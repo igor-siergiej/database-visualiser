@@ -1,5 +1,5 @@
-4879
-60/home/igors/Desktop/database-visualiser/src/scss/styles.scss1675196979346630453 0
+4881
+60/home/igors/Desktop/database-visualiser/src/scss/styles.scss1675200875362645413 0
 46/home/igors/Desktop/database-visualiser/src/js1675198869929109981 1
 67/home/igors/Desktop/database-visualiser/dist/index.1346fb5e.css.map1675198870575773099 0
 63/home/igors/Desktop/database-visualiser/dist/index.1346fb5e.css1675198870569106469 0
@@ -201,7 +201,7 @@
 92/home/igors/Desktop/database-visualiser/node_modules/css-tree/lib/syntax/pseudo/nth-child.js1675199057974744757 0
 99/home/igors/Desktop/database-visualiser/node_modules/css-tree/lib/syntax/pseudo/nth-last-of-type.js1675199057978078072 0
 86/home/igors/Desktop/database-visualiser/node_modules/css-tree/lib/syntax/pseudo/common1675199057984744702 1
-44/home/igors/Desktop/database-visualiser/dist1675198870619106194 1
+44/home/igors/Desktop/database-visualiser/dist1675200878622627524 1
 97/home/igors/Desktop/database-visualiser/node_modules/css-tree/lib/syntax/pseudo/nth-last-child.js1675199057974744757 0
 82/home/igors/Desktop/database-visualiser/node_modules/css-tree/lib/syntax/create.js1675199057921411716 0
 87/home/igors/Desktop/database-visualiser/node_modules/css-tree/lib/syntax/atrule/page.js1675199057978078072 0
@@ -2236,7 +2236,7 @@
 77/home/igors/Desktop/database-visualiser/node_modules/domutils/lib/legacy.d.ts1675199057888078566 0
 95/home/igors/Desktop/database-visualiser/node_modules/css-tree/lib/syntax/function/expression.js1675199057954744867 0
 108/home/igors/Desktop/database-visualiser/node_modules/@jridgewell/trace-mapping/dist/trace-mapping.umd.js.map1675199057844745470 0
-55/home/igors/Desktop/database-visualiser/dist/index.html1675198870572439784 0
+55/home/igors/Desktop/database-visualiser/dist/index.html1675200878592627688 0
 83/home/igors/Desktop/database-visualiser/node_modules/@parcel/utils/src/TapStream.js1675198618537156147 0
 100/home/igors/Desktop/database-visualiser/node_modules/posthtml/node_modules/posthtml-parser/readme.md1675199057808079005 0
 78/home/igors/Desktop/database-visualiser/node_modules/domutils/lib/stringify.js1675199057834745525 0
@@ -2326,7 +2326,7 @@
 86/home/igors/Desktop/database-visualiser/node_modules/csso/lib/replace/property/font.js1675199057934744976 0
 72/home/igors/Desktop/database-visualiser/node_modules/parcel/package.json1675199057841412155 0
 88/home/igors/Desktop/database-visualiser/node_modules/postcss-value-parser/lib/index.d.ts1675199057838078840 0
-39/home/igors/Desktop/database-visualiser1675199283730172603 1
+39/home/igors/Desktop/database-visualiser1675254580982471900 1
 94/home/igors/Desktop/database-visualiser/node_modules/@lmdb/lmdb-linux-x64/node.abi93.musl.node1675198618587155872 0
 103/home/igors/Desktop/database-visualiser/node_modules/@parcel/core/test/fixtures/config-plugin-not-found1675198618407156860 1
 129/home/igors/Desktop/database-visualiser/node_modules/@parcel/node-resolver-core/test/fixture/node_modules/@scope/pkg/package.json1675199057991411332 0
@@ -2618,6 +2618,7 @@
 98/home/igors/Desktop/database-visualiser/node_modules/@parcel/core/test/ParcelConfigRequest.test.js1675198618567155982 0
 63/home/igors/Desktop/database-visualiser/node_modules/.bin/acorn1675199058328076151 0
 101/home/igors/Desktop/database-visualiser/node_modules/@babel/highlight/node_modules/chalk/package.json1675199057771412539 0
+67/home/igors/Desktop/database-visualiser/dist/index.044e704e.css.map1675200878602627633 0
 87/home/igors/Desktop/database-visualiser/node_modules/type-fest/source/package-json.d.ts1675199057894745196 0
 74/home/igors/Desktop/database-visualiser/node_modules/source-map-js/LICENSE1675198618303824094 0
 92/home/igors/Desktop/database-visualiser/node_modules/@parcel/utils/test/PromiseQueue.test.js1675198618523822887 0
@@ -3339,7 +3340,7 @@
 86/home/igors/Desktop/database-visualiser/node_modules/@jridgewell/resolve-uri/README.md1675199057818078950 0
 82/home/igors/Desktop/database-visualiser/node_modules/electron-to-chromium/index.js1675198618367157080 0
 103/home/igors/Desktop/database-visualiser/node_modules/caniuse-lite/data/features/prefers-color-scheme.js1675198618667155433 0
-62/home/igors/Desktop/database-visualiser/dist/index.18dbc454.js1675198870615772879 0
+62/home/igors/Desktop/database-visualiser/dist/index.18dbc454.js1675200878619294209 0
 84/home/igors/Desktop/database-visualiser/node_modules/caniuse-lite/data/regions/CU.js1675198618607155763 0
 102/home/igors/Desktop/database-visualiser/node_modules/lmdb/dependencies/lmdb/libraries/liblmdb/Makefile1675198618443823326 0
 106/home/igors/Desktop/database-visualiser/node_modules/@parcel/transformer-js/parcel-swc.win32-x64-msvc.node1675199058321409521 0
@@ -3543,7 +3544,7 @@
 75/home/igors/Desktop/database-visualiser/node_modules/browserslist/README.md1675198618383823655 0
 106/home/igors/Desktop/database-visualiser/node_modules/caniuse-lite/data/features/document-evaluate-xpath.js1675198618627155653 0
 101/home/igors/Desktop/database-visualiser/node_modules/caniuse-lite/data/features/css-math-functions.js1675198618577155927 0
-66/home/igors/Desktop/database-visualiser/dist/index.18dbc454.js.map1675198870615772879 0
+66/home/igors/Desktop/database-visualiser/dist/index.18dbc454.js.map1675200878619294209 0
 92/home/igors/Desktop/database-visualiser/node_modules/caniuse-lite/data/features/png-alpha.js1675198618663822118 0
 68/home/igors/Desktop/database-visualiser/node_modules/posthtml-parser1675199057814745635 1
 77/home/igors/Desktop/database-visualiser/node_modules/term-size/vendor/windows1675199057818078950 1
@@ -4149,6 +4150,7 @@
 101/home/igors/Desktop/database-visualiser/node_modules/@parcel/packager-js/src/ScopeHoistingPackager.js1675199057891411881 0
 70/home/igors/Desktop/database-visualiser/node_modules/bootstrap/LICENSE1675196833779968135 0
 71/home/igors/Desktop/database-visualiser/node_modules/@parcel/logger/src1675198618320490669 1
+63/home/igors/Desktop/database-visualiser/dist/index.044e704e.css1675200878602627633 0
 81/home/igors/Desktop/database-visualiser/node_modules/sass/types/logger/index.d.ts1675198618623822338 0
 61/home/igors/Desktop/database-visualiser/node_modules/htmlnano1675199057968078127 1
 95/home/igors/Desktop/database-visualiser/node_modules/caniuse-lite/data/features/css-rrggbbaa.js1675198618590489188 0
