@@ -558,6 +558,33 @@ function hmrAccept(bundle, id) {
 
 },{}],"1SICI":[function(require,module,exports) {
 var _bootstrap = require("bootstrap");
+function generateTableHead(table, data) {
+    let thead = table.createTHead();
+    let row = thead.insertRow();
+    for (let key1 of data){
+        let th = document.createElement("th");
+        let text = document.createTextNode(key1);
+        th.appendChild(text);
+        row.appendChild(th);
+    }
+}
+function generateTable(table, data) {
+    for (let element of data){
+        let row = table.insertRow();
+        for(key in element){
+            let cell = row.insertCell();
+            let text = document.createTextNode(element[key]);
+            cell.appendChild(text);
+        }
+    }
+}
+document.querySelector(".click").addEventListener("click", (e)=>{
+    let table = document.querySelector(".table");
+    let data = document.querySelector(".textarea").value;
+    generateTableHead(table, data);
+    generateTable(table, mountains);
+    e.target.textContent = "Clicked!";
+});
 
 },{"bootstrap":"h36JB"}],"h36JB":[function(require,module,exports) {
 /*!

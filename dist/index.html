@@ -3,14 +3,21 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Bootstrap w/ Parcel</title>
+    <title>Database Visualiser</title>
     <link rel="stylesheet" href="/index.044e704e.css">
     <script src="/index.18dbc454.js" defer=""></script>
   </head>
   <body>
     <div class="container py-4 px-3 mx-auto">
-      <h1>Hello, Bootstrap and Parcel!</h1>
-      <button class="btn btn-primary">Primary button</button>
+      <h1>Welcome to Database Visualiser</h1>
     </div>
+
+    <div class="input-group">
+      <span class="input-group-text">Paste SQL here</span>
+      <textarea class="form-control textarea" aria-label="Paste SQL here"></textarea>
+    </div>
+    <button class="btn btn-primary click">Visualise Database</button>
+    <table class="table"></table>
   </body>
 </html>
+
