@@ -22,12 +22,34 @@ import * as bootstrap from 'bootstrap';
     }
   }
   
+  function parseSQL(text) {
+    // need to first split by each 'CREATE TABLE'
+    // need to check if statements are not IF NOT EXISTS and CREATE TABLE AS
+    let textArray = text.split(',');
+    textArray[0] = textArray[0].split('(')[1];
+    textArray.forEach(element => {
+        console.log(element);
+    });
+    let lastIndex = textArray.length -1;
+    let length = textArray[lastIndex].length;
+    textArray[lastIndex] = textArray[lastIndex].substring(0,length-2);
+    return textArray
+  }
  
 
   document.querySelector('.click').addEventListener('click', (e) => {
     let table = document.querySelector(".table");
-    let data = document.querySelector(".textarea").value;
-    generateTableHead(table, data);
-    generateTable(table, mountains);
-    e.target.textContent = 'Clicked!';
+    if (table != null) {
+        table.deleteTHead();
+    }
+    let text = document.querySelector(".textarea").value;
+    let headers = parseSQL(text);
+    generateTableHead(table, headers);
+
+
+    //generateTable(table, data);   this should be used for adding values to table so
+    // these can be used to implement correcting queries?
+
+
+    //e.target.textContent = 'Clicked!';
   });
