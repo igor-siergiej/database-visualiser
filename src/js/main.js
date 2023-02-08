@@ -1,5 +1,7 @@
 import * as bootstrap from 'bootstrap';
 import Table from './Table'; 
+import LeaderLine from 'leader-line-new';
+import AnimEvent from 'anim-event';
 
   function generateTableHead(table, data) {
     data.shift();
@@ -7,6 +9,9 @@ import Table from './Table';
     let row = thead.insertRow();
     for (let key of data) {
       let th = document.createElement("th");
+      if (key == " id serial") {
+        th.id = "test"
+      }
       let text = document.createTextNode(key);
       th.appendChild(text);
       row.appendChild(th);
@@ -44,10 +49,9 @@ import Table from './Table';
     return returnList
   }
  
+ 
 
   document.querySelector('.click').addEventListener('click', (e) => {
-    let test = new Table(1,2,3);
-    console.log(test);
     let div = document.querySelector(".tableArea");
      if (div.childElementCount == 0) { // need a better way to check for needing to reconstruct tables
         let text = document.querySelector(".textarea").value;
@@ -60,14 +64,24 @@ import Table from './Table';
             div.appendChild(heading);
             
             let table = document.createElement("table");
+            table.id = element[0].trim();
             table.className = "table";
             generateTableHead(table, element);
             
             div.appendChild(table);
         }
      }
+
+     var line = new LeaderLine(
+      document.getElementById('123'),
+      document.getElementById('test')
+    );
+     
     });
+
+  
     
+
     //generateTable(table, data);   this should be used for adding values to table so
     // these can be used to implement correcting queries?
 
