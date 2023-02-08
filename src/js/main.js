@@ -1,5 +1,6 @@
 import * as bootstrap from 'bootstrap';
-  
+import Table from './Table'; 
+
   function generateTableHead(table, data) {
     data.shift();
     let thead = table.createTHead();
@@ -29,7 +30,7 @@ import * as bootstrap from 'bootstrap';
     let tableArray = text.split('CREATE TABLE'); // this should have length the number of tables
     tableArray.shift();
     tableArray.forEach(text => {
-        text = text.replace(/(\r\n|\n|\r)/gm, "");
+        text = text.replace(/(\r\n|\n|\r)/gm, ""); // replaces new lines
         let textArray = text.split(',');
         let tableTitle = textArray[0].split('(')[0];
         textArray[0] = textArray[0].split('(')[1];
@@ -45,6 +46,8 @@ import * as bootstrap from 'bootstrap';
  
 
   document.querySelector('.click').addEventListener('click', (e) => {
+    let test = new Table(1,2,3);
+    console.log(test);
     let div = document.querySelector(".tableArea");
      if (div.childElementCount == 0) { // need a better way to check for needing to reconstruct tables
         let text = document.querySelector(".textarea").value;
