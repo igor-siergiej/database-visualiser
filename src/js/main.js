@@ -6,16 +6,36 @@ import AnimEvent from 'anim-event';
   function generateTableHead(table, data) {
     data.shift();
     let thead = table.createTHead();
-    let row = thead.insertRow();
     for (let key of data) {
       let th = document.createElement("th");
       if (key == " id serial") {
         th.id = "test"
       }
+      let row = thead.insertRow();
       let text = document.createTextNode(key);
       th.appendChild(text);
       row.appendChild(th);
     }
+  }
+
+  function generateCustomTable(div,data) {
+    let column = document.createElement("div");
+    column.className = "col";
+
+    let heading = document.createElement("h3");
+    heading.innerText = data[0];
+    column.appendChild(heading);
+    data.shift();
+
+    
+    for (let element of data) {
+      let row = document.createElement("div");
+      row.className = "row";
+      let text = document.createTextNode(element);
+      row.appendChild(text);
+      column.appendChild(row);
+    }
+    div.appendChild(column);
   }
 
   function generateTable(table, data) {
@@ -59,22 +79,16 @@ import AnimEvent from 'anim-event';
 
         for (const element of sqlText) {
 
-            let heading = document.createElement("h3");
-            heading.innerText = element[0];
-            div.appendChild(heading);
-            
-            let table = document.createElement("table");
-            table.id = element[0].trim();
-            table.className = "table";
-            generateTableHead(table, element);
-            
-            div.appendChild(table);
+            //let table = document.createElement("div");
+            //table.id = element[0].trim();
+            //table.className = "container";
+            generateCustomTable(div, element);
         }
      }
 
      var line = new LeaderLine(
-      document.getElementById('123'),
-      document.getElementById('test')
+      document.getElementById('test'),
+      document.getElementById('123')
     );
      
     });
