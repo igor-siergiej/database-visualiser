@@ -20,9 +20,9 @@ import AnimEvent from 'anim-event';
 
   function generateCustomTable(div,data) {
     let column = document.createElement("div");
-    column.className = "col";
-
+    column.className = "col-md border border-4 mx-3 my-3 w-auto";
     let heading = document.createElement("h3");
+    heading.className = "text-center";
     heading.innerText = data[0];
     column.appendChild(heading);
     data.shift();
@@ -30,7 +30,11 @@ import AnimEvent from 'anim-event';
     
     for (let element of data) {
       let row = document.createElement("div");
-      row.className = "row";
+      if (data.indexOf(element) == 0) {
+        row.className = "row border-top border-bottom border-1 py-1";
+      } else {
+        row.className = "row border-bottom border-1 py-1";
+      }
       let text = document.createTextNode(element);
       row.appendChild(text);
       column.appendChild(row);
