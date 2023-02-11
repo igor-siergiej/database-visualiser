@@ -18,11 +18,12 @@ import AnimEvent from 'anim-event';
     }
   }
 
+
   function generateCustomTable(div,data) {
     let column = document.createElement("div");
-    column.className = "col-md border border-4 mx-3 my-3 w-auto";
+    column.className = "col border border-4 mx-5 my-5 w-25 gx-0";
     let heading = document.createElement("h3");
-    heading.className = "text-center";
+    heading.className = "text-center py-1 px-1 my-0 bg-primary";
     heading.innerText = data[0];
     column.appendChild(heading);
     data.shift();
@@ -31,10 +32,13 @@ import AnimEvent from 'anim-event';
     for (let element of data) {
       let row = document.createElement("div");
       if (data.indexOf(element) == 0) {
-        row.className = "row border-top border-bottom border-1 py-1";
+        row.className = "row border-top border-bottom border-2 py-1 px-2 gx-0";
+      } else if (data.indexOf(element) == data.length-1) {
+        row.className = "row py-1 px-2 gx-0";
       } else {
-        row.className = "row border-bottom border-1 py-1";
+        row.className = "row border-bottom border-2 py-1 px-2 gx-0";
       }
+
       let text = document.createTextNode(element);
       row.appendChild(text);
       column.appendChild(row);
@@ -42,16 +46,7 @@ import AnimEvent from 'anim-event';
     div.appendChild(column);
   }
 
-  function generateTable(table, data) {
-    for (let element of data) {
-      let row = table.insertRow();
-      for (key in element) {
-        let cell = row.insertCell();
-        let text = document.createTextNode(element[key]);
-        cell.appendChild(text);
-      }
-    }
-  }
+  
   
   function parseSQL(text) {
     var returnList = [];
@@ -73,8 +68,6 @@ import AnimEvent from 'anim-event';
     return returnList
   }
  
- 
-
   document.querySelector('.click').addEventListener('click', (e) => {
     let div = document.querySelector(".tableArea");
      if (div.childElementCount == 0) { // need a better way to check for needing to reconstruct tables
@@ -88,7 +81,7 @@ import AnimEvent from 'anim-event';
             //table.className = "container";
             generateCustomTable(div, element);
         }
-     }
+     }  
 
      var line = new LeaderLine(
       document.getElementById('test'),
