@@ -8,26 +8,25 @@
     <script type="module" src="js/main.js"></script>
   </head>
   <body>
-    <div class="container py-3">
-      <h1>Welcome to Database Visualiser</h1>
+    <div class="container">
+      <h1 class="py-5">Welcome to Database Visualiser</h1>
 
       <div class="input-group">
-        <span class="input-group-text">Paste SQL here</span>
+        <span class="input-group-text ">Paste SQL here</span>
         <textarea class="form-control textarea h-auto" rows="10" aria-label="Paste SQL here"></textarea>
 
       </div>
 
-      <button class="btn btn-primary w-100 click">Visualise Database</button>
+      <div class="container text-center">
+        <button id="visualiseButton" class="btn btn-primary my-3 py-3 w-25 click ">Visualise Database</button>
+      </div>
       
-      <div class="row row-cols-md-3 tableArea">
-
+      <div class="container">
+        <div class="row row-cols-md-3 tableArea justify-content-around">
+        </div>  
       </div>
 
-
     </div>
-
-    
-
 
   </body>
 </html>
