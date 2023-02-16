@@ -3,7 +3,7 @@ export default class Column {
     type;
 
     constructor(inputString) {
-        console.log(inputString);
+      
     }
 
     // input string e.i. table name and list of columns

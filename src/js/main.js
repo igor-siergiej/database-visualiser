@@ -49,10 +49,12 @@ function generateCustomTable(div, data) {
 
 function parseSQL(text) {
   var returnList = [];
+  
   // need to check if statements are not IF NOT EXISTS and CREATE TABLE AS
   let tableArray = text.split(';'); // this should have length the number of tables
-  tableArray.pop(); // removes the empty space at the end of the array that is created by split function
-
+   // removes the empty space at the end of the array that is created by split function
+  tableArray.pop()
+   console.log(tableArray)
   tableArray.forEach(text => {
     // syntax checking here?
     let table = new Table(text);
