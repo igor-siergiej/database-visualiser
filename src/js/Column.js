@@ -1,18 +1,12 @@
 export default class Column {
     name;
     type;
+    isPrimaryKey;
 
     constructor(inputString) {
-      
-    }
-
-    // input string e.i. table name and list of columns
-    parseString() {
-
-    }
-
-    // add a table to the div or div id?
-    createTable(div) {
-        
+        // if column type is found in array from dictionary then set type.
+        // remove all words from dictionary and the one that remains is column name?
+        this.name = inputString[0]
+        this.type = inputString[1]
     }
 }
