@@ -55,46 +55,47 @@ export default class Table {
 			var column = new Column(element);
 			this.columns.push(column);
 		}
-		console.log(this.columns)
+		console.log(columns)
 	}
 
 	createTable(div) {
 		let table = document.createElement("div");
-		table.className = "col border border-4 mx-5 my-5 w-25 gx-0";
+		table.className = "row border border-4 mx-3 w-25 gx-0 h-100 my-3";
+
+		let keyColumn = document.createElement("div");
+		keyColumn.className = "col-1 border-top border-4 gx-0 w-25 h-100";
+
+		let nameColumn = document.createElement("div");
+		nameColumn.className = "col border-top border-start border-4 h-100 gx-0";
+
+		let typeColumn = document.createElement("div");
+		typeColumn.className = "col border-top border-start border-4 h-100 gx-0";
+
 		let heading = document.createElement("h3");
-		heading.className = "text-center py-1 px-1 my-0 bg-primary";
+		heading.className = "text-center my-0 bg-primary";
 		heading.innerText = this.name;
 		table.appendChild(heading);
 
 		for (const column of this.columns) {
-			this.createColumn(column, table)
+			this.createColumn(column.isPrimaryKey, keyColumn)
+			this.createColumn(column.name.value, nameColumn)
+			this.createColumn(column.type.value, typeColumn)
 		}
+		
+		table.appendChild(keyColumn)
+		table.appendChild(nameColumn);
+		table.appendChild(typeColumn);
+
 		div.appendChild(table);
 	}
 
-	createColumn(column, div) {
+	createColumn(text, div) {
 		let nameRow = document.createElement("div");
 		nameRow.className = "row py-1 px-2 gx-0";
 
-		let typeRow = document.createElement("div");
-		typeRow.className = "row py-1 px-2 gx-0";
-
-
-		let nameText = document.createTextNode(column.name.value);
+		let nameText = document.createTextNode(text);
 		nameRow.appendChild(nameText);
-
-		let typeText = document.createTextNode(column.type.value);
-		typeRow.appendChild(typeText);
 		
-		div.appendChild(nameRow);
-		div.appendChild(typeRow)
+		div.appendChild(nameRow)
 	}
-
-
-	//   if (this.columns.indexOf(column) == 0) {
-	// 	row.className = "row border-top border-bottom border-2 py-1 px-2 gx-0";
-	//   } else if (this.columns.indexOf(column) == this.columns.length - 1) {
-	// 	row.className = "row py-1 px-2 gx-0";
-	//   } else {
-	// 	row.className = "row border-bottom border-2 py-1 px-2 gx-0";
 }
