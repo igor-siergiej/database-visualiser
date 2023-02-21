@@ -21,13 +21,13 @@ function parseSQL(text) {
   return tableList
 }
 
-document.getElementById("myTab2").hidden = true; 
+document.getElementById("outputTab").hidden = true; 
 
 document.querySelector('.click').addEventListener('click', (e) => {
-  document.getElementById("myTab2").hidden = false; 
-  let div = document.querySelector(".tableArea");
+  document.getElementById("outputTab").hidden = false; 
+  let div = document.getElementById("tableArea");
   // need a better way to check for needing to reconstruct tables
-  let text = document.querySelector(".textarea").value;
+  let text = document.getElementById("textArea").value;
   let tables = parseSQL(text);
 
   for (const element of tables) {
