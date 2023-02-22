@@ -4,6 +4,40 @@ import LeaderLine from 'leader-line-new';
 import AnimEvent from 'anim-event';
 import jsTokens from "js-tokens";
 
+(function () {
+  'use strict'
+
+  // Fetch all the forms we want to apply custom Bootstrap validation styles to
+  var forms = document.querySelectorAll('.needs-validation')
+
+  const inputFile = document.getElementById("filePicker");
+
+  // Loop over them and prevent submission
+  Array.prototype.slice.call(forms)
+    .forEach(function (form) {
+      form.addEventListener('submit', function (event) {
+        event.preventDefault()
+        event.stopPropagation()
+        if (form.checkValidity() && fileValidation()) {
+          visualise()
+        } else {
+          inputFile.classList.add("is-invalid")
+        }
+
+        form.classList.add('was-validated')
+      }, false)
+    })
+})()
+
+function fileValidation() {
+  const inputFile = document.getElementById("filePicker").files[0].name;
+  var regex = new RegExp("^.*\.(txt|TXT|psql|PSQL)$")
+  if (regex.test(inputFile.toLowerCase())) {
+    return true
+  } else {
+    return false
+  }
+}
 
 function parseSQL(text) {
   var tableList = [];
@@ -23,7 +57,7 @@ function parseSQL(text) {
 
 document.getElementById("outputTab").hidden = true; 
 
-document.querySelector('.click').addEventListener('click', (e) => {
+function visualise() {
   document.getElementById("outputTab").hidden = false; 
   let div = document.getElementById("tableArea");
   // need a better way to check for needing to reconstruct tables
@@ -33,13 +67,13 @@ document.querySelector('.click').addEventListener('click', (e) => {
   for (const element of tables) {
     element.createTable(div);
   }
+}
 
   //  var line = new LeaderLine(
   //   document.getElementById('test'),
   //   document.getElementById('123')
   // );
 
-});
 
 //text = text.replace(/(\r\n|\n|\r)/gm, ""); // replaces new lines
 

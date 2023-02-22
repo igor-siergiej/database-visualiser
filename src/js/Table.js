@@ -60,7 +60,7 @@ export default class Table {
 
 	createTable(div) {
 		let table = document.createElement("div");
-		table.className = "row border border-4 mx-3 w-25 gx-0 h-100 my-3";
+		table.className = "row border border-4 mx-3 w-25 gx-0 h-100 my-3 w-auto";
 
 		let keyColumn = document.createElement("div");
 		keyColumn.className = "col-1 border-top border-4 gx-0 w-25 h-100";
