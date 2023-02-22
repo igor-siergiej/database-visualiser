@@ -14,13 +14,44 @@
   <div class="container">
     <h1 class="py-5">Welcome to Database Visualiser</h1>
 
+    <section>
+    <ul class="nav nav-pills nav-fill w-50" id="inputTab">
+      <li class="nav-item">
+        <button class="nav-link active" id="table-tab" data-bs-toggle="tab" data-bs-target="#textInput" type="button"
+          role="tab" aria-controls="textInput" aria-selected="true">Text Input</button>
+      </li>
 
-      <ul class="nav nav-pills" id="inputTab">
+      <li class="nav-item">
+        <button class="nav-link" id="syntax-tab" data-bs-toggle="tab" data-bs-target="#fileInput" type="button"
+          role="tab" aria-controls="fileInput" aria-selected="false">File Input</button>
+      </li>
+    </ul>
+
+    <div class="tab-content">
+      <div class="tab-pane show active" id="textInput" role="tabpanel" aria-labelledby="syntax-tab">
+        <div class="input-group py-3">
+          <span class="input-group-text ">Paste SQL here</span>
+          <textarea class="form-control h-auto" id="textArea" rows="10" aria-label="Paste SQL here"></textarea>
+        </div>
+      </div>
+
+      <div class="tab-pane" id="fileInput" role="tabpanel" aria-labelledby="syntax-tab">
+        <h1>Test1</h1>
+      </div>
+    </div>
+  </section>
+
+    <div class="container text-center">
+      <button id="visualiseButton" class="btn btn-primary my-3 py-3 w-25 click ">Visualise Database</button>
+    </div>
+
+    <section>
+      <ul class="nav nav-pills nav-fill w-50" id="outputTab">
         <li class="nav-item">
           <button class="nav-link active" id="table-tab" data-bs-toggle="tab" data-bs-target="#tableTab" type="button"
             role="tab" aria-controls="tableTab" aria-selected="true">Table View</button>
         </li>
-  
+
         <li class="nav-item">
           <button class="nav-link" id="syntax-tab" data-bs-toggle="tab" data-bs-target="#syntaxArea" type="button"
             role="tab" aria-controls="syntaxArea" aria-selected="false">Syntax View</button>
@@ -28,67 +59,19 @@
       </ul>
 
       <div class="tab-content">
-        <div class="input-group py-3" id="textInput">
-          <span class="input-group-text ">Paste SQL here</span>
-          <textarea class="form-control h-auto" id="textArea" rows="10" aria-label="Paste SQL here"></textarea>
+        <div class=" tab-pane  show active " id="tableTab" role="tabpanel" aria-labelledby="table-tab">
+          <div class="row row-cols-md-3 justify-content-around py-3" id="tableArea"></div>
         </div>
 
-        <div>
-          
+        <div class="tab-pane" id="syntaxArea" role="tabpanel" aria-labelledby="syntax-tab">
+          <div class="container">
+            <h1>Test</h1>
+          </div>
         </div>
       </div>
+
+    </section>
     
-
-
-    <div class="container text-center">
-      <button id="visualiseButton" class="btn btn-primary my-3 py-3 w-25 click ">Visualise Database</button>
-    </div>
-
-
-
-
-    <ul class="nav nav-pills"  id="outputTab">
-      <li class="nav-item" >
-        <button class="nav-link active" id="table-tab" data-bs-toggle="tab" data-bs-target="#tableTab" type="button"
-          role="tab" aria-controls="tableTab" aria-selected="true">Table View</button>
-      </li>
-
-      <li class="nav-item" >
-        <button class="nav-link" id="syntax-tab" data-bs-toggle="tab" data-bs-target="#syntaxArea" type="button"
-          role="tab" aria-controls="syntaxArea" aria-selected="false">Syntax View</button>
-      </li>
-    </ul>
-
-
-
-
-
-
-
-    <div class="tab-content">
-      <div class=" tab-pane  show active " id="tableTab" role="tabpanel"
-      aria-labelledby="table-tab">
-      <div class="row row-cols-md-3 justify-content-around py-3" id="tableArea">
-
-      </div>
-    </div>
-
-
-
-    <div class="tab-pane" id="syntaxArea" role="tabpanel" aria-labelledby="syntax-tab">
-      <div class="container">
-        <h1>Test</h1>
-      </div>
-    </div>
-    </div>
-
-
-
-
   </div>
-
-  
-
 </body>
-
 </html>
