@@ -15,10 +15,12 @@ import jsTokens from "js-tokens";
   // Loop over them and prevent submission
   Array.prototype.slice.call(forms)
     .forEach(function (form) {
+      // re do this validation so that you check only the one that is not disabled
       form.addEventListener('submit', function (event) {
         event.preventDefault()
         event.stopPropagation()
         if (form.checkValidity() && fileValidation()) {
+          // need to
           visualise()
         } else {
           inputFile.classList.add("is-invalid")
@@ -30,8 +32,10 @@ import jsTokens from "js-tokens";
 })()
 
 function fileValidation() {
+  // check which div is hidden and validate the other
+  // write validation for text area not being empty
   const inputFile = document.getElementById("filePicker").files[0].name;
-  var regex = new RegExp("^.*\.(txt|TXT|psql|PSQL)$")
+  var regex = new RegExp("^.*\.(txt|psql|sql)$")
   if (regex.test(inputFile.toLowerCase())) {
     return true
   } else {
