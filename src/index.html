@@ -1,87 +1,140 @@
 <!doctype html>
+
 <html lang="en">
 
 <head>
+
   <meta charset="utf-8">
+
   <meta name="viewport" content="width=device-width, initial-scale=1">
+
   <title>Database Visualiser</title>
+
   <link rel="stylesheet" href="scss/styles.scss">
+
   <script type="module" src="js/main.js"></script>
+
 </head>
 
 <body>
 
   <div class="container">
+
     <h1 class="py-5">Welcome to Database Visualiser</h1>
 
     <section>
-    <ul class="nav nav-pills nav-fill w-50" id="inputTab">
-      <li class="nav-item">
-        <button class="nav-link active" id="table-tab" data-bs-toggle="tab" data-bs-target="#textInput" type="button"
-          role="tab" aria-controls="textInput" aria-selected="true">Text Input</button>
-      </li>
 
-      <li class="nav-item">
-        <button class="nav-link" id="syntax-tab" data-bs-toggle="tab" data-bs-target="#fileInput" type="button"
-          role="tab" aria-controls="fileInput" aria-selected="false">File Input</button>
-      </li>
-    </ul>
+      <ul class="nav nav-pills nav-fill w-50" id="inputTab">
 
-    <div class="tab-content">
-      <div class="tab-pane fade show active" id="textInput" role="tabpanel" aria-labelledby="syntax-tab">
-        <div class="input-group py-3">
-          <span class="input-group-text ">Paste SQL here</span>
-          <textarea class="form-control h-auto" id="textArea" rows="10" aria-label="Paste SQL here"></textarea>
-        </div>
-      </div>
-
-      <form class="needs-validation inputForm" novalidate>
-        <div class="tab-pane fade input-group" id="fileInput" role="tabpanel" aria-labelledby="syntax-tab">
-          <label for="filePicker" class="form-label">Upload .PSQL File</label>
-          <input class="form-control form-control-lg" id="filePicker" type="file" required>
-          <div class="invalid-tooltip">
-            Please provide a valid file.
-          </div>
-        </div>
-
-        <div class="container text-center">
-          <button id="visualiseButton" class="btn btn-primary my-3 py-3 w-25 click" type="submit">Visualise Database</button>
-        </div>
-
-      </form>
-      
-    </div>
-  </section>
-
-    
-
-    <section>
-      <ul class="nav nav-pills nav-fill w-50" id="outputTab">
         <li class="nav-item">
-          <button class="nav-link active" id="table-tab" data-bs-toggle="tab" data-bs-target="#tableTab" type="button"
-            role="tab" aria-controls="tableTab" aria-selected="true">Table View</button>
+
+          <button class="nav-link active" id="table-tab" data-bs-toggle="tab" data-bs-target="#textInput" type="button"
+            role="tab" aria-controls="textInput" aria-selected="true">Text Input</button>
+
         </li>
 
         <li class="nav-item">
-          <button class="nav-link" id="syntax-tab" data-bs-toggle="tab" data-bs-target="#syntaxArea" type="button"
-            role="tab" aria-controls="syntaxArea" aria-selected="false">Syntax View</button>
+
+          <button class="nav-link" id="syntax-tab" data-bs-toggle="tab" data-bs-target="#fileInput" type="button"
+            role="tab" aria-controls="fileInput" aria-selected="false">File Input</button>
+
         </li>
+
       </ul>
 
+
+
+
+
       <div class="tab-content">
-        <div class=" tab-pane fade show active" id="tableTab" role="tabpanel" aria-labelledby="table-tab">
-          <div class="row row-cols-md-3 justify-content-around " id="tableArea"></div>
+
+        <div class="tab-pane fade py-3" id="fileInput" role="tabpanel" aria-labelledby="syntax-tab">
+
+          <form id="fileForm" novalidate>
+
+            <label for="filePicker" class="form-label">Upload .PSQL File Here:</label>
+
+            <input class="form-control form-control-lg" id="filePicker" type="file" required>
+
+            <div class="container text-center">
+
+              <button id="visualiseButton" class="btn btn-primary my-3 py-3 w-25" type="submit">Visualise
+                Database</button>
+
+            </div>
+
+          </form>
+
         </div>
 
-        <div class="tab-pane fade " id="syntaxArea" role="tabpanel" aria-labelledby="syntax-tab">
-          <div class="container">
-            <h1>Test</h1>
-          </div>
+        <div class="tab-pane fade show active py-3" id="textInput" role="tabpanel" aria-labelledby="syntax-tab">
+
+          <form id="textForm" novalidate>
+
+            <label for="textArea" class="form-label">Paste SQL Here:</label>
+
+            <textarea class="form-control h-auto" id="textArea" rows="10" aria-label="Paste SQL here"
+              required></textarea>
+
+            <div class="container text-center">
+
+              <button id="visualiseButton" class="btn btn-primary my-3 py-3 w-25" type="submit">Visualise
+                Database</button>
+
+            </div>
+
+          </form>
+
         </div>
+
       </div>
 
     </section>
-    
+
+    <section>
+
+      <ul class="nav nav-pills nav-fill w-50" id="outputTab">
+
+        <li class="nav-item">
+
+          <button class="nav-link active" id="table-tab" data-bs-toggle="tab" data-bs-target="#tableTab" type="button"
+            role="tab" aria-controls="tableTab" aria-selected="true">Table View</button>
+
+        </li>
+
+        <li class="nav-item">
+
+          <button class="nav-link" id="syntax-tab" data-bs-toggle="tab" data-bs-target="#syntaxArea" type="button"
+            role="tab" aria-controls="syntaxArea" aria-selected="false">Syntax View</button>
+
+        </li>
+
+      </ul>
+
+      <div class="tab-content">
+
+        <div class=" tab-pane fade show active" id="tableTab" role="tabpanel" aria-labelledby="table-tab">
+
+          <div class="row row-cols-md-3 justify-content-around " id="tableArea"></div>
+
+        </div>
+
+        <div class="tab-pane fade " id="syntaxArea" role="tabpanel" aria-labelledby="syntax-tab">
+
+          <div class="container">
+
+            <h1>Test</h1>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
   </div>
+
 </body>
+
 </html>

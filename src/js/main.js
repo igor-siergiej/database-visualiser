@@ -4,39 +4,49 @@ import LeaderLine from 'leader-line-new';
 import AnimEvent from 'anim-event';
 import jsTokens from "js-tokens";
 
-(function () {
-  'use strict'
+const fileForm = document.getElementById("fileForm");
+const textForm = document.getElementById("textForm");
 
-  // Fetch all the forms we want to apply custom Bootstrap validation styles to
-  var forms = document.querySelectorAll('.needs-validation')
+const filePicker = document.getElementById("filePicker");
+const textArea = document.getElementById("textArea");
 
-  const inputFile = document.getElementById("filePicker");
+fileForm.addEventListener('submit', function (event) {
+  event.preventDefault()
+  event.stopPropagation()
+    // means textArea is hidden so validate filePicker
+    if (fileForm.checkValidity() && fileValidation()) {
+      filePicker.classList.remove("is-invalid")
+      filePicker.classList.add("is-valid")
+      var reader = new FileReader();
+      reader.readAsText(document.getElementById("filePicker").files[0],"UTF-8");
+      reader.addEventListener('load', (event) => {
+        visualise(event.target.result)
+      })
+    } else {
+      filePicker.classList.add("is-invalid")
+      filePicker.classList.remove("is-valid")
+    }
+}, false)
 
-  // Loop over them and prevent submission
-  Array.prototype.slice.call(forms)
-    .forEach(function (form) {
-      // re do this validation so that you check only the one that is not disabled
-      form.addEventListener('submit', function (event) {
-        event.preventDefault()
-        event.stopPropagation()
-        if (form.checkValidity() && fileValidation()) {
-          // need to
-          visualise()
-        } else {
-          inputFile.classList.add("is-invalid")
-        }
-
-        form.classList.add('was-validated')
-      }, false)
-    })
-})()
+textForm.addEventListener('submit', function (event) {
+  event.preventDefault()
+  event.stopPropagation()
+  if (textForm.checkValidity()) {
+    textArea.classList.remove("is-invalid")
+    textArea.classList.add("is-valid")
+    visualise(textArea.value)
+  } else {
+    textArea.classList.remove("is-valid")
+    textArea.classList.add("is-invalid")
+  }
+}, false)
 
 function fileValidation() {
   // check which div is hidden and validate the other
   // write validation for text area not being empty
-  const inputFile = document.getElementById("filePicker").files[0].name;
+  const fileName = document.getElementById("filePicker").files[0].name;
   var regex = new RegExp("^.*\.(txt|psql|sql)$")
-  if (regex.test(inputFile.toLowerCase())) {
+  if (regex.test(fileName.toLowerCase())) {
     return true
   } else {
     return false
@@ -59,10 +69,11 @@ function parseSQL(text) {
   return tableList
 }
 
-document.getElementById("outputTab").hidden = true; 
+document.getElementById("outputTab").hidden = true;
 
-function visualise() {
-  document.getElementById("outputTab").hidden = false; 
+function visualise(inputString) {
+  console.log(inputString)
+  document.getElementById("outputTab").hidden = false;
   let div = document.getElementById("tableArea");
   // need a better way to check for needing to reconstruct tables
   let text = document.getElementById("textArea").value;
