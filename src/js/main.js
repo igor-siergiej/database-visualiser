@@ -72,7 +72,6 @@ function parseSQL(text) {
 document.getElementById("outputTab").hidden = true;
 
 function visualise(inputString) {
-  console.log(inputString)
   document.getElementById("outputTab").hidden = false;
   let div = document.getElementById("tableArea");
   // need a better way to check for needing to reconstruct tables

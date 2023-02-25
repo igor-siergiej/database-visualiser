@@ -4,12 +4,14 @@ import Column from './Column';
 export default class Table {
 	name;
 	columns = [];
-	keys;
+	keys = [];
 
 	// inputString = input text split up by 'Create Table' string
 	constructor(inputString) {
 		const tokenizedInputString = jsTokens(inputString);
 		let tokenizedArray = Array.from(tokenizedInputString);
+
+		
 
 		tokenizedArray = tokenizedArray.filter(function (token) {
 			return token.type != "LineTerminatorSequence";
@@ -26,7 +28,6 @@ export default class Table {
 		// first open bracket should be after table name
 		// split everything before the open bracket to remove the keywords
 		this.name = tokenizedArray[index - 1].value;
-		console.log(this.name)
 
 		var columnArray = tokenizedArray.slice(index + 1);
 
@@ -35,27 +36,89 @@ export default class Table {
 		for (const element of columnArray) {
 			if (bufferArray.length == 0 && element.value == "PRIMARY") { // this means there are table constraints
 				bufferArray = [];
+				this.parseTableConstraints(columnArray.slice(columnArray.indexOf(element)))
 				break
 			} else {
 				if (element.value == ",") {  // this means there were no table constraints
-					columns.push(bufferArray);
+					var column = new Column(bufferArray);
+					this.columns.push(column);
 					bufferArray = []
 				} else {
 					bufferArray.push(element);
 				}
-
 			}
 		}
 		if (bufferArray.length != 0) {
-			columns.push(bufferArray);
+			var column = new Column(bufferArray);
+			this.columns.push(column);
 			bufferArray = []
 		}
 
 		for (const element of columns) {
-			var column = new Column(element);
-			this.columns.push(column);
+			
 		}
-		console.log(columns)
+	}
+
+	parseTableConstraints(inputArray) {
+
+		var tableConstraints = inputArray.map(function(element) {
+			return element['value'];
+		  });
+
+		  tableConstraints = tableConstraints.join(" ")
+
+		  const regXSplit = /(?<!\([^\)]+)\s*,\s*(?!\))/;
+
+
+		  tableConstraints = tableConstraints.split(regXSplit)
+
+		  var tableConstraintsList = [];
+
+		  for (const element of tableConstraints) {
+			const tokenizedInputString = jsTokens(element);
+		    tableConstraintsList.push(Array.from(tokenizedInputString))
+		  }
+
+		  console.log(this)
+
+		  for (const element of tableConstraintsList) {
+			if (element[0].value == "PRIMARY" || element[1].value == "KEY") {
+				let tempElement = element
+				tempElement = tempElement.filter(e =>e.value !== "PRIMARY")
+				tempElement = tempElement.filter(e =>e.value !== "KEY")
+				tempElement = tempElement.filter(e =>e.type !== "WhiteSpace")
+
+				
+
+				for (const word of tempElement) {
+					if (word.type == "IdentifierName") {
+						for (const column of this.columns) {
+							if (column.name.value == word.value) {
+								column.isPrimaryKey = "P"
+							}
+						}
+					}
+				}
+			}
+
+			
+		  }
+		
+	
+		// for (let i = 0; i <inputArray.length; i++) {
+		// 	if (inputArray[i].value == "PRIMARY" && inputArray[i+1].value == "KEY") {
+		// 		// split inside of brackets on comma 
+		// 		for (const element of inputArray.slice(i)) {
+		// 			console.log(element)
+		// 		}
+		// 	}
+		// }
+
+		// for (const element of inputArray) {
+		// 	if (element.value == "PRIMARY") {
+		// 		console.log("test")
+		// 	}
+		// }
 	}
 
 	createTable(div) {

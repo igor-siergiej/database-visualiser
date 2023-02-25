@@ -1,7 +1,7 @@
 export default class Column {
     name;
     type;
-    isPrimaryKey = "N/A";
+    isPrimaryKey = "";
 
     constructor(inputString) {
         if (inputString.find(e => e.value === "PRIMARY") && inputString.find(e => e.value === "KEY")) {
