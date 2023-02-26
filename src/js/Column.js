@@ -12,7 +12,7 @@ export default class Column {
         }
 
         // first element in array should be name need to check
-        this.name = inputString[0]
+        this.name = inputString[0].value
 
         if (inputString.find(e => e.value === "(")) { // data type with no value
 
@@ -21,11 +21,12 @@ export default class Column {
             });
 
             joinedArray = joinedArray.join(" ")
-            console.log(joinedArray)
 
             const matchInsideBrackets = /(?<=\().*?(?=\))/;
 
-            this.columnType = new ColumnType(inputString[1].value, parseInt(joinedArray.match(matchInsideBrackets)[0]))
+            var matchedValues = joinedArray.match(matchInsideBrackets)
+
+            this.columnType = new ColumnType(inputString[1].value, matchedValues[0].trim())
         } else {
             this.columnType = new ColumnType(inputString[1].value)
         }

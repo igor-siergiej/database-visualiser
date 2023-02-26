@@ -27,62 +27,55 @@ export default class Table {
 		// split everything before the open bracket to remove the keywords
 		this.name = tokenizedArray[index - 1].value;
 
-		var columnArray = tokenizedArray.slice(index + 1);
+		tokenizedArray = tokenizedArray.slice(index + 1);
 
-		var bufferArray = [];
-
-		for (const element of columnArray) {
-			if (bufferArray.length == 0 && element.value == "PRIMARY") { // this means there are table constraints
-				bufferArray = [];
-				this.parseTableConstraints(columnArray.slice(columnArray.indexOf(element)))
-				break
-			} else {
-				if (element.value == ",") {  // this means there were no table constraints
-					var column = new Column(bufferArray);
-					this.columns.push(column);
-					bufferArray = []
-				} else {
-					bufferArray.push(element);
-				}
-			}
-		}
-
-		if (bufferArray.length != 0) {
-			var column = new Column(bufferArray);
-			this.columns.push(column);
-			bufferArray = []
-		}
-	}
-
-	parseTableConstraints(inputArray) {
-		var tableConstraints = inputArray.map(function (element) {
+		var tokenizedArrayValues = tokenizedArray.map(function (element) {
 			return element['value'];
 		});
 
-		tableConstraints = tableConstraints.join(" ")
+		tokenizedArrayValues = tokenizedArrayValues.join(" ")
 
-		const regXSplit = /(?<!\([^\)]+)\s*,\s*(?!\))/;
+		const commaOutsideOfBrackets = /(?<!\([^\)]+)\s*,\s*(?!\))/;
 
-		tableConstraints = tableConstraints.split(regXSplit)
+		var columnStrings = tokenizedArrayValues.split(commaOutsideOfBrackets)
 
-		var tableConstraintsList = [];
+		var columns = [];
 
-		for (const element of tableConstraints) {
+		for (const element of columnStrings) {
 			const tokenizedInputString = jsTokens(element);
-			tableConstraintsList.push(Array.from(tokenizedInputString))
+			var tokenizedColumnArray = Array.from(tokenizedInputString)
+			tokenizedColumnArray = tokenizedColumnArray.filter(function (token) {
+				return token.type != "WhiteSpace";
+			});
+			columns.push(tokenizedColumnArray)
 		}
+
+		for (const columnArray of columns) {
+			
+				if (columnArray[0].value == "PRIMARY" || columnArray[0].value == "FOREIGN") { // this means we reached table constraints
+					// need the rest of the arrays joined and passed to parseTableConstraints()
+					this.parseTableConstraints(columns.slice(columns.indexOf(columnArray)))
+					break
+				} else {
+					  // this means there were no table constraints
+						var column = new Column(columnArray);
+						this.columns.push(column);
+					}
+				}
+	}
+
+	parseTableConstraints(tableConstraintsList) {
 
 		for (const element of tableConstraintsList) {
 			if (element[0].value == "PRIMARY" || element[1].value == "KEY") {
 				let tempElement = element
 				tempElement = tempElement.filter(e => e.value !== "PRIMARY")
 				tempElement = tempElement.filter(e => e.value !== "KEY")
-				tempElement = tempElement.filter(e => e.type !== "WhiteSpace")
 
 				for (const word of tempElement) {
 					if (word.type == "IdentifierName") {
 						for (const column of this.columns) {
-							if (column.name.value == word.value) {
+							if (column.name == word.value) {
 								column.isPrimaryKey = "P"
 							}
 						}
@@ -114,7 +107,7 @@ export default class Table {
 
 		for (const column of this.columns) {
 			this.createColumn(column.isPrimaryKey, keyColumn)
-			this.createColumn(column.name.value, nameColumn)
+			this.createColumn(column.name, nameColumn)
 			this.createColumn(column.columnType.getValue(), typeColumn)
 		}
 
@@ -150,7 +143,7 @@ export default class Table {
 
 		for (const column of this.columns) {
 			textArea.innerHTML += "&emsp;"
-			textArea.innerHTML += column.name.value + " "
+			textArea.innerHTML += column.name + " "
 			if (column.columnType.doesTypeHaveValue()) {
 				blueText.textContent = column.columnType.type
 				textArea.appendChild(blueText)
@@ -163,10 +156,8 @@ export default class Table {
 				blueText.textContent = column.columnType.getValue()
 				textArea.appendChild(blueText)
 			}
-			
 			textArea.innerHTML += "<br>"
 		}
-
 		textArea.innerHTML += "&emsp;" + "<br>"
 	}
 }

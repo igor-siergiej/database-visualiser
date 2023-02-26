@@ -61,8 +61,11 @@ function parseSQL(text) {
   tableArray.pop() // removes the empty space at the end of the array that is created by split function
   tableArray.forEach(text => {
     // syntax checking here?
-    let table = new Table(text);
-    tableList.push(table);
+    if (text.includes("CREATE TABLE")) { // used to only catch create table statements in file parsing
+      let table = new Table(text);
+      tableList.push(table);
+    }
+    
   });
   return tableList
 }
