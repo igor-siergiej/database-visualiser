@@ -24,9 +24,10 @@ export default class Table {
 		var index = tokenizedArray.map(function (e) { return e.value; }).indexOf("(");
 
 		// first open bracket should be after table name
-		// split everything before the open bracket to remove the keywords
+		
 		this.name = tokenizedArray[index - 1].value;
 
+		// split everything before the open bracket to remove the CREATE TABLE
 		tokenizedArray = tokenizedArray.slice(index + 1);
 
 		var tokenizedArrayValues = tokenizedArray.map(function (element) {
@@ -90,7 +91,7 @@ export default class Table {
 		table.className = "row border border-4 mx-3 w-25 gx-0 h-100 my-3 w-auto";
 
 		let keyColumn = document.createElement("div");
-		keyColumn.className = "col-1 border-top border-4 gx-0 w-25 h-100";
+		keyColumn.className = "col-1 border-top border-4 gx-0 h-100";
 
 		let nameColumn = document.createElement("div");
 		nameColumn.className = "col border-top border-start border-4 h-100 gx-0";
@@ -130,7 +131,7 @@ export default class Table {
 
 	writeSyntax(textArea) {
 		var blueText = document.createElement("span");
-		blueText.style = "color: blue;";
+		blueText.style = "color: green;";
 
 		var redText = document.createElement("span");
 		redText.style = "color: red;";
