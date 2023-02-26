@@ -11,8 +11,6 @@ export default class Table {
 		const tokenizedInputString = jsTokens(inputString);
 		let tokenizedArray = Array.from(tokenizedInputString);
 
-		
-
 		tokenizedArray = tokenizedArray.filter(function (token) {
 			return token.type != "LineTerminatorSequence";
 		});
@@ -31,8 +29,8 @@ export default class Table {
 
 		var columnArray = tokenizedArray.slice(index + 1);
 
-		var columns = [];
 		var bufferArray = [];
+
 		for (const element of columnArray) {
 			if (bufferArray.length == 0 && element.value == "PRIMARY") { // this means there are table constraints
 				bufferArray = [];
@@ -48,47 +46,38 @@ export default class Table {
 				}
 			}
 		}
+
 		if (bufferArray.length != 0) {
 			var column = new Column(bufferArray);
 			this.columns.push(column);
 			bufferArray = []
 		}
-
-		for (const element of columns) {
-			
-		}
 	}
 
 	parseTableConstraints(inputArray) {
-
-		var tableConstraints = inputArray.map(function(element) {
+		var tableConstraints = inputArray.map(function (element) {
 			return element['value'];
-		  });
+		});
 
-		  tableConstraints = tableConstraints.join(" ")
+		tableConstraints = tableConstraints.join(" ")
 
-		  const regXSplit = /(?<!\([^\)]+)\s*,\s*(?!\))/;
+		const regXSplit = /(?<!\([^\)]+)\s*,\s*(?!\))/;
 
+		tableConstraints = tableConstraints.split(regXSplit)
 
-		  tableConstraints = tableConstraints.split(regXSplit)
+		var tableConstraintsList = [];
 
-		  var tableConstraintsList = [];
-
-		  for (const element of tableConstraints) {
+		for (const element of tableConstraints) {
 			const tokenizedInputString = jsTokens(element);
-		    tableConstraintsList.push(Array.from(tokenizedInputString))
-		  }
+			tableConstraintsList.push(Array.from(tokenizedInputString))
+		}
 
-		  console.log(this)
-
-		  for (const element of tableConstraintsList) {
+		for (const element of tableConstraintsList) {
 			if (element[0].value == "PRIMARY" || element[1].value == "KEY") {
 				let tempElement = element
-				tempElement = tempElement.filter(e =>e.value !== "PRIMARY")
-				tempElement = tempElement.filter(e =>e.value !== "KEY")
-				tempElement = tempElement.filter(e =>e.type !== "WhiteSpace")
-
-				
+				tempElement = tempElement.filter(e => e.value !== "PRIMARY")
+				tempElement = tempElement.filter(e => e.value !== "KEY")
+				tempElement = tempElement.filter(e => e.type !== "WhiteSpace")
 
 				for (const word of tempElement) {
 					if (word.type == "IdentifierName") {
@@ -100,25 +89,7 @@ export default class Table {
 					}
 				}
 			}
-
-			
-		  }
-		
-	
-		// for (let i = 0; i <inputArray.length; i++) {
-		// 	if (inputArray[i].value == "PRIMARY" && inputArray[i+1].value == "KEY") {
-		// 		// split inside of brackets on comma 
-		// 		for (const element of inputArray.slice(i)) {
-		// 			console.log(element)
-		// 		}
-		// 	}
-		// }
-
-		// for (const element of inputArray) {
-		// 	if (element.value == "PRIMARY") {
-		// 		console.log("test")
-		// 	}
-		// }
+		}
 	}
 
 	createTable(div) {
@@ -139,12 +110,14 @@ export default class Table {
 		heading.innerText = this.name;
 		table.appendChild(heading);
 
+		console.log(this)
+
 		for (const column of this.columns) {
 			this.createColumn(column.isPrimaryKey, keyColumn)
 			this.createColumn(column.name.value, nameColumn)
-			this.createColumn(column.type.value, typeColumn)
+			this.createColumn(column.columnType.getValue(), typeColumn)
 		}
-		
+
 		table.appendChild(keyColumn)
 		table.appendChild(nameColumn);
 		table.appendChild(typeColumn);
@@ -158,7 +131,42 @@ export default class Table {
 
 		let nameText = document.createTextNode(text);
 		nameRow.appendChild(nameText);
-		
+
 		div.appendChild(nameRow)
+	}
+
+	writeSyntax(textArea) {
+		var blueText = document.createElement("span");
+		blueText.style = "color: blue;";
+
+		var redText = document.createElement("span");
+		redText.style = "color: red;";
+
+		blueText.textContent = "CREATE TABLE "
+		textArea.appendChild(blueText)
+		textArea.innerHTML += this.name + " (" + "<br>"
+
+		// create function for writing in colours
+
+		for (const column of this.columns) {
+			textArea.innerHTML += "&emsp;"
+			textArea.innerHTML += column.name.value + " "
+			if (column.columnType.doesTypeHaveValue()) {
+				blueText.textContent = column.columnType.type
+				textArea.appendChild(blueText)
+				textArea.innerHTML += " (";
+				redText.textContent = column.columnType.value
+				textArea.appendChild(redText)
+				textArea.innerHTML += ")"
+				
+			} else {
+				blueText.textContent = column.columnType.getValue()
+				textArea.appendChild(blueText)
+			}
+			
+			textArea.innerHTML += "<br>"
+		}
+
+		textArea.innerHTML += "&emsp;" + "<br>"
 	}
 }

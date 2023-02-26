@@ -57,15 +57,13 @@ function parseSQL(text) {
   var tableList = [];
 
   // need to check if statements are not IF NOT EXISTS and CREATE TABLE AS
-  let tableArray = text.split(';'); // this should have length the number of tables
-  // removes the empty space at the end of the array that is created by split function
-  tableArray.pop()
+  let tableArray = text.split(';'); // this should have length the number of tables/ statements
+  tableArray.pop() // removes the empty space at the end of the array that is created by split function
   tableArray.forEach(text => {
     // syntax checking here?
     let table = new Table(text);
     tableList.push(table);
   });
-
   return tableList
 }
 
@@ -73,13 +71,15 @@ document.getElementById("outputTab").hidden = true;
 
 function visualise(inputString) {
   document.getElementById("outputTab").hidden = false;
-  let div = document.getElementById("tableArea");
-  // need a better way to check for needing to reconstruct tables
-  let text = document.getElementById("textArea").value;
-  let tables = parseSQL(text);
+
+  let syntaxTextArea = document.getElementById("syntaxTextArea");
+  let tableArea = document.getElementById("tableArea");
+
+  let tables = parseSQL(inputString);
 
   for (const element of tables) {
-    element.createTable(div);
+    element.createTable(tableArea);
+    element.writeSyntax(syntaxTextArea);
   }
 }
 
@@ -88,11 +88,4 @@ function visualise(inputString) {
   //   document.getElementById('123')
   // );
 
-
 //text = text.replace(/(\r\n|\n|\r)/gm, ""); // replaces new lines
-
-    //generateTable(table, data);   this should be used for adding values to table so
-    // these can be used to implement correcting queries?
-
-    //e.target.textContent = 'Clicked!';
-
