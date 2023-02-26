@@ -1,27 +1,34 @@
+import ColumnType from './ColumnType';
+
 export default class Column {
     name;
-    type;
+    columnType;
     isPrimaryKey = "";
 
+    // need a dictionary look up for data types
     constructor(inputString) {
         if (inputString.find(e => e.value === "PRIMARY") && inputString.find(e => e.value === "KEY")) {
             this.isPrimaryKey = "P"
         }
 
-        if (inputString.find(e => e.value === "FOREIGN") && inputString.find(e => e.value === "KEY")) {
-            this.isPrimaryKey = "P"
-        }
-
-        // first element in array should be name
+        // first element in array should be name need to check
         this.name = inputString[0]
 
-        // need a dictionary look up for data types
-        this.type = inputString[1]
-        if (inputString.length > 2) {
-            if (inputString[2].value == "(") {
-                this.type.value = this.type.value.concat(inputString[2].value, inputString[3].value, inputString[4].value)
-                // this should probably be add values to type until a closed bracket is
-            }
+        if (inputString.find(e => e.value === "(")) { // data type with no value
+
+            var joinedArray = inputString.map(function (element) {
+                return element['value'];
+            });
+
+            joinedArray = joinedArray.join(" ")
+            console.log(joinedArray)
+
+            const matchInsideBrackets = /(?<=\().*?(?=\))/;
+
+            this.columnType = new ColumnType(inputString[1].value, parseInt(joinedArray.match(matchInsideBrackets)[0]))
+        } else {
+            this.columnType = new ColumnType(inputString[1].value)
         }
     }
 }
+
