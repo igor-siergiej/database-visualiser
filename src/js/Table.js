@@ -91,16 +91,16 @@ export default class Table {
 		table.className = "row border border-4 mx-3 w-25 gx-0 h-100 my-3 w-auto";
 
 		let keyColumn = document.createElement("div");
-		keyColumn.className = "col-1 border-top border-4 gx-0 h-100";
+		keyColumn.className = "col-1 border border-4 gx-0";
 
 		let nameColumn = document.createElement("div");
-		nameColumn.className = "col border-top border-start border-4 h-100 gx-0";
+		nameColumn.className = "col border border-4 h-100 gx-0";
 
 		let typeColumn = document.createElement("div");
-		typeColumn.className = "col border-top border-start border-4 h-100 gx-0";
+		typeColumn.className = "col border border-4 h-100 gx-0";
 
 		let heading = document.createElement("h3");
-		heading.className = "text-center my-0 bg-primary";
+		heading.className = "text-center border my-0 bg-primary";
 		heading.innerText = this.name;
 		table.appendChild(heading);
 
@@ -119,14 +119,24 @@ export default class Table {
 		div.appendChild(table);
 	}
 
+	// need some way to set id or class error styling from parsing
+
 	createColumn(text, div) {
-		let nameRow = document.createElement("div");
-		nameRow.className = "row py-1 px-2 gx-0";
+		if (text != "") {
+			let nameRow = document.createElement("div");
+			if (text != "P") {
+				nameRow.className = "row py-1 px-2 gx-0 border";
+			} else {
+				nameRow.className = "row py-1 px-2 gx-0";
 
-		let nameText = document.createTextNode(text);
-		nameRow.appendChild(nameText);
-
-		div.appendChild(nameRow)
+			}
+	
+			let nameText = document.createTextNode(text);
+			nameRow.appendChild(nameText);
+	
+			div.appendChild(nameRow)
+		}
+		
 	}
 
 	writeSyntax(textArea) {
