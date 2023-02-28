@@ -136,6 +136,9 @@ export default class Table {
 		var redText = document.createElement("span");
 		redText.style = "color: red;";
 
+		var orangeText = document.createElement("span");
+		orangeText.style = "color: orange;";
+
 		blueText.textContent = "CREATE TABLE "
 		textArea.appendChild(blueText)
 		textArea.innerHTML += this.name + " (" + "<br>"
@@ -157,7 +160,22 @@ export default class Table {
 				blueText.textContent = column.columnType.getValue()
 				textArea.appendChild(blueText)
 			}
+
+			console.log(column.constraints)
+
+			if (column.constraints.length != 0) {
+				orangeText.textContent = ""
+				for (const element of column.constraints) {
+					if (element.type == "IdentifierName") {
+						orangeText.textContent +=  " " + element.value 
+					}
+				}
+				textArea.appendChild(orangeText)
+			}
+			
 			textArea.innerHTML += "<br>"
+
+
 		}
 		textArea.innerHTML += "&emsp;" + "<br>"
 	}
