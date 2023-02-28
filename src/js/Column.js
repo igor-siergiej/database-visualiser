@@ -41,6 +41,7 @@ export default class Column {
 
         }
         this.constraints = inputString
+        // if there are words here that do not match keywords then flag as error
     }
 }
 
