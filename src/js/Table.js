@@ -4,9 +4,7 @@ import Column from './Column';
 export default class Table {
 	name;
 	columns = [];
-	keys = [];
 
-	// inputString = input text split up by 'Create Table' string
 	constructor(inputString) {
 		const tokenizedInputString = jsTokens(inputString);
 		let tokenizedArray = Array.from(tokenizedInputString);
@@ -24,6 +22,9 @@ export default class Table {
 		var index = tokenizedArray.map(function (e) { return e.value; }).indexOf("(");
 
 		// first open bracket should be after table name
+		//Must contain only letters (a-z, A-Z), numbers (0-9), or underscores ( _ ) 
+		//Must begin with a letter or underscore.
+		// Must be less than the maximum length of 59 characters. 
 		
 		this.name = tokenizedArray[index - 1].value;
 
@@ -52,21 +53,19 @@ export default class Table {
 		}
 
 		for (const columnArray of columns) {
-			
-				if (columnArray[0].value == "PRIMARY" || columnArray[0].value == "FOREIGN") { // this means we reached table constraints
-					// need the rest of the arrays joined and passed to parseTableConstraints()
-					this.parseTableConstraints(columns.slice(columns.indexOf(columnArray)))
-					break
-				} else {
-					  // this means there were no table constraints
-						var column = new Column(columnArray);
-						this.columns.push(column);
-					}
-				}
+			if (columnArray[0].value == "PRIMARY" || columnArray[0].value == "FOREIGN") { // this means we reached table constraints
+				// need the rest of the arrays joined and passed to parseTableConstraints()
+				this.parseTableConstraints(columns.slice(columns.indexOf(columnArray)))
+				break
+			} else {
+				// this means there were no table constraints
+				var column = new Column(columnArray);
+				this.columns.push(column);
+			}
+		}
 	}
 
 	parseTableConstraints(tableConstraintsList) {
-
 		for (const element of tableConstraintsList) {
 			if (element[0].value == "PRIMARY" || element[1].value == "KEY") {
 				let tempElement = element
@@ -77,7 +76,7 @@ export default class Table {
 					if (word.type == "IdentifierName") {
 						for (const column of this.columns) {
 							if (column.name == word.value) {
-								column.isPrimaryKey = "P"
+								column.addKey("P")
 							}
 						}
 					}
@@ -86,40 +85,54 @@ export default class Table {
 		}
 	}
 
+	hasPrimaryKey() {
+		for (const element of this.columns) {
+			if (element.hasPrimaryKey()) {
+				return true;
+			}
+		}
+		return false
+	}
+
 	createTable(div) {
 		let table = document.createElement("div");
-		table.className = "row border border-4 mx-3 w-25 gx-0 h-100 my-3 w-auto";
+		table.className = "row border border-2 mx-3 w-25 gx-0 h-100 my-3 w-auto";
 
 		let keyColumn = document.createElement("div");
-		keyColumn.className = "col-1 border border-4 gx-0";
-
+		if (this.hasPrimaryKey()) {
+			keyColumn.className = "col-1 border border-2 gx-0";
+		} else {
+			keyColumn.className = "col-1 border border-2 gx-0 error";
+		}
+		
 		let nameColumn = document.createElement("div");
-		nameColumn.className = "col border border-4 h-100 gx-0";
+		nameColumn.className = "col border border-2 h-100 gx-0";
 
 		let typeColumn = document.createElement("div");
-		typeColumn.className = "col border border-4 h-100 gx-0";
+		typeColumn.className = "col border border-2 h-100 gx-0";
 
 		let heading = document.createElement("h3");
 		heading.className = "text-center border my-0 bg-primary";
 		heading.innerText = this.name;
 		table.appendChild(heading);
 
-		console.log(this)
-
 		for (const column of this.columns) {
-			this.createColumn(column.isPrimaryKey, keyColumn)
+			if (column.hasPrimaryKey()) {
+				this.createColumn("P", keyColumn)
+			} else {
+				this.createColumn("", keyColumn)
+			}
+			
 			this.createColumn(column.name, nameColumn)
 			this.createColumn(column.columnType.getValue(), typeColumn)
 		}
 
-		table.appendChild(keyColumn)
+		table.appendChild(keyColumn);
 		table.appendChild(nameColumn);
 		table.appendChild(typeColumn);
 
 		div.appendChild(table);
 	}
-
-	// need some way to set id or class error styling from parsing
 
 	createColumn(text, div) {
 		if (text != "") {
@@ -128,15 +141,13 @@ export default class Table {
 				nameRow.className = "row py-1 px-2 gx-0 border";
 			} else {
 				nameRow.className = "row py-1 px-2 gx-0";
-
 			}
-	
+
 			let nameText = document.createTextNode(text);
 			nameRow.appendChild(nameText);
-	
+
 			div.appendChild(nameRow)
 		}
-		
 	}
 
 	writeSyntax(textArea) {
@@ -165,7 +176,7 @@ export default class Table {
 				redText.textContent = column.columnType.value
 				textArea.appendChild(redText)
 				textArea.innerHTML += ")"
-				
+
 			} else {
 				blueText.textContent = column.columnType.getValue()
 				textArea.appendChild(blueText)
@@ -177,16 +188,18 @@ export default class Table {
 				orangeText.textContent = ""
 				for (const element of column.constraints) {
 					if (element.type == "IdentifierName") {
-						orangeText.textContent +=  " " + element.value 
+						orangeText.textContent += " " + element.value
 					}
 				}
 				textArea.appendChild(orangeText)
 			}
-			
 			textArea.innerHTML += "<br>"
-
-
 		}
-		textArea.innerHTML += "&emsp;" + "<br>"
+		textArea.innerHTML += ");"
+		textArea.innerHTML += "<br>"
+	}
+
+	createErrors() {
+		// add the notification red bubble to  the errors tab button
 	}
 }
