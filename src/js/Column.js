@@ -3,21 +3,24 @@ import ColumnType from './ColumnType';
 export default class Column {
     name;
     columnType;
-    isPrimaryKey = "";
+    #primaryKey = "";
+    #foreignKey = "";
     constraints;
+    errors = [];
 
     // need a dictionary look up for data types
     constructor(inputString) {
         
         if (inputString.find(e => e.value === "PRIMARY") && inputString.find(e => e.value === "KEY")) {
-            this.isPrimaryKey = "P" // need to check if the keywords are next to eachother
+            this.addKey("P") // need to check if the keywords are next to eachother
             inputString = inputString.filter(element => element.value !== "PRIMARY")
             inputString = inputString.filter(element => element.value !== "KEY")
-            // is there a better way of doing this
+            // is there a better way of doing this?
         }
 
         // first element in array should be name need to check
         this.name = inputString[0].value
+        this.errors.push("name")
 
         inputString = inputString.splice(1)
 
@@ -42,6 +45,19 @@ export default class Column {
         }
         this.constraints = inputString
         // if there are words here that do not match keywords then flag as error
+    }
+
+    addKey(key) {
+        if (key == "P") {
+            this.#primaryKey = "P"
+        }
+    }
+
+    hasPrimaryKey() {
+        if (this.#primaryKey == "P") {
+            return true
+        } 
+        return false
     }
 }
 

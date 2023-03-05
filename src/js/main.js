@@ -4,6 +4,8 @@ import LeaderLine from 'leader-line-new';
 import AnimEvent from 'anim-event';
 import jsTokens from "js-tokens";
 
+var visualised = false
+
 const fileForm = document.getElementById("fileForm");
 const textForm = document.getElementById("textForm");
 
@@ -13,7 +15,6 @@ const textArea = document.getElementById("textArea");
 fileForm.addEventListener('submit', function (event) {
   event.preventDefault()
   event.stopPropagation()
-    // means textArea is hidden so validate filePicker
     if (fileForm.checkValidity() && fileValidation()) {
       filePicker.classList.remove("is-invalid")
       filePicker.classList.add("is-valid")
@@ -42,8 +43,6 @@ textForm.addEventListener('submit', function (event) {
 }, false)
 
 function fileValidation() {
-  // check which div is hidden and validate the other
-  // write validation for text area not being empty
   const fileName = document.getElementById("filePicker").files[0].name;
   var regex = new RegExp("^.*\.(txt|psql|sql)$")
   if (regex.test(fileName.toLowerCase())) {
@@ -73,10 +72,18 @@ function parseSQL(text) {
 document.getElementById("outputTab").hidden = true;
 
 function visualise(inputString) {
-  document.getElementById("outputTab").hidden = false;
 
   let syntaxTextArea = document.getElementById("syntaxTextArea");
   let tableArea = document.getElementById("tableArea");
+
+  if (visualised) { // if the table has already been visualised then reset the html of the outputs
+    tableArea.innerHTML= ""
+    syntaxTextArea.innerHTML = ""
+    // refresh error tab inner html too
+  }
+  document.getElementById("outputTab").hidden = false;
+
+  
 
   let tables = parseSQL(inputString);
 
@@ -84,6 +91,8 @@ function visualise(inputString) {
     element.createTable(tableArea);
     element.writeSyntax(syntaxTextArea);
   }
+
+  visualised = true;
 }
 
   //  var line = new LeaderLine(
