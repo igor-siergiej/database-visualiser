@@ -12,21 +12,44 @@ const textForm = document.getElementById("textForm");
 const filePicker = document.getElementById("filePicker");
 const textArea = document.getElementById("textArea");
 
+const varcharBox = document.getElementById('varcharBox');
+
+varcharBox.addEventListener('change', function() {
+  highlightWords("VARCHAR")
+})
+
+function highlightWords(type) {
+  var words = document.querySelectorAll(`[id=${type}]`);
+  if (varcharBox.checked) {
+    for (let i = 0; i < words.length; i++) {
+      words[i].classList.add("highlightColor")
+    }
+  } else {
+    for (let i = 0; i < words.length; i++) {
+      words[i].classList.remove("highlightColor")
+    }
+  }
+}
+
+varcharBox.checked=false
+
+
+
 fileForm.addEventListener('submit', function (event) {
   event.preventDefault()
   event.stopPropagation()
-    if (fileForm.checkValidity() && fileValidation()) {
-      filePicker.classList.remove("is-invalid")
-      filePicker.classList.add("is-valid")
-      var reader = new FileReader();
-      reader.readAsText(document.getElementById("filePicker").files[0],"UTF-8");
-      reader.addEventListener('load', (event) => {
-        visualise(event.target.result)
-      })
-    } else {
-      filePicker.classList.add("is-invalid")
-      filePicker.classList.remove("is-valid")
-    }
+  if (fileForm.checkValidity() && fileValidation()) {
+    filePicker.classList.remove("is-invalid")
+    filePicker.classList.add("is-valid")
+    var reader = new FileReader();
+    reader.readAsText(document.getElementById("filePicker").files[0], "UTF-8");
+    reader.addEventListener('load', (event) => {
+      visualise(event.target.result)
+    })
+  } else {
+    filePicker.classList.add("is-invalid")
+    filePicker.classList.remove("is-valid")
+  }
 }, false)
 
 textForm.addEventListener('submit', function (event) {
@@ -64,7 +87,7 @@ function parseSQL(text) {
       let table = new Table(text);
       tableList.push(table);
     }
-    
+
   });
   return tableList
 }
@@ -77,13 +100,13 @@ function visualise(inputString) {
   let tableArea = document.getElementById("tableArea");
 
   if (visualised) { // if the table has already been visualised then reset the html of the outputs
-    tableArea.innerHTML= ""
+    tableArea.innerHTML = ""
     syntaxTextArea.innerHTML = ""
     // refresh error tab inner html too
   }
   document.getElementById("outputTab").hidden = false;
 
-  
+
 
   let tables = parseSQL(inputString);
 

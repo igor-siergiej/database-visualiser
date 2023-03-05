@@ -151,17 +151,17 @@ export default class Table {
 	}
 
 	writeSyntax(textArea) {
-		var blueText = document.createElement("span");
-		blueText.style = "color: green;";
+		var typeText = document.createElement("span");
+		typeText.className = "typeColor"
 
-		var redText = document.createElement("span");
-		redText.style = "color: red;";
+		var typeValueText = document.createElement("span");
+		typeValueText.className = "typeValueColor"
 
-		var orangeText = document.createElement("span");
-		orangeText.style = "color: orange;";
+		var constraintText = document.createElement("span");
+		constraintText.className = "typeValueColor"
 
-		blueText.textContent = "CREATE TABLE "
-		textArea.appendChild(blueText)
+		typeText.textContent = "CREATE TABLE "
+		textArea.appendChild(typeText)
 		textArea.innerHTML += this.name + " (" + "<br>"
 
 		// create function for writing in colours
@@ -170,28 +170,28 @@ export default class Table {
 			textArea.innerHTML += "&emsp;"
 			textArea.innerHTML += column.name + " "
 			if (column.columnType.doesTypeHaveValue()) {
-				blueText.textContent = column.columnType.type
-				textArea.appendChild(blueText)
+				typeText.textContent = column.columnType.type
+				typeText.id = column.columnType.type
+				textArea.appendChild(typeText)
 				textArea.innerHTML += " (";
-				redText.textContent = column.columnType.value
-				textArea.appendChild(redText)
+				typeValueText.textContent = column.columnType.value
+				textArea.appendChild(typeValueText)
 				textArea.innerHTML += ")"
 
 			} else {
-				blueText.textContent = column.columnType.getValue()
-				textArea.appendChild(blueText)
+				typeText.textContent = column.columnType.getValue()
+				typeText.id = column.columnType.getValue();
+				textArea.appendChild(typeText)
 			}
 
-			console.log(column.constraints)
-
 			if (column.constraints.length != 0) {
-				orangeText.textContent = ""
+				constraintText.textContent = ""
 				for (const element of column.constraints) {
 					if (element.type == "IdentifierName") {
-						orangeText.textContent += " " + element.value
+						constraintText.textContent += " " + element.value
 					}
 				}
-				textArea.appendChild(orangeText)
+				textArea.appendChild(constraintText)
 			}
 			textArea.innerHTML += "<br>"
 		}
