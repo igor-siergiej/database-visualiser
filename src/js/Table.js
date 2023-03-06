@@ -151,6 +151,7 @@ export default class Table {
 	}
 
 	writeSyntax(textArea) {
+		
 		var typeText = document.createElement("span");
 		typeText.className = "typeColor"
 
@@ -158,7 +159,7 @@ export default class Table {
 		typeValueText.className = "typeValueColor"
 
 		var constraintText = document.createElement("span");
-		constraintText.className = "typeValueColor"
+		constraintText.className = "constraintColor"
 
 		typeText.textContent = "CREATE TABLE "
 		textArea.appendChild(typeText)
@@ -166,6 +167,7 @@ export default class Table {
 
 		// create function for writing in colours
 
+		//Write a method in column to create the syntax per column??
 		for (const column of this.columns) {
 			textArea.innerHTML += "&emsp;"
 			textArea.innerHTML += column.name + " "
@@ -177,23 +179,12 @@ export default class Table {
 				typeValueText.textContent = column.columnType.value
 				textArea.appendChild(typeValueText)
 				textArea.innerHTML += ")"
-
 			} else {
 				typeText.textContent = column.columnType.getValue()
 				typeText.id = column.columnType.getValue();
 				textArea.appendChild(typeText)
 			}
-
-			if (column.constraints.length != 0) {
-				constraintText.textContent = ""
-				for (const element of column.constraints) {
-					if (element.type == "IdentifierName") {
-						constraintText.textContent += " " + element.value
-					}
-				}
-				textArea.appendChild(constraintText)
-			}
-			textArea.innerHTML += "<br>"
+			column.writeConstraintSyntax(textArea)
 		}
 		textArea.innerHTML += ");"
 		textArea.innerHTML += "<br>"
@@ -202,4 +193,14 @@ export default class Table {
 	createErrors() {
 		// add the notification red bubble to  the errors tab button
 	}
+
+	getUniqueColumnTypes() {
+		var columnTypes = [];
+		for (const element of this.columns) {
+			columnTypes.push(element.columnType.getType())
+		}
+		return Array.from(new Set(columnTypes))
+	}
+
+	
 }

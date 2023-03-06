@@ -47,6 +47,30 @@ export default class Column {
         // if there are words here that do not match keywords then flag as error
     }
 
+    writeConstraintSyntax(textArea) {
+     
+			if (this.constraints.length != 0) {
+				for (const element of this.constraints) {
+                    var typeValueText = document.createElement("span");
+                    typeValueText.className = "typeValueColor"
+            
+                    var constraintText = document.createElement("span");
+                    constraintText.className = "constraintColor"
+
+					if (element.type == "IdentifierName") {
+						if (element.value == "NULL") {
+							typeValueText.textContent = " " + element.value
+							textArea.appendChild(typeValueText)
+						} else {
+							constraintText.textContent = " " + element.value
+							textArea.appendChild(constraintText)
+						}
+					}
+				}	
+			}
+			textArea.innerHTML += "<br>"
+    }
+
     addKey(key) {
         if (key == "P") {
             this.#primaryKey = "P"
