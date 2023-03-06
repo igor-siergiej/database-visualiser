@@ -15,7 +15,6 @@ const textArea = document.getElementById("textArea");
 function highlightWords(type, checkbox) {
   
   var words = document.querySelectorAll(`[id=${type}]`);
-  console.log(checkbox.checked)
   if (checkbox.checked) {
     for (let i = 0; i < words.length; i++) {
       words[i].classList.add("highlightColor")
@@ -26,6 +25,37 @@ function highlightWords(type, checkbox) {
     }
   }
 }
+
+function debounce(func, timeout = 500){
+  let timer;
+  return (...args) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => { func.apply(this, args); }, timeout);
+  };
+}
+
+function validateTextArea(){
+  if (validateSQL()) {
+    textArea.classList.remove("is-invalid")
+    textArea.classList.add("is-valid")
+  } else {
+    textArea.classList.remove("is-valid")
+    textArea.classList.add("is-invalid")
+  }
+}
+
+function validateSQL() {
+  return false;
+}
+
+const processChange = debounce(() => validateTextArea());
+
+textArea.addEventListener("input", function() {
+  textArea.classList.remove("is-invalid")
+  textArea.classList.remove("is-valid")
+  processChange()
+});
+
 
 fileForm.addEventListener('submit', function (event) {
   event.preventDefault()
@@ -90,17 +120,15 @@ function visualise(inputString) {
 
   let syntaxTextArea = document.getElementById("syntaxTextArea");
   let tableArea = document.getElementById("tableArea");
+  let filterArea = document.getElementById("filterArea")
 
   if (visualised) { // if the table has already been visualised then reset the html of the outputs
     tableArea.innerHTML = ""
     syntaxTextArea.innerHTML = ""
+    filterArea.innerHTML = ""
     // refresh error tab inner html too
   }
   document.getElementById("outputTab").hidden = false;
-
-  let filterArea = document.getElementById("filterArea")
-
-
 
   let tables = parseSQL(inputString);
 
@@ -122,7 +150,6 @@ function uniqueColumnTypesForAllTables(tables) {
     for (const columnType of element.getUniqueColumnTypes())
       columnTypes.push(columnType)
   }
-
   return (Array.from(new Set(columnTypes)))
 }
 
