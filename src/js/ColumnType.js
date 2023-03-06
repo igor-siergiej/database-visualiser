@@ -23,4 +23,8 @@ export default class ColumnType {
             return true
         }
     }
+
+    getType() {
+        return this.type;
+    }
 }

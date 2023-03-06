@@ -12,15 +12,11 @@ const textForm = document.getElementById("textForm");
 const filePicker = document.getElementById("filePicker");
 const textArea = document.getElementById("textArea");
 
-const varcharBox = document.getElementById('varcharBox');
-
-varcharBox.addEventListener('change', function() {
-  highlightWords("VARCHAR")
-})
-
-function highlightWords(type) {
+function highlightWords(type, checkbox) {
+  
   var words = document.querySelectorAll(`[id=${type}]`);
-  if (varcharBox.checked) {
+  console.log(checkbox.checked)
+  if (checkbox.checked) {
     for (let i = 0; i < words.length; i++) {
       words[i].classList.add("highlightColor")
     }
@@ -30,10 +26,6 @@ function highlightWords(type) {
     }
   }
 }
-
-varcharBox.checked=false
-
-
 
 fileForm.addEventListener('submit', function (event) {
   event.preventDefault()
@@ -106,16 +98,66 @@ function visualise(inputString) {
   }
   document.getElementById("outputTab").hidden = false;
 
+  let filterArea = document.getElementById("filterArea")
+
 
 
   let tables = parseSQL(inputString);
+
+  let uniqueColumnTypes = uniqueColumnTypesForAllTables(tables)
 
   for (const element of tables) {
     element.createTable(tableArea);
     element.writeSyntax(syntaxTextArea);
   }
 
+  createFilters(uniqueColumnTypes, filterArea)
+
   visualised = true;
+}
+
+function uniqueColumnTypesForAllTables(tables) {
+  var columnTypes = []
+  for (const element of tables) {
+    for (const columnType of element.getUniqueColumnTypes())
+      columnTypes.push(columnType)
+  }
+
+  return (Array.from(new Set(columnTypes)))
+}
+
+
+function createFilters(uniqueColumnTypes, filterArea) {
+  for (const type of uniqueColumnTypes) {
+    var checkBoxDiv = createCheckbox(type)
+    filterArea.appendChild(checkBoxDiv)
+  }
+}
+
+function createCheckbox(type) {
+  var checkboxDiv = document.createElement("div");
+  checkboxDiv.className = "form-check checkbox-xl";
+
+  var checkbox = document.createElement("input");
+  checkbox.type = "checkbox"
+  checkbox.id = type
+  checkbox.value = ""
+  checkbox.className = "form-check-input mx-3"
+
+  var label = document.createElement("label");
+
+  label.className = "form-check-label";
+  label.htmlFor = type;
+
+  label.appendChild(document.createTextNode(type))
+
+  checkbox.addEventListener('change', function () {
+    highlightWords(type, this)
+  })
+
+  checkboxDiv.appendChild(checkbox);
+  checkboxDiv.appendChild(label);
+  return checkboxDiv
 }
 
   //  var line = new LeaderLine(
