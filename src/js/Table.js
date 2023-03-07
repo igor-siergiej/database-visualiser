@@ -3,29 +3,31 @@ import Column from './Column';
 
 export default class Table {
 	name;
+	temp = false;
+	unlogged = false;
+	ifNotExists = false;
 	columns = [];
 
 	constructor(inputString) {
 		const tokenizedInputString = jsTokens(inputString);
 		let tokenizedArray = Array.from(tokenizedInputString);
 
+		// removes newlines
 		tokenizedArray = tokenizedArray.filter(function (token) {
 			return token.type != "LineTerminatorSequence";
 		});
-		// removes newlines
 
+		// removes whitespaces
 		tokenizedArray = tokenizedArray.filter(function (token) {
 			return token.type != "WhiteSpace";
 		});
-		// removes whitespaces
-
+		
+		// first open bracket should be after table name
 		var index = tokenizedArray.map(function (e) { return e.value; }).indexOf("(");
 
-		// first open bracket should be after table name
 		//Must contain only letters (a-z, A-Z), numbers (0-9), or underscores ( _ ) 
 		//Must begin with a letter or underscore.
 		// Must be less than the maximum length of 59 characters. 
-		
 		this.name = tokenizedArray[index - 1].value;
 
 		// split everything before the open bracket to remove the CREATE TABLE
@@ -151,7 +153,6 @@ export default class Table {
 	}
 
 	writeSyntax(textArea) {
-		
 		var typeText = document.createElement("span");
 		typeText.className = "typeColor"
 
@@ -201,6 +202,4 @@ export default class Table {
 		}
 		return Array.from(new Set(columnTypes))
 	}
-
-	
 }
