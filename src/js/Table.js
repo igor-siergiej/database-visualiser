@@ -24,6 +24,10 @@ export default class Table {
 		
 		// first open bracket should be after table name
 		var index = tokenizedArray.map(function (e) { return e.value; }).indexOf("(");
+		console.log(index)
+		if (index == -1) {
+			throw Error("No brackets found in string")
+		}
 
 		//Must contain only letters (a-z, A-Z), numbers (0-9), or underscores ( _ ) 
 		//Must begin with a letter or underscore.
