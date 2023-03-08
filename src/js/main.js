@@ -12,6 +12,8 @@ const textForm = document.getElementById("textForm");
 const filePicker = document.getElementById("filePicker");
 const textArea = document.getElementById("textArea");
 
+const alertDiv = document.getElementById("alertDiv")
+
 function visualise(inputString) {
   let syntaxTextArea = document.getElementById("syntaxTextArea");
   let tableArea = document.getElementById("tableArea");
@@ -53,6 +55,7 @@ function visualise(inputString) {
 function validateSQL(inputString) {
   var statements = inputString.split(";");
   statements.pop();
+  var validated = true
 
   try { // try to create datamodel and the first error it throws will be displayed to user
     for (const statement of statements) {
@@ -64,8 +67,11 @@ function validateSQL(inputString) {
     }
   } catch (e) {
     // feedback to user with error
-    console.log(e)
+    validated = false
+    createAlert(e,alertDiv)
   }
+
+  return validated
 }
 
 function createTable(statement) {
@@ -107,6 +113,29 @@ function createFilters(uniqueColumnTypes, filterArea) {
     var checkBoxDiv = createCheckbox(type)
     filterArea.appendChild(checkBoxDiv)
   }
+}
+
+function createAlert(errorMessage,alertsDiv) {
+  if (alertsDiv.firstChild) { // if alertsDiv already has an alert then clear the div
+    alertsDiv.innerHTML = ""
+  }
+
+  let alertDiv = document.createElement("div")
+  alertDiv.className = "alert alert-danger alert-dismissible fade show"
+  alertDiv.setAttribute("role","alert")
+
+  let alertText = document.createTextNode(errorMessage)
+  
+  let dismissButton = document.createElement("button")
+  dismissButton.className = "btn-close"
+  dismissButton.setAttribute("data-bs-dismiss", "alert")
+  dismissButton.type = "button"
+  dismissButton.ariaLabel = "Close"
+
+  alertDiv.appendChild(alertText)
+  alertDiv.appendChild(dismissButton)
+
+  alertsDiv.appendChild(alertDiv)
 }
 
 function createCheckbox(type) {
