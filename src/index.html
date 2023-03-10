@@ -28,7 +28,7 @@
 
         <li class="nav-item">
 
-          <button class="nav-link active" id="table-tab" data-bs-toggle="tab" data-bs-target="#textInput" type="button"
+          <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#textInput" type="button"
             role="tab" aria-controls="textInput" aria-selected="true">Text Input</button>
 
         </li>
@@ -45,7 +45,7 @@
 
       <div class="tab-content">
 
-        <div class="tab-pane fade py-3" id="fileInput" role="tabpanel" aria-labelledby="syntax-tab">
+        <div class="tab-pane fade py-3" id="fileInput" role="tabpanel" >
 
           <form id="fileForm" novalidate>
 
@@ -64,7 +64,7 @@
 
         </div>
 
-        <div class="tab-pane fade show active py-3" id="textInput" role="tabpanel" aria-labelledby="syntax-tab">
+        <div class="tab-pane fade show active py-3" id="textInput" role="tabpanel" >
 
           <form id="textForm" novalidate>
 
@@ -80,6 +80,8 @@
             </div>
 
           </form>
+
+          <div id="alertDiv"></div>
 
         </div>
 
