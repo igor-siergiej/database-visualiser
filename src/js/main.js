@@ -31,7 +31,8 @@ function visualise() {
   }
   document.getElementById("outputTab").hidden = false;
 
-  var tables = database.tables
+  // need to add all tables from all schema together
+  var tables = database
 
   let uniqueColumnTypes = uniqueColumnTypesForAllTables(tables)
 

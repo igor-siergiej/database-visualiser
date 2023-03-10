@@ -32,6 +32,7 @@ export default class Table {
 		switch(tokenizedArray[1].value) {
 			case "GLOBAL": 
 			case "LOCAL":
+
 				if (tokenizedArray[2].value != "TEMPORARY" && tokenizedArray[2].value != "TEMP") {
 					throw Error("GLOBAL or LOCAL flag used without TEMPORARY flag")
 				} else {
@@ -42,52 +43,40 @@ export default class Table {
 					}
 				}
 
-				// lots of code duplication, can make a function for this?
-
 				if (tokenizedArray[3].value != "TABLE") {
 					throw Error("MISSING TABLE")
 				} 
 
-				this.name = tokenizedArray[4].value
-
-				if (tokenizedArray[5].value != "(") {
-					throw new Error("Open bracket expected")
-				}
+				this.setName(4,tokenizedArray,database)
 				indexOfOpenBracket = 5
-
 				break;
+
 			case "UNLOGGED":
+
 				this.unlogged = true
+
 				if (tokenizedArray[2].value != "TABLE") {
 					throw Error("MISSING TABLE")
 				}
 
-				this.name = tokenizedArray[3].value
-
-				if (tokenizedArray[4].value != "(") {
-					throw new Error("Open bracket expected")
-				}
+				this.setName(3,tokenizedArray,database)
 				indexOfOpenBracket = 4
-
 				break;
+
 			case "TEMP":
 			case "TEMPORARY":
+
 				this.temp = true
 				if (tokenizedArray[2].value != "TABLE") {
 					throw Error("MISSING TABLE")
 				}
 
-				this.name = tokenizedArray[3].value
-
-				if (tokenizedArray[4].value != "(") {
-					throw new Error("Open bracket expected")
-				}
+				this.setName(3,tokenizedArray,database)
 				indexOfOpenBracket = 4
-
 				break;
+
 			case "TABLE":
 				
-
 				this.setName(2,tokenizedArray,database)
 				indexOfOpenBracket = 3
 				break;
@@ -97,7 +86,7 @@ export default class Table {
 		}
 
 		// split everything before the open bracket to remove the CREATE TABLE
-		tokenizedArray = tokenizedArray.slice(indexOfOpenBracket);
+		tokenizedArray = tokenizedArray.slice(indexOfOpenBracket + 1);
 
 		console.log(tokenizedArray)
 
@@ -148,6 +137,11 @@ export default class Table {
 					if (this.doesSchemaExist(database, schemaName)) {
 						this.name = name
 						// add this table to the schema
+
+						// if anything but an open bracket is present throw error
+						if (tokenizedArray[nameIndex + 3].value != "(") {
+							throw new Error("Open bracket is expected")
+						}
 					} else {
 						throw new Error(`Schema "${schemaName}" does not exist`)
 					}
@@ -158,7 +152,7 @@ export default class Table {
 				throw new Error(`Name "${name}" is not valid`)
 			}
 
-			// this means that only table name is present
+		// this means that only table name is present
 		} else if (tokenizedArray[nameIndex + 1].value == "(") {
 			if (this.isNameValid(name)) {
 				this.name = name;
@@ -168,11 +162,11 @@ export default class Table {
 		}
 	}
 
-	// Must contain only letters (a-z, A-Z), numbers (0-9), or underscores ( _ ) 
-	// Must begin with a letter or underscore.
-	// Must be less than the maximum length of 59 characters. 
+	// Name must contain only letters (a-z, A-Z), numbers (0-9), or underscores ( _ ) 
+	// Name must begin with a letter or underscore.
+	// Name must be less than the maximum length of 59 characters. 
 	isNameValid(name) {
-		valid = false
+		var valid = false
 		const validSQLColumnNameRegex = /^[A-Za-z_][A-Za-z\d_]*$/;
 
 		if (name.match(validSQLColumnNameRegex) && name.length < 59) {
