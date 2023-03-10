@@ -1,8 +1,8 @@
 import * as bootstrap from 'bootstrap';
 import Table from './Table';
 import LeaderLine from 'leader-line-new';
-import AnimEvent from 'anim-event';
 import jsTokens from "js-tokens";
+import Schema from './Schema';
 
 var visualised = false
 
@@ -14,10 +14,14 @@ const textArea = document.getElementById("textArea");
 
 const alertDiv = document.getElementById("alertDiv")
 
-function visualise(inputString) {
+var database = []; // this should be an array of schema
+var publicSchema = new Schema("public");
+database.push(publicSchema)
+
+function visualise() {
   let syntaxTextArea = document.getElementById("syntaxTextArea");
   let tableArea = document.getElementById("tableArea");
-  let filterArea = document.getElementById("filterArea")
+  let filterArea = document.getElementById("filterArea");
 
   if (visualised) { // if the table has already been visualised then reset the html of the outputs
     tableArea.innerHTML = ""
@@ -27,18 +31,7 @@ function visualise(inputString) {
   }
   document.getElementById("outputTab").hidden = false;
 
-  let statements = inputString.split(';'); // this should have length the number of tables/ statements
-  statements.pop() // removes the empty element at the end of the array that is created by split function
-
-  // Maybe have a database object that has a schema and tables?
-  let tables = [];
-  for (const statement of statements) {
-    if (statement.includes("CREATE") && statement.includes("TABLE")) {
-      tables.push(createTable(statement))
-    } else if (statement.includes("CREATE SCHEMA")) {
-      // create schedma function here
-    }
-  }
+  var tables = database.tables
 
   let uniqueColumnTypes = uniqueColumnTypesForAllTables(tables)
 
@@ -52,31 +45,37 @@ function visualise(inputString) {
   visualised = true;
 }
 
+// in the future if it validates then create database object as a global variable and visualise will only visualise it
 function validateSQL(inputString) {
   var statements = inputString.split(";");
   statements.pop();
+
   var validated = true
 
-  try { // try to create datamodel and the first error it throws will be displayed to user
-    for (const statement of statements) {
-      if (statement.includes("CREATE") && statement.includes("TABLE")) {
-        createTable(statement)
-      } else if (statement.includes("CREATE SCHEMA")) {
-        // create schema object
+  try { // try to create datamodel and the first error it throws will be displayed to user as error
+    for (var statement of statements) {
+      statement = statement.replace(/(\r\n|\n|\r)/gm, ""); // replaces new lines
+      statement = statement.trim() // removes white spaces before and after statement
+
+      var words = statement.split(" ")
+
+      if (words[0].toUpperCase() === "CREATE") {
+         if (words[1].toUpperCase() == "SCHEMA") {
+            // create schema object
+         } else {
+          let table = new Table(statement, database); // this will be added to database object later
+         }
+      } else {
+        throw Error("Unsupported Statement")
       }
     }
-  } catch (e) {
+  } catch (error) {
     // feedback to user with error
+    console.log(error)
     validated = false
-    createAlert(e,alertDiv)
+    createAlert(error,alertDiv)
   }
-
   return validated
-}
-
-function createTable(statement) {
-  let table = new Table(statement);
-  return table
 }
 
 function fileValidation() {
@@ -93,6 +92,9 @@ function validateTextArea() {
   if (validateSQL(textArea.value)) {
     textArea.classList.remove("is-invalid")
     textArea.classList.add("is-valid")
+    if (alertDiv.firstChild) { // if alertsDiv already has an alert then clear the div
+      alertDiv.innerHTML = ""
+    }
   } else {
     textArea.classList.remove("is-valid")
     textArea.classList.add("is-invalid")
@@ -115,7 +117,7 @@ function createFilters(uniqueColumnTypes, filterArea) {
   }
 }
 
-function createAlert(errorMessage,alertsDiv) {
+function createAlert(error,alertsDiv) {
   if (alertsDiv.firstChild) { // if alertsDiv already has an alert then clear the div
     alertsDiv.innerHTML = ""
   }
@@ -124,7 +126,9 @@ function createAlert(errorMessage,alertsDiv) {
   alertDiv.className = "alert alert-danger alert-dismissible fade show"
   alertDiv.setAttribute("role","alert")
 
-  let alertText = document.createTextNode(errorMessage)
+  let boldError = document.createElement("strong")
+  boldError.innerHTML = "Error: "
+  let alertText = document.createTextNode(error.message)
   
   let dismissButton = document.createElement("button")
   dismissButton.className = "btn-close"
@@ -132,6 +136,7 @@ function createAlert(errorMessage,alertsDiv) {
   dismissButton.type = "button"
   dismissButton.ariaLabel = "Close"
 
+  alertDiv.appendChild(boldError)
   alertDiv.appendChild(alertText)
   alertDiv.appendChild(dismissButton)
 
@@ -230,4 +235,3 @@ textForm.addEventListener('submit', function (event) {
   //   document.getElementById('123')
   // );
 
-//text = text.replace(/(\r\n|\n|\r)/gm, ""); // replaces new lines

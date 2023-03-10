@@ -3,12 +3,15 @@ import Column from './Column';
 
 export default class Table {
 	name;
+	global = false;
+	local = false;
 	temp = false;
 	unlogged = false;
 	ifNotExists = false;
+	
 	columns = [];
 
-	constructor(inputString) {
+	constructor(inputString, database) {
 		const tokenizedInputString = jsTokens(inputString);
 		let tokenizedArray = Array.from(tokenizedInputString);
 
@@ -21,21 +24,82 @@ export default class Table {
 		tokenizedArray = tokenizedArray.filter(function (token) {
 			return token.type != "WhiteSpace";
 		});
-		
-		// first open bracket should be after table name
-		var index = tokenizedArray.map(function (e) { return e.value; }).indexOf("(");
-	
-		if (index == -1) {
-			throw Error("No brackets found in string")
+
+		// tokenizedArray[0] this should be "CREATE" but is already checked for	
+
+		var indexOfOpenBracket;
+
+		switch(tokenizedArray[1].value) {
+			case "GLOBAL": 
+			case "LOCAL":
+				if (tokenizedArray[2].value != "TEMPORARY" && tokenizedArray[2].value != "TEMP") {
+					throw Error("GLOBAL or LOCAL flag used without TEMPORARY flag")
+				} else {
+					if (tokenizedArray[1] == "GLOBAL") {
+						this.global = true
+					} else {
+						this.local = true
+					}
+				}
+
+				// lots of code duplication, can make a function for this?
+
+				if (tokenizedArray[3].value != "TABLE") {
+					throw Error("MISSING TABLE")
+				} 
+
+				this.name = tokenizedArray[4].value
+
+				if (tokenizedArray[5].value != "(") {
+					throw new Error("Open bracket expected")
+				}
+				indexOfOpenBracket = 5
+
+				break;
+			case "UNLOGGED":
+				this.unlogged = true
+				if (tokenizedArray[2].value != "TABLE") {
+					throw Error("MISSING TABLE")
+				}
+
+				this.name = tokenizedArray[3].value
+
+				if (tokenizedArray[4].value != "(") {
+					throw new Error("Open bracket expected")
+				}
+				indexOfOpenBracket = 4
+
+				break;
+			case "TEMP":
+			case "TEMPORARY":
+				this.temp = true
+				if (tokenizedArray[2].value != "TABLE") {
+					throw Error("MISSING TABLE")
+				}
+
+				this.name = tokenizedArray[3].value
+
+				if (tokenizedArray[4].value != "(") {
+					throw new Error("Open bracket expected")
+				}
+				indexOfOpenBracket = 4
+
+				break;
+			case "TABLE":
+				
+
+				this.setName(2,tokenizedArray,database)
+				indexOfOpenBracket = 3
+				break;
+
+			default:
+				throw Error("INVALID FLAG IN CREATE STATEMENT")
 		}
 
-		//Must contain only letters (a-z, A-Z), numbers (0-9), or underscores ( _ ) 
-		//Must begin with a letter or underscore.
-		// Must be less than the maximum length of 59 characters. 
-		this.name = tokenizedArray[index - 1].value;
-
 		// split everything before the open bracket to remove the CREATE TABLE
-		tokenizedArray = tokenizedArray.slice(index + 1);
+		tokenizedArray = tokenizedArray.slice(indexOfOpenBracket);
+
+		console.log(tokenizedArray)
 
 		var tokenizedArrayValues = tokenizedArray.map(function (element) {
 			return element['value'];
@@ -69,6 +133,62 @@ export default class Table {
 				this.columns.push(column);
 			}
 		}
+	}
+
+	setName(nameIndex, tokenizedArray, database) {
+		var name = tokenizedArray[nameIndex].value
+
+		// this means that a schema name is before table name
+		if (tokenizedArray[nameIndex + 1].value == ".") {
+			var schemaName = name
+			var name = tokenizedArray[nameIndex + 2].value
+
+			if (this.isNameValid(name)) {
+				if (this.isNameValid(schemaName)) {
+					if (this.doesSchemaExist(database, schemaName)) {
+						this.name = name
+						// add this table to the schema
+					} else {
+						throw new Error(`Schema "${schemaName}" does not exist`)
+					}
+				} else {
+					throw new Error(`Schema name "${schemaName}" is not valid`)
+				}
+			} else {
+				throw new Error(`Name "${name}" is not valid`)
+			}
+
+			// this means that only table name is present
+		} else if (tokenizedArray[nameIndex + 1].value == "(") {
+			if (this.isNameValid(name)) {
+				this.name = name;
+			}
+		} else {
+			throw new Error("Invalid syntax, should be an open bracket")
+		}
+	}
+
+	// Must contain only letters (a-z, A-Z), numbers (0-9), or underscores ( _ ) 
+	// Must begin with a letter or underscore.
+	// Must be less than the maximum length of 59 characters. 
+	isNameValid(name) {
+		valid = false
+		const validSQLColumnNameRegex = /^[A-Za-z_][A-Za-z\d_]*$/;
+
+		if (name.match(validSQLColumnNameRegex) && name.length < 59) {
+			valid = true
+		}
+		return valid
+	}
+
+	doesSchemaExist(database,schemaName) {
+		var match = false
+		for (const schema of database) {
+			if (schema.name == schemaName) {
+				match = true
+			}
+		}
+		return match
 	}
 
 	parseTableConstraints(tableConstraintsList) {
