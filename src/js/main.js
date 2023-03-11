@@ -232,7 +232,7 @@ fileForm.addEventListener('submit', function (event) {
 textForm.addEventListener('submit', function (event) {
   event.preventDefault()
   event.stopPropagation()
-  if (textForm.checkValidity()) {
+  if (textForm.checkValidity() && validateSQL(textArea.value)) {
     textArea.classList.remove("is-invalid")
     textArea.classList.add("is-valid")
     visualise(textArea.value)
