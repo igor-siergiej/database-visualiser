@@ -10,6 +10,7 @@ export default class Column {
 
     // need a dictionary look up for data types
     constructor(inputString) {
+        // need to add validation to this
         
         if (inputString.find(e => e.value === "PRIMARY") && inputString.find(e => e.value === "KEY")) {
             this.addKey("P") // need to check if the keywords are next to eachother

@@ -12,6 +12,7 @@ export default class Table {
 	columns = [];
 
 	constructor(inputString, database) {
+		// tokenize input string
 		const tokenizedInputString = jsTokens(inputString);
 		let tokenizedArray = Array.from(tokenizedInputString);
 
@@ -26,99 +27,85 @@ export default class Table {
 		});
 
 		// tokenizedArray[0] this should be "CREATE" but is already checked for	
-
 		var indexOfOpenBracket;
 
-		switch (tokenizedArray[1].value) {
+		// checking what is after "CREATE"
+		switch (tokenizedArray[1].value) { 
+			// If it's "GLOBAL" or "LOCAL", check if "TEMP" or "TEMPORARY" is used
 			case "GLOBAL":
 			case "LOCAL":
-
 				if (tokenizedArray[2].value != "TEMPORARY" && tokenizedArray[2].value != "TEMP") {
 					throw Error("GLOBAL or LOCAL flag used without TEMPORARY flag")
 				} else {
-					if (tokenizedArray[1] == "GLOBAL") {
+					// If "TEMP" flag is used set the correct flags
+					if (tokenizedArray[1].value == "GLOBAL") {
+						this.temp = true
 						this.global = true
 					} else {
+						this.temp = true
 						this.local = true
 					}
 				}
 
-				if (tokenizedArray[3].value != "TABLE") {
-					throw Error("MISSING TABLE")
-				}
+				// check if "TABLE" word is present
+				this.checkIfTableFlagExists(3,tokenizedArray)
 
-				this.setName(4, tokenizedArray, database)
-				indexOfOpenBracket = 5
+				// get the index of the open bracket based on if "IF NOT EXISTS" flag exists 
+				// and if schema name is used in the table name and validating everything.
+				indexOfOpenBracket = this.checkCreateTableStatement(3,tokenizedArray,database)
 				break;
 
 			case "UNLOGGED":
-
 				this.unlogged = true
-
-
-
-				// need to check if table exists
-				this.setName(3, tokenizedArray, database)
-				indexOfOpenBracket = 4
+				this.checkIfTableFlagExists(2,tokenizedArray)
+				indexOfOpenBracket = this.checkCreateTableStatement(2,tokenizedArray,database)
 				break;
 
 			case "TEMP":
 			case "TEMPORARY":
-
 				this.temp = true
-				if (tokenizedArray[2].value != "TABLE") {
-					throw Error("MISSING TABLE")
-				}
-
-				this.setName(3, tokenizedArray, database)
-				indexOfOpenBracket = 4
+				this.checkIfTableFlagExists(2,tokenizedArray)
+				indexOfOpenBracket = this.checkCreateTableStatement(2,tokenizedArray,database)
 				break;
 
 			case "TABLE":
-				if (this.checkIfNotExists(1, tokenizedArray)) {
-					if (this.setName(5, tokenizedArray, database)) {
-						indexOfOpenBracket = 8
-					} else {
-						indexOfOpenBracket = 6
-					}
-				} else {
-					if (this.setName(2, tokenizedArray, database)) {
-						indexOfOpenBracket = 5
-					} else {
-						indexOfOpenBracket = 3
-					}
-				}
-				
+				// don't need to check for table flag becuase it already exists
+				indexOfOpenBracket = this.checkCreateTableStatement(1,tokenizedArray,database)
 				break;
 
 			default:
+				// if flag is not recognised then throw error
 				throw Error("INVALID FLAG IN CREATE STATEMENT")
 		}
 
-		console.log(this)
-
 		// split everything before the open bracket to remove the CREATE TABLE
 		tokenizedArray = tokenizedArray.slice(indexOfOpenBracket + 1);
-		console.log(tokenizedArray)
 
+		// just get the values from tokenized array
 		var tokenizedArrayValues = tokenizedArray.map(function (element) {
 			return element['value'];
 		});
 
+		// join the array to a string
 		tokenizedArrayValues = tokenizedArrayValues.join(" ")
 
 		const commaOutsideOfBrackets = /(?<!\([^\)]+)\s*,\s*(?!\))/;
 
+		// split the string to individual columns
 		var columnStrings = tokenizedArrayValues.split(commaOutsideOfBrackets)
 
 		var columns = [];
 
 		for (const element of columnStrings) {
+			// tokenize the column string
 			const tokenizedInputString = jsTokens(element);
 			var tokenizedColumnArray = Array.from(tokenizedInputString)
+
+			// remove white spaces
 			tokenizedColumnArray = tokenizedColumnArray.filter(function (token) {
 				return token.type != "WhiteSpace";
 			});
+
 			columns.push(tokenizedColumnArray)
 		}
 
@@ -133,6 +120,24 @@ export default class Table {
 				this.columns.push(column);
 			}
 		}
+	}
+
+	checkCreateTableStatement(startingIndex,tokenizedArray,database) {
+		var indexOfOpenBracket
+		if (this.checkIfNotExists(startingIndex, tokenizedArray)) {
+			if (this.setName(startingIndex + 4, tokenizedArray, database)) {
+				indexOfOpenBracket = startingIndex + 7
+			} else {
+				indexOfOpenBracket = startingIndex + 5
+			}
+		} else {
+			if (this.setName(startingIndex + 1, tokenizedArray, database)) {
+				indexOfOpenBracket = startingIndex + 4
+			} else {
+				indexOfOpenBracket = startingIndex + 2
+			}
+		}
+		return indexOfOpenBracket
 	}
 
 	checkIfNotExists(indexOfTable, tokenizedArray) {
@@ -216,6 +221,7 @@ export default class Table {
 	}
 
 	parseTableConstraints(tableConstraintsList) {
+		// need to add syntax validation to this function
 		for (const element of tableConstraintsList) {
 			if (element[0].value == "PRIMARY" || element[1].value == "KEY") {
 				let tempElement = element
