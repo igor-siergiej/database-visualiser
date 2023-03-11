@@ -18,7 +18,10 @@ var database = []; // this should be an array of schema
 var publicSchema = new Schema("public");
 database.push(publicSchema)
 
-function visualise() {
+var tables = []
+
+function visualise(inputString) {
+  validateSQL(inputString)
   let syntaxTextArea = document.getElementById("syntaxTextArea");
   let tableArea = document.getElementById("tableArea");
   let filterArea = document.getElementById("filterArea");
@@ -31,8 +34,14 @@ function visualise() {
   }
   document.getElementById("outputTab").hidden = false;
 
+  
   // need to add all tables from all schema together
-  var tables = database
+  // for (const schema of database) {
+  //   for (const table of schema.tables) {
+  //     tables.push(table)
+  //   }
+  // }
+ 
 
   let uniqueColumnTypes = uniqueColumnTypesForAllTables(tables)
 
@@ -48,6 +57,7 @@ function visualise() {
 
 // in the future if it validates then create database object as a global variable and visualise will only visualise it
 function validateSQL(inputString) {
+  tables = []
   var statements = inputString.split(";");
   statements.pop();
 
@@ -65,6 +75,7 @@ function validateSQL(inputString) {
             // create schema object
          } else {
           let table = new Table(statement, database); // this will be added to database object later
+          tables.push(table)
          }
       } else {
         throw Error("Unsupported Statement")

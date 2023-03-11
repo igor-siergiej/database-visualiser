@@ -8,7 +8,7 @@ export default class Table {
 	temp = false;
 	unlogged = false;
 	ifNotExists = false;
-	
+
 	columns = [];
 
 	constructor(inputString, database) {
@@ -29,8 +29,8 @@ export default class Table {
 
 		var indexOfOpenBracket;
 
-		switch(tokenizedArray[1].value) {
-			case "GLOBAL": 
+		switch (tokenizedArray[1].value) {
+			case "GLOBAL":
 			case "LOCAL":
 
 				if (tokenizedArray[2].value != "TEMPORARY" && tokenizedArray[2].value != "TEMP") {
@@ -45,9 +45,9 @@ export default class Table {
 
 				if (tokenizedArray[3].value != "TABLE") {
 					throw Error("MISSING TABLE")
-				} 
+				}
 
-				this.setName(4,tokenizedArray,database)
+				this.setName(4, tokenizedArray, database)
 				indexOfOpenBracket = 5
 				break;
 
@@ -55,11 +55,10 @@ export default class Table {
 
 				this.unlogged = true
 
-				if (tokenizedArray[2].value != "TABLE") {
-					throw Error("MISSING TABLE")
-				}
 
-				this.setName(3,tokenizedArray,database)
+
+				// need to check if table exists
+				this.setName(3, tokenizedArray, database)
 				indexOfOpenBracket = 4
 				break;
 
@@ -71,23 +70,35 @@ export default class Table {
 					throw Error("MISSING TABLE")
 				}
 
-				this.setName(3,tokenizedArray,database)
+				this.setName(3, tokenizedArray, database)
 				indexOfOpenBracket = 4
 				break;
 
 			case "TABLE":
+				if (this.checkIfNotExists(1, tokenizedArray)) {
+					if (this.setName(5, tokenizedArray, database)) {
+						indexOfOpenBracket = 8
+					} else {
+						indexOfOpenBracket = 6
+					}
+				} else {
+					if (this.setName(2, tokenizedArray, database)) {
+						indexOfOpenBracket = 5
+					} else {
+						indexOfOpenBracket = 3
+					}
+				}
 				
-				this.setName(2,tokenizedArray,database)
-				indexOfOpenBracket = 3
 				break;
 
 			default:
 				throw Error("INVALID FLAG IN CREATE STATEMENT")
 		}
 
+		console.log(this)
+
 		// split everything before the open bracket to remove the CREATE TABLE
 		tokenizedArray = tokenizedArray.slice(indexOfOpenBracket + 1);
-
 		console.log(tokenizedArray)
 
 		var tokenizedArrayValues = tokenizedArray.map(function (element) {
@@ -124,6 +135,29 @@ export default class Table {
 		}
 	}
 
+	checkIfNotExists(indexOfTable, tokenizedArray) {
+		if (tokenizedArray[indexOfTable + 1].value == "IF") {
+			if (tokenizedArray[indexOfTable + 2].value == "NOT") {
+				if (tokenizedArray[indexOfTable + 3].value == "EXISTS") {
+					this.ifNotExists = true
+					return true
+				} else {
+					throw new Error("Unexpected word in \"IF NOT EXISTS\"")
+				}
+			} else {
+				throw new Error("Unexpected word in \"IF NOT EXISTS\"")
+			}
+		} else {
+			return false
+		}
+	}
+
+	checkIfTableFlagExists(indexOfTable, tokenizedArray) {
+		if (tokenizedArray[indexOfTable].value != "TABLE") {
+			throw Error("Missing \"TABLE\"")
+		}
+	}
+
 	setName(nameIndex, tokenizedArray, database) {
 		var name = tokenizedArray[nameIndex].value
 
@@ -136,12 +170,8 @@ export default class Table {
 				if (this.isNameValid(schemaName)) {
 					if (this.doesSchemaExist(database, schemaName)) {
 						this.name = name
+						return true
 						// add this table to the schema
-
-						// if anything but an open bracket is present throw error
-						if (tokenizedArray[nameIndex + 3].value != "(") {
-							throw new Error("Open bracket is expected")
-						}
 					} else {
 						throw new Error(`Schema "${schemaName}" does not exist`)
 					}
@@ -152,13 +182,13 @@ export default class Table {
 				throw new Error(`Name "${name}" is not valid`)
 			}
 
-		// this means that only table name is present
+			// this means that only table name is present
 		} else if (tokenizedArray[nameIndex + 1].value == "(") {
 			if (this.isNameValid(name)) {
 				this.name = name;
 			}
 		} else {
-			throw new Error("Invalid syntax, should be an open bracket")
+			throw new Error("Invalid syntax, should be an open bracket or invalid table name")
 		}
 	}
 
@@ -175,7 +205,7 @@ export default class Table {
 		return valid
 	}
 
-	doesSchemaExist(database,schemaName) {
+	doesSchemaExist(database, schemaName) {
 		var match = false
 		for (const schema of database) {
 			if (schema.name == schemaName) {
@@ -224,7 +254,7 @@ export default class Table {
 		} else {
 			keyColumn.className = "col-1 border border-2 gx-0 error";
 		}
-		
+
 		let nameColumn = document.createElement("div");
 		nameColumn.className = "col border border-2 h-100 gx-0";
 
@@ -242,7 +272,7 @@ export default class Table {
 			} else {
 				this.createColumn("", keyColumn)
 			}
-			
+
 			this.createColumn(column.name, nameColumn)
 			this.createColumn(column.columnType.getValue(), typeColumn)
 		}
