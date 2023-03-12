@@ -1,4 +1,5 @@
 import ColumnType from './ColumnType';
+import Util from './Util';
 
 export default class Column {
     name;
@@ -6,28 +7,34 @@ export default class Column {
     #primaryKey = "";
     #foreignKey = "";
     constraints;
-    errors = [];
 
-    // need a dictionary look up for data types
-    constructor(inputString) {
-        // need to add validation to this
+    constructor(tokenizedArray) {
+
+        Util.joinPunctuators(tokenizedArray)
         
-        if (inputString.find(e => e.value === "PRIMARY") && inputString.find(e => e.value === "KEY")) {
+        if (tokenizedArray.find(e => e.value === "PRIMARY") && tokenizedArray.find(e => e.value === "KEY")) {
             this.addKey("P") // need to check if the keywords are next to eachother
-            inputString = inputString.filter(element => element.value !== "PRIMARY")
-            inputString = inputString.filter(element => element.value !== "KEY")
+            tokenizedArray = tokenizedArray.filter(element => element.value !== "PRIMARY")
+            tokenizedArray = tokenizedArray.filter(element => element.value !== "KEY")
             // is there a better way of doing this?
         }
 
-        // first element in array should be name need to check
-        this.name = inputString[0].value
-        this.errors.push("name")
+        // first element should be name
+        if (Util.isNameValid(tokenizedArray[0].value)) {
+            this.name = tokenizedArray[0].value // 
+        } else {
+            throw new Error(`Column name\"${tokenizedArray[0].value}\" invalid`)
+        }
 
-        inputString = inputString.splice(1)
+        console.log(tokenizedArray)
+        
+        // removes name from array
+        tokenizedArray = tokenizedArray.splice(1);
 
-        if (inputString.find(e => e.value === "(")) { // data type with no value
 
-            var joinedArray = inputString.map(function (element) {
+        if (tokenizedArray.find(e => e.value === "(")) { // data type with no value
+
+            var joinedArray = tokenizedArray.map(function (element) {
                 return element['value'];
             });
 
@@ -37,14 +44,14 @@ export default class Column {
 
             var matchedValues = joinedArray.match(matchInsideBrackets)
 
-            this.columnType = new ColumnType(inputString[0].value, matchedValues[0].trim())
-            inputString = inputString.splice(4) // this will remove open bracket, value inside and close bracket
+            this.columnType = new ColumnType(tokenizedArray[0].value, matchedValues[0].trim())
+            tokenizedArray = tokenizedArray.splice(4) // this will remove open bracket, value inside and close bracket
         } else {
-            this.columnType = new ColumnType(inputString[0].value)
-            inputString = inputString.splice(1) // this will just remove the datatype
+            this.columnType = new ColumnType(tokenizedArray[0].value)
+            tokenizedArray = tokenizedArray.splice(1) // this will just remove the datatype
 
         }
-        this.constraints = inputString
+        this.constraints = tokenizedArray
         // if there are words here that do not match keywords then flag as error
     }
 
