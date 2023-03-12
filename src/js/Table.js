@@ -1,5 +1,6 @@
 import jsTokens from "js-tokens";
 import Column from './Column';
+import Util from "./Util";
 
 export default class Table {
 	name;
@@ -171,8 +172,8 @@ export default class Table {
 			var schemaName = name
 			var name = tokenizedArray[nameIndex + 2].value
 
-			if (this.isNameValid(name)) {
-				if (this.isNameValid(schemaName)) {
+			if (Util.isNameValid(name)) {
+				if (Util.isNameValid(schemaName)) {
 					if (this.doesSchemaExist(database, schemaName)) {
 						this.name = name
 						return true
@@ -189,25 +190,12 @@ export default class Table {
 
 			// this means that only table name is present
 		} else if (tokenizedArray[nameIndex + 1].value == "(") {
-			if (this.isNameValid(name)) {
+			if (Util.isNameValid(name)) {
 				this.name = name;
 			}
 		} else {
 			throw new Error("Invalid syntax, should be an open bracket or invalid table name")
 		}
-	}
-
-	// Name must contain only letters (a-z, A-Z), numbers (0-9), or underscores ( _ ) 
-	// Name must begin with a letter or underscore.
-	// Name must be less than the maximum length of 59 characters. 
-	isNameValid(name) {
-		var valid = false
-		const validSQLColumnNameRegex = /^[A-Za-z_][A-Za-z\d_]*$/;
-
-		if (name.match(validSQLColumnNameRegex) && name.length < 59) {
-			valid = true
-		}
-		return valid
 	}
 
 	doesSchemaExist(database, schemaName) {
