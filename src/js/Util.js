@@ -1,6 +1,4 @@
 export default class Util {
-
-
     // Name must contain only letters (a-z, A-Z), numbers (0-9), or underscores ( _ ) 
 	// Name must begin with a letter or underscore.
 	// Name must be less than the maximum length of 59 characters. 
@@ -21,10 +19,14 @@ export default class Util {
             var value = tokenizedArray[i].value
             var type = tokenizedArray[i].type
             if (type == "Punctuator" && value != "(" && value != ")") {
-                tokenizedArray[i-1].value += tokenizedArray[i].value + tokenizedArray[i+1].value
-                tokenizedArray.splice(i,i+1)
+                if (i == 0) {
+                    tokenizedArray[i].value += tokenizedArray[i+1].value
+                    tokenizedArray.splice(i,i)
+                } else {
+                    tokenizedArray[i-1].value += tokenizedArray[i].value + tokenizedArray[i+1].value
+                    tokenizedArray.splice(i,i+1)
+                }
             }
         }
-        console.log(tokenizedArray)
     }
 }
