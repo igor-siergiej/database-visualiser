@@ -9,7 +9,7 @@ export default class Table {
 	temp = false;
 	unlogged = false;
 	ifNotExists = false;
-
+	schema = "public"
 	columns = [];
 
 	constructor(inputString, database) {
@@ -98,10 +98,11 @@ export default class Table {
 		var columns = [];
 
 		for (const element of columnStrings) {
+			
 			// tokenize the column string
 			const tokenizedInputString = jsTokens(element);
 			var tokenizedColumnArray = Array.from(tokenizedInputString)
-
+			
 			// remove white spaces
 			tokenizedColumnArray = tokenizedColumnArray.filter(function (token) {
 				return token.type != "WhiteSpace";
@@ -169,6 +170,9 @@ export default class Table {
 
 		// this means that a schema name is before table name
 		if (tokenizedArray[nameIndex + 1].value == ".") {
+			if (this.temp) {
+				throw new Error("Temporary tables exist in a special schema, so a schema name cannot be given when creating a temporary table")
+			}
 			var schemaName = name
 			var name = tokenizedArray[nameIndex + 2].value
 
@@ -176,8 +180,8 @@ export default class Table {
 				if (Util.isNameValid(schemaName)) {
 					if (this.doesSchemaExist(database, schemaName)) {
 						this.name = name
+						this.schema = schemaName
 						return true
-						// add this table to the schema
 					} else {
 						throw new Error(`Schema "${schemaName}" does not exist`)
 					}

@@ -6,18 +6,19 @@ export default class Column {
     columnType;
     #primaryKey = "";
     #foreignKey = "";
+    nullable = true;
     constraints;
 
     constructor(tokenizedArray) {
-
         Util.joinPunctuators(tokenizedArray)
-        
-        if (tokenizedArray.find(e => e.value === "PRIMARY") && tokenizedArray.find(e => e.value === "KEY")) {
-            this.addKey("P") // need to check if the keywords are next to eachother
-            tokenizedArray = tokenizedArray.filter(element => element.value !== "PRIMARY")
-            tokenizedArray = tokenizedArray.filter(element => element.value !== "KEY")
-            // is there a better way of doing this?
-        }
+
+        // if the input array contains primary and key then remove them from the 
+        // if (tokenizedArray.find(e => e.value === "PRIMARY") && tokenizedArray.find(e => e.value === "KEY")) {
+        //     this.addKey("P") // need to check if the keywords are next to eachother
+        //     tokenizedArray = tokenizedArray.filter(element => element.value !== "PRIMARY")
+        //     tokenizedArray = tokenizedArray.filter(element => element.value !== "KEY")
+        //     // is there a better way of doing this?
+        // }
 
         // first element should be name
         if (Util.isNameValid(tokenizedArray[0].value)) {
@@ -26,11 +27,20 @@ export default class Column {
             throw new Error(`Column name\"${tokenizedArray[0].value}\" invalid`)
         }
 
-        console.log(tokenizedArray)
-        
         // removes name from array
         tokenizedArray = tokenizedArray.splice(1);
 
+        var columnType = new ColumnType();
+
+        if (tokenizedArray[1].value == "(" && tokenizedArray[3].value == ")") {
+            columnType.setType(tokenizedArray[0].value, tokenizedArray[2].value)
+        } else {
+            columnType.setType(tokenizedArray[0].value)
+        }
+
+        this.columnType = columnType
+
+        console.log(columnType)
 
         if (tokenizedArray.find(e => e.value === "(")) { // data type with no value
 
@@ -56,27 +66,27 @@ export default class Column {
     }
 
     writeConstraintSyntax(textArea) {
-     
-			if (this.constraints.length != 0) {
-				for (const element of this.constraints) {
-                    var typeValueText = document.createElement("span");
-                    typeValueText.className = "typeValueColor"
-            
-                    var constraintText = document.createElement("span");
-                    constraintText.className = "constraintColor"
 
-					if (element.type == "IdentifierName") {
-						if (element.value == "NULL") {
-							typeValueText.textContent = " " + element.value
-							textArea.appendChild(typeValueText)
-						} else {
-							constraintText.textContent = " " + element.value
-							textArea.appendChild(constraintText)
-						}
-					}
-				}	
-			}
-			textArea.innerHTML += "<br>"
+        if (this.constraints.length != 0) {
+            for (const element of this.constraints) {
+                var typeValueText = document.createElement("span");
+                typeValueText.className = "typeValueColor"
+
+                var constraintText = document.createElement("span");
+                constraintText.className = "constraintColor"
+
+                if (element.type == "IdentifierName") {
+                    if (element.value == "NULL") {
+                        typeValueText.textContent = " " + element.value
+                        textArea.appendChild(typeValueText)
+                    } else {
+                        constraintText.textContent = " " + element.value
+                        textArea.appendChild(constraintText)
+                    }
+                }
+            }
+        }
+        textArea.innerHTML += "<br>"
     }
 
     addKey(key) {
@@ -88,7 +98,7 @@ export default class Column {
     hasPrimaryKey() {
         if (this.#primaryKey == "P") {
             return true
-        } 
+        }
         return false
     }
 }

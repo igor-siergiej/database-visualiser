@@ -15,13 +15,10 @@ const textArea = document.getElementById("textArea");
 const alertDiv = document.getElementById("alertDiv")
 
 var database = []; // this should be an array of schema
-var publicSchema = new Schema("public");
-database.push(publicSchema)
+var publicSchema = new Schema("public"); // create default schema 
+database.push(publicSchema) // add public schema to database array
 
-var tables = []
-
-function visualise(inputString) {
-  validateSQL(inputString)
+function visualise() {
   let syntaxTextArea = document.getElementById("syntaxTextArea");
   let tableArea = document.getElementById("tableArea");
   let filterArea = document.getElementById("filterArea");
@@ -32,17 +29,16 @@ function visualise(inputString) {
     filterArea.innerHTML = ""
     // refresh error tab inner html too
   }
+  
   document.getElementById("outputTab").hidden = false;
 
-  
-  // need to add all tables from all schema together
-  // for (const schema of database) {
-  //   for (const table of schema.tables) {
-  //     tables.push(table)
-  //   }
-  // }
+  var tables = []
+   for (const schema of database) {
+     for (const table of schema.tables) {
+       tables.push(table)
+     }
+   }
  
-
   let uniqueColumnTypes = uniqueColumnTypesForAllTables(tables)
 
   for (const element of tables) {
@@ -57,7 +53,6 @@ function visualise(inputString) {
 
 // in the future if it validates then create database object as a global variable and visualise will only visualise it
 function validateSQL(inputString) {
-  tables = []
   var statements = inputString.split(";");
   statements.pop();
 
@@ -75,12 +70,17 @@ function validateSQL(inputString) {
             // create schema object
          } else {
           let table = new Table(statement, database); // this will be added to database object later
-          tables.push(table)
+          for (const schema of database) {
+            if (table.schema == schema.name) {
+              schema.addTable(table)
+            }
+          }
          }
       } else {
         throw Error("Unsupported Statement")
       }
     }
+
   } catch (error) {
     // feedback to user with error
     console.log(error)

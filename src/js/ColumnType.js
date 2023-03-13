@@ -17,13 +17,27 @@ export default class ColumnType {
     // if type is present in typesWithInput and there is an input check input and set
     // if type is present in typesWithInput and there is no input put default value?
 
-    constructor(type, value) {
-        this.type = type;
-        this.value = value;
-    }
-
-    setType(inputType) {
-        
+    setType(type, value) {
+        type = type.toLowerCase()
+        if (value === "undefined") { // if value is passed in
+            if (this.#typesWithNoInput.includes(type)) {
+                throw new Error("This column type does not have a parameter")
+            } else {
+                if (this.#typesWithInput.includes(type)) {
+                    this.type = type;
+                    this.value = value;
+                } else {
+                    throw new Error(`The columnType \"${type}\" does not exist`)
+                }
+            }
+        } else {
+            if (this.#typesWithInput.includes(type) || this.#typesWithNoInput.includes(type)) {
+                this.type = type;
+                this.value = value;
+            } else {
+                throw new Error(`The columnType \"${type}\" does not exist`)
+            }
+        }
     }
 
     getValue() {
