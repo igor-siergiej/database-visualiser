@@ -3,14 +3,13 @@ export default class ColumnType {
     value;
 
     #typesWithNoInput = ["smallint","integer","bigint","smallserial","bigserial",
-                         "serial","real","numeric","decimal","double precision",
+                         "serial","real","double precision",
                          "point","line","lseg","box","path","polygon","circle", "cidr",
-                         "inet", "macaddr", "macaddr8", "money", "character varying", "varchar", "character",
-                         "char", "text", "bytea", "boolean", "timestamp", "timestamp with time zone", "timestamptz",
-                         "date", "time", "time with time zone", "timetz", "interval"]
+                         "inet", "macaddr", "macaddr8", "money","text", "bytea", "boolean","date"]
 
     #typesWithInput = ["numeric", "decimal","timestamp", "timestamp with time zone", "timestamptz",
-                       "time", "time with time zone", "timetz", "interval"]
+                       "time", "time with time zone", "timetz", "interval", "character varying", "varchar", "character",
+                       "char"]
 
     //get type string, get if type has value
     // if type is present in typesWithNoInput and there is an input throw error
@@ -18,20 +17,22 @@ export default class ColumnType {
     // if type is present in typesWithInput and there is no input put default value?
 
     setType(type, value) {
+        console.log(type)
+        console.log(value)
         type = type.toLowerCase()
-        if (value === "undefined") { // if value is passed in
-            if (this.#typesWithNoInput.includes(type)) {
-                throw new Error("This column type does not have a parameter")
-            } else {
-                if (this.#typesWithInput.includes(type)) {
-                    this.type = type;
-                    this.value = value;
-                } else {
-                    throw new Error(`The columnType \"${type}\" does not exist`)
-                }
-            }
-        } else {
+        if (value === undefined) { // if no value
             if (this.#typesWithInput.includes(type) || this.#typesWithNoInput.includes(type)) {
+                this.type = type;
+            } else {
+                throw new Error(`The columnType \"${type}\" does not exist`)
+            }             
+        } else { // if there is a value
+            if (this.#typesWithNoInput.includes(type)) {
+                throw new Error(`The columnType \"${type}\" should not have a parameter`)
+            } else if (this.#typesWithInput.includes(type)) {
+                if (isNaN(value)) {
+                    throw new Error(`\"${value}\" is not a valid value`)
+                }
                 this.type = type;
                 this.value = value;
             } else {
