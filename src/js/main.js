@@ -9,6 +9,16 @@ var visualised = false
 const fileForm = document.getElementById("fileForm");
 const textForm = document.getElementById("textForm");
 
+var isTextInputSelected = true
+
+const textTabButton = document.getElementById("text-tab-button")
+const fileTabButton = document.getElementById("file-tab-button")
+
+const fileVisualiseButton = document.getElementById("fileVisualiseButton")
+const textVisualiseButton = document.getElementById("textVisualiseButton")
+fileVisualiseButton.disabled = true
+textVisualiseButton.disabled = true
+
 const filePicker = document.getElementById("filePicker");
 const textArea = document.getElementById("textArea");
 
@@ -19,6 +29,8 @@ var publicSchema = new Schema("public"); // create default schema
 database.push(publicSchema) // add public schema to database array
 
 function visualise() {
+  console.log("visualise")
+
   let syntaxTextArea = document.getElementById("syntaxTextArea");
   let tableArea = document.getElementById("tableArea");
   let filterArea = document.getElementById("filterArea");
@@ -53,6 +65,13 @@ function visualise() {
 
 // in the future if it validates then create database object as a global variable and visualise will only visualise it
 function validateSQL(inputString) {
+  console.log("validate")
+  if (visualised) {
+    database = []
+    publicSchema = new Schema("public");
+    database.push(publicSchema)
+  }
+
   var statements = inputString.split(";");
   statements.pop();
 
@@ -102,12 +121,14 @@ function fileValidation() {
 
 function validateTextArea() {
   if (validateSQL(textArea.value)) {
+    textVisualiseButton.disabled = false
     textArea.classList.remove("is-invalid")
     textArea.classList.add("is-valid")
     if (alertDiv.firstChild) { // if alertsDiv already has an alert then clear the div
       alertDiv.innerHTML = ""
     }
   } else {
+    textVisualiseButton.disabled = true
     textArea.classList.remove("is-valid")
     textArea.classList.add("is-invalid")
   }
@@ -204,6 +225,8 @@ function highlightWords(type, checkbox) {
   }
 }
 
+
+
 function debounce(func, timeout = 500) {
   let timer;
   return (...args) => {
@@ -212,34 +235,35 @@ function debounce(func, timeout = 500) {
   };
 }
 
-fileForm.addEventListener('submit', function (event) {
-  event.preventDefault()
-  event.stopPropagation()
-  if (fileForm.checkValidity() && fileValidation()) {
-    filePicker.classList.remove("is-invalid")
-    filePicker.classList.add("is-valid")
-    var reader = new FileReader();
-    reader.readAsText(document.getElementById("filePicker").files[0], "UTF-8");
-    reader.addEventListener('load', (event) => {
-      visualise(event.target.result)
-    })
-  } else {
-    filePicker.classList.add("is-invalid")
-    filePicker.classList.remove("is-valid")
-  }
-}, false)
+textTabButton.addEventListener("click", function(event) {
+  isTextInputSelected = true
+})
 
-textForm.addEventListener('submit', function (event) {
-  event.preventDefault()
-  event.stopPropagation()
-  if (textForm.checkValidity() && validateSQL(textArea.value)) {
-    textArea.classList.remove("is-invalid")
-    textArea.classList.add("is-valid")
-    visualise(textArea.value)
-  } else {
-    textArea.classList.remove("is-valid")
-    textArea.classList.add("is-invalid")
-  }
+fileTabButton.addEventListener("click", function (event) {
+  isTextInputSelected = false
+})
+
+// replace this in the future with visualise button event handler
+
+// fileForm.addEventListener('submit', function (event) {
+//   event.preventDefault()
+//   event.stopPropagation()
+//   if (fileForm.checkValidity() && fileValidation()) {
+//     filePicker.classList.remove("is-invalid")
+//     filePicker.classList.add("is-valid")
+//     var reader = new FileReader();
+//     reader.readAsText(document.getElementById("filePicker").files[0], "UTF-8");
+//     reader.addEventListener('load', (event) => {
+//       visualise(event.target.result)
+//     })
+//   } else {
+//     filePicker.classList.add("is-invalid")
+//     filePicker.classList.remove("is-valid")
+//   }
+// }, false)
+
+textVisualiseButton.addEventListener('click', function (event) {
+  visualise(textArea.value)
 }, false)
 
   //  var line = new LeaderLine(

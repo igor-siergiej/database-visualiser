@@ -196,6 +196,8 @@ export default class Table {
 		} else if (tokenizedArray[nameIndex + 1].value == "(") {
 			if (Util.isNameValid(name)) {
 				this.name = name;
+			} else {
+				throw new Error(`Name "${name}" is not valid`)
 			}
 		} else {
 			throw new Error("Invalid syntax, should be an open bracket or invalid table name")
@@ -346,6 +348,7 @@ export default class Table {
 		for (const element of this.columns) {
 			columnTypes.push(element.columnType.getType())
 		}
+		
 		return Array.from(new Set(columnTypes))
 	}
 }

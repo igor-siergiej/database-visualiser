@@ -23,8 +23,8 @@ export default class Util {
                     tokenizedArray[i].value += tokenizedArray[i+1].value
                     tokenizedArray.splice(i,i)
                 } else {
-                    tokenizedArray[i-1].value += tokenizedArray[i].value + tokenizedArray[i+1].value
-                    tokenizedArray.splice(i,i+1)
+                    tokenizedArray[i].value += tokenizedArray[i+1].value
+                    tokenizedArray.splice(i+1,1)
                 }
             }
         }

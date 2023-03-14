@@ -12,13 +12,13 @@ export default class Column {
     constructor(tokenizedArray) {
         Util.joinPunctuators(tokenizedArray)
 
-        // if the input array contains primary and key then remove them from the 
-        // if (tokenizedArray.find(e => e.value === "PRIMARY") && tokenizedArray.find(e => e.value === "KEY")) {
-        //     this.addKey("P") // need to check if the keywords are next to eachother
-        //     tokenizedArray = tokenizedArray.filter(element => element.value !== "PRIMARY")
-        //     tokenizedArray = tokenizedArray.filter(element => element.value !== "KEY")
-        //     // is there a better way of doing this?
-        // }
+        //if the input array contains primary and key then remove them from the 
+        if (tokenizedArray.find(e => e.value === "PRIMARY") && tokenizedArray.find(e => e.value === "KEY")) {
+            this.addKey("P") // need to check if the keywords are next to eachother
+            tokenizedArray = tokenizedArray.filter(element => element.value !== "PRIMARY")
+            tokenizedArray = tokenizedArray.filter(element => element.value !== "KEY")
+            // is there a better way of doing this?
+        }
 
         // first element should be name
         if (Util.isNameValid(tokenizedArray[0].value)) {
@@ -32,35 +32,41 @@ export default class Column {
 
         var columnType = new ColumnType();
 
-        if (tokenizedArray[1].value == "(" && tokenizedArray[3].value == ")") {
-            columnType.setType(tokenizedArray[0].value, tokenizedArray[2].value)
+        if (tokenizedArray[1] !== undefined) {
+            if (tokenizedArray[1].value == "(" && tokenizedArray[3].value == ")") {
+                columnType.setType(tokenizedArray[0].value, tokenizedArray[2].value)
+            } else {
+                if (tokenizedArray[3].value == ")") {
+                    throw new Error(`Column Type\"${tokenizedArray[2].value}\"is invalid`)
+                }
+                columnType.setType(tokenizedArray[0].value)
+            }
         } else {
-            columnType.setType(tokenizedArray[0].value)
+            columnType.setType(tokenizedArray[0].value)             
         }
-
+    
         this.columnType = columnType
+        console.log(this.columnType)
 
-        console.log(columnType)
+        // if (tokenizedArray.find(e => e.value === "(")) { // data type with no value
 
-        if (tokenizedArray.find(e => e.value === "(")) { // data type with no value
+        //     var joinedArray = tokenizedArray.map(function (element) {
+        //         return element['value'];
+        //     });
 
-            var joinedArray = tokenizedArray.map(function (element) {
-                return element['value'];
-            });
+        //     joinedArray = joinedArray.join(" ")
 
-            joinedArray = joinedArray.join(" ")
+        //     const matchInsideBrackets = /(?<=\().*?(?=\))/;
 
-            const matchInsideBrackets = /(?<=\().*?(?=\))/;
+        //     var matchedValues = joinedArray.match(matchInsideBrackets)
 
-            var matchedValues = joinedArray.match(matchInsideBrackets)
+        //     this.columnType = new ColumnType(tokenizedArray[0].value, matchedValues[0].trim())
+        //     tokenizedArray = tokenizedArray.splice(4) // this will remove open bracket, value inside and close bracket
+        // } else {
+        //     this.columnType = new ColumnType(tokenizedArray[0].value)
+        //     tokenizedArray = tokenizedArray.splice(1) // this will just remove the datatype
 
-            this.columnType = new ColumnType(tokenizedArray[0].value, matchedValues[0].trim())
-            tokenizedArray = tokenizedArray.splice(4) // this will remove open bracket, value inside and close bracket
-        } else {
-            this.columnType = new ColumnType(tokenizedArray[0].value)
-            tokenizedArray = tokenizedArray.splice(1) // this will just remove the datatype
-
-        }
+        // }
         this.constraints = tokenizedArray
         // if there are words here that do not match keywords then flag as error
     }
