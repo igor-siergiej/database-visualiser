@@ -28,14 +28,14 @@
 
         <li class="nav-item">
 
-          <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#textInput" type="button"
+          <button class="nav-link active" id="text-tab-button" data-bs-toggle="tab" data-bs-target="#textInput" type="button"
             role="tab" aria-controls="textInput" aria-selected="true">Text Input</button>
 
         </li>
 
         <li class="nav-item">
 
-          <button class="nav-link" id="syntax-tab" data-bs-toggle="tab" data-bs-target="#fileInput" type="button"
+          <button class="nav-link" id="file-tab-button" data-bs-toggle="tab" data-bs-target="#fileInput" type="button"
             role="tab" aria-controls="fileInput" aria-selected="false">File Input</button>
 
         </li>
@@ -47,7 +47,7 @@
 
         <div class="tab-pane fade py-3" id="fileInput" role="tabpanel" >
 
-          <form id="fileForm" novalidate>
+          
 
             <label for="filePicker" class="form-label">Upload .PSQL File Here:</label>
 
@@ -55,18 +55,18 @@
 
             <div class="container text-center">
 
-              <button id="visualiseButton" class="btn btn-primary my-3 py-3 w-25" type="submit">Visualise
+              <button id="fileVisualiseButton" class="btn btn-primary my-3 py-3 w-25" >Visualise
                 Database</button>
 
             </div>
 
-          </form>
+          
 
         </div>
 
         <div class="tab-pane fade show active py-3" id="textInput" role="tabpanel" >
 
-          <form id="textForm" novalidate>
+        
 
             <label for="textArea" class="form-label">Paste SQL Here:</label>
 
@@ -74,12 +74,12 @@
 
             <div class="container text-center">
 
-              <button id="visualiseButton" class="btn btn-primary my-3 py-3 w-25" type="submit">Visualise
+              <button id="textVisualiseButton" class="btn btn-primary my-3 py-3 w-25">Visualise
                 Database</button>
 
             </div>
 
-          </form>
+         
 
           <div id="alertDiv"></div>
 
