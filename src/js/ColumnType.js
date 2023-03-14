@@ -11,11 +11,6 @@ export default class ColumnType {
                        "time", "time with time zone", "timetz", "interval", "character varying", "varchar", "character",
                        "char"]
 
-    //get type string, get if type has value
-    // if type is present in typesWithNoInput and there is an input throw error
-    // if type is present in typesWithInput and there is an input check input and set
-    // if type is present in typesWithInput and there is no input put default value?
-
     setType(type, value) {
         console.log(type)
         console.log(value)
