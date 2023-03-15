@@ -216,7 +216,6 @@ export default class Table {
 	}
 
 	parseTableConstraints(tableConstraintsList, database) {
-		console.log(tableConstraintsList)
 		for (const constraintStatement of tableConstraintsList) {
 			switch(constraintStatement[0].value) {
 				case "PRIMARY":
