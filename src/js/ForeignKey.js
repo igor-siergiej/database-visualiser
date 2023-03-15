@@ -1,9 +1,11 @@
 export default class ForeignKey {
     referencedTable;
     referencedColumn;
+    referencedColumnType
 
-    constructor(referencedTable, referencedColumn) {
+    constructor(referencedTable, referencedColumn, referencedColumnType) {
         this.referencedTable = referencedTable
         this.referencedColumn = referencedColumn
+        this.referencedColumnType = referencedColumnType
     }
 }

@@ -111,8 +111,8 @@ export default class Column {
         return false
     }
 
-    setForeignKey(referencedTable,referencedColumn) {
-        this.#foreignKey = new ForeignKey(referencedTable,referencedColumn)
+    setForeignKey(referencedTable,referencedColumn,columnType) {
+        this.#foreignKey = new ForeignKey(referencedTable,referencedColumn,columnType)
     }
 
     getForeignKey() {

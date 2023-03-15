@@ -39,16 +39,16 @@ function visualise() {
     filterArea.innerHTML = ""
     // refresh error tab inner html too
   }
-  
+
   document.getElementById("outputTab").hidden = false;
 
   var tables = []
-   for (const schema of database) {
-     for (const table of schema.tables) {
-       tables.push(table)
-     }
-   }
- 
+  for (const schema of database) {
+    for (const table of schema.tables) {
+      tables.push(table)
+    }
+  }
+
   let uniqueColumnTypes = uniqueColumnTypesForAllTables(tables)
 
   for (const element of tables) {
@@ -56,25 +56,27 @@ function visualise() {
     element.writeSyntax(syntaxTextArea);
   }
 
-  console.log(database)
-
   for (const table of tables) {
     for (const column of table.columns) {
       var foreignKey = column.getForeignKey()
-			if (foreignKey !== undefined) {
-       
+      if (foreignKey !== undefined) {
 
-        var from =  table.name + "/" + column.name
-        var to = foreignKey.referencedTable+"/"+foreignKey.referencedColumn
+
+        var from = table.name + "/" + column.name + "/" + column.columnType.type
+        var to = foreignKey.referencedTable + "/" + foreignKey.referencedColumn + "/" + foreignKey.referencedColumnType
 
         console.log(from)
         console.log(to)
-				var line = new LeaderLine(
-					document.getElementById(from),
-					document.getElementById(to))
 
-          line.path = "grid"
-			}
+        var line = new LeaderLine(
+          document.getElementById(from),
+          document.getElementById(to)
+          )
+
+        line.path = "grid"
+        line.setOptions({startSocket: 'right', endSocket: 'right'})
+
+      }
     }
   }
 
@@ -83,9 +85,8 @@ function visualise() {
   visualised = true;
 }
 
-// in the future if it validates then create database object as a global variable and visualise will only visualise it
 function validateSQL(inputString) {
-  if (visualised) {
+  if (visualised) { // reset the database if it has been already visualised
     database = []
     publicSchema = new Schema("public");
     database.push(publicSchema)
@@ -104,16 +105,16 @@ function validateSQL(inputString) {
       var words = statement.split(" ")
 
       if (words[0].toUpperCase() === "CREATE") {
-         if (words[1].toUpperCase() == "SCHEMA") {
-            // create schema object
-         } else {
+        if (words[1].toUpperCase() == "SCHEMA") {
+          // create schema object
+        } else {
           let table = new Table(statement, database); // this will be added to database object later
           for (const schema of database) {
             if (table.schema == schema.name) {
               schema.addTable(table)
             }
           }
-         }
+        }
       } else {
         throw Error("Unsupported Statement")
       }
@@ -123,7 +124,7 @@ function validateSQL(inputString) {
     // feedback to user with error
     console.log(error)
     validated = false
-    createAlert(error,alertDiv)
+    createAlert(error, alertDiv)
   }
   return validated
 }
@@ -169,19 +170,19 @@ function createFilters(uniqueColumnTypes, filterArea) {
   }
 }
 
-function createAlert(error,alertsDiv) {
+function createAlert(error, alertsDiv) {
   if (alertsDiv.firstChild) { // if alertsDiv already has an alert then clear the div
     alertsDiv.innerHTML = ""
   }
 
   let alertDiv = document.createElement("div")
   alertDiv.className = "alert alert-danger alert-dismissible fade show"
-  alertDiv.setAttribute("role","alert")
+  alertDiv.setAttribute("role", "alert")
 
   let boldError = document.createElement("strong")
   boldError.innerHTML = "Error: "
   let alertText = document.createTextNode(error.message)
-  
+
   let dismissButton = document.createElement("button")
   dismissButton.className = "btn-close"
   dismissButton.setAttribute("data-bs-dismiss", "alert")
@@ -254,7 +255,7 @@ function debounce(func, timeout = 500) {
   };
 }
 
-textTabButton.addEventListener("click", function(event) {
+textTabButton.addEventListener("click", function (event) {
   isTextInputSelected = true
 })
 
@@ -285,5 +286,5 @@ textVisualiseButton.addEventListener('click', function (event) {
   visualise(textArea.value)
 }, false)
 
- 
+
 

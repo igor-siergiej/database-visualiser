@@ -241,7 +241,19 @@ export default class Table {
 							var columnName = constraintStatement[3].value
 							var referencedTable = constraintStatement[6].value
 							var referencedColumn = constraintStatement[8].value
-							this.setForeignKey(columnName,referencedTable,referencedColumn)
+							var referencedColumnType
+							for (const schema of database) {
+								for (const table of schema.tables) {
+									if (table.name == referencedTable) {
+										for (const column of table.columns) {
+											if (column.name == referencedColumn) {
+												referencedColumnType = column.columnType.type
+											}
+										}
+									}
+								}
+							}
+							this.setForeignKey(columnName,referencedTable,referencedColumn,referencedColumnType)
 						} else {
 							// throw error that open bracket expected
 						}
@@ -267,10 +279,10 @@ export default class Table {
 		
 	}
 
-	setForeignKey(columnName, referencedTable,referencedColumn) {
+	setForeignKey(columnName, referencedTable,referencedColumn,referencedColumnType) {
 		for (const column of this.columns) {
 			if (column.name == columnName) {
-				column.setForeignKey(referencedTable,referencedColumn)
+				column.setForeignKey(referencedTable,referencedColumn,referencedColumnType)
 			}
 		}
 	}
@@ -301,6 +313,7 @@ export default class Table {
 
 		let typeColumn = document.createElement("div");
 		typeColumn.className = "col border border-2 h-100 gx-0";
+		typeColumn.id = "typeColumn"
 
 		let heading = document.createElement("h3");
 		heading.className = "text-center border my-0 bg-primary";
@@ -317,9 +330,12 @@ export default class Table {
 			}
 
 			this.createColumn(column.name, nameColumn)
-			this.createColumn(column.columnType.getValue(), typeColumn)
+			this.createColumn(column.columnType.getValue(), typeColumn, column)
+			// type column has to contain table name, column name and datatype
 		}
 
+		// fix this in the future and find a better way to set ids to draw lines 
+		// or just keep it as it is but rework function to make it look better
 		table.appendChild(keyColumn);
 		table.appendChild(nameColumn);
 		table.appendChild(typeColumn);
@@ -327,7 +343,7 @@ export default class Table {
 		div.appendChild(table);
 	}
 
-	createColumn(text, div) {
+	createColumn(text, div,column) {
 		if (text != "") {
 			let nameRow = document.createElement("div");
 			if (text != "P") {
@@ -335,7 +351,9 @@ export default class Table {
 			} else {
 				nameRow.className = "row py-1 px-2 gx-0";
 			}
-			nameRow.id = this.name+ "/"+text
+			if (div.id == "typeColumn") { // not ideal but works
+				nameRow.id = this.name+"/"+column.name + "/" + column.columnType.type;
+			}
 
 			let nameText = document.createTextNode(text);
 			nameRow.appendChild(nameText);
