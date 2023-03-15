@@ -1,11 +1,12 @@
 import ColumnType from './ColumnType';
+import ForeignKey from './ForeignKey';
 import Util from './Util';
 
 export default class Column {
     name;
     columnType;
     #primaryKey = "";
-    #foreignKey = "";
+    #foreignKey;
     nullable = true;
     constraints;
 
@@ -32,21 +33,23 @@ export default class Column {
 
         var columnType = new ColumnType();
 
-        if (tokenizedArray[1] !== undefined) {
+        if (tokenizedArray[3] !== undefined) {
             if (tokenizedArray[1].value == "(" && tokenizedArray[3].value == ")") {
                 columnType.setType(tokenizedArray[0].value, tokenizedArray[2].value)
+                tokenizedArray = tokenizedArray.splice(4)
             } else {
                 if (tokenizedArray[3].value == ")") {
                     throw new Error(`Column Type\"${tokenizedArray[2].value}\"is invalid`)
                 }
                 columnType.setType(tokenizedArray[0].value)
+                tokenizedArray = tokenizedArray.splice(1)
             }
         } else {
-            columnType.setType(tokenizedArray[0].value)             
+            columnType.setType(tokenizedArray[0].value)    
+            tokenizedArray = tokenizedArray.splice(1)         
         }
     
         this.columnType = columnType
-        console.log(this.columnType)
 
         // if (tokenizedArray.find(e => e.value === "(")) { // data type with no value
 
@@ -106,6 +109,14 @@ export default class Column {
             return true
         }
         return false
+    }
+
+    setForeignKey(referencedTable,referencedColumn) {
+        this.#foreignKey = new ForeignKey(referencedTable,referencedColumn)
+    }
+
+    getForeignKey() {
+        return this.#foreignKey
     }
 }
 

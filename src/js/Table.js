@@ -1,6 +1,7 @@
 import jsTokens from "js-tokens";
 import Column from './Column';
 import Util from "./Util";
+import LeaderLine from "leader-line-new";
 
 export default class Table {
 	name;
@@ -114,7 +115,7 @@ export default class Table {
 		for (const columnArray of columns) {
 			if (columnArray[0].value == "PRIMARY" || columnArray[0].value == "FOREIGN") { // this means we reached table constraints
 				// need the rest of the arrays joined and passed to parseTableConstraints()
-				this.parseTableConstraints(columns.slice(columns.indexOf(columnArray)))
+				this.parseTableConstraints(columns.slice(columns.indexOf(columnArray)), database)
 				break
 			} else {
 				// this means there were no table constraints
@@ -214,23 +215,62 @@ export default class Table {
 		return match
 	}
 
-	parseTableConstraints(tableConstraintsList) {
-		// need to add syntax validation to this function
-		for (const element of tableConstraintsList) {
-			if (element[0].value == "PRIMARY" || element[1].value == "KEY") {
-				let tempElement = element
-				tempElement = tempElement.filter(e => e.value !== "PRIMARY")
-				tempElement = tempElement.filter(e => e.value !== "KEY")
-
-				for (const word of tempElement) {
-					if (word.type == "IdentifierName") {
-						for (const column of this.columns) {
-							if (column.name == word.value) {
-								column.addKey("P")
-							}
+	parseTableConstraints(tableConstraintsList, database) {
+		console.log(tableConstraintsList)
+		for (const constraintStatement of tableConstraintsList) {
+			switch(constraintStatement[0].value) {
+				case "PRIMARY":
+					if (constraintStatement[1].value == "KEY") {
+						if (constraintStatement[2].value == "(") {
+							var columnNames = [];
+							// while values are either "," or valid column name add them to columnNames
+							columnNames.push(constraintStatement[3].value)
+							columnNames.push(constraintStatement[5].value)
+							this.setPrimaryKey(columnNames)
+						} else {
+							// throw error that open bracket expected
 						}
+					} else {
+						throw new Error(`Expected "KEY" instead of ${constraintStatement[1].value}`)
 					}
+				break;
+
+				case "FOREIGN":
+					if (constraintStatement[1].value == "KEY") {
+						if (constraintStatement[2].value == "(") {
+							var columnName = constraintStatement[3].value
+							var referencedTable = constraintStatement[6].value
+							var referencedColumn = constraintStatement[8].value
+							this.setForeignKey(columnName,referencedTable,referencedColumn)
+						} else {
+							// throw error that open bracket expected
+						}
+					} else {
+						throw new Error(`Expected "KEY" instead of ${constraintStatement[1].value}`)
+					}
+				break;
+
+				default:
+					throw new Error(`${constraintStatement[0].value} is not a valid constraint`)
+			}
+		}
+	}
+	
+	setPrimaryKey(columnNames) {
+		for (const columnName of columnNames) {
+			for (const column of this.columns) {
+				if (column.name == columnName) {
+					column.addKey("P")
 				}
+			}
+		}
+		
+	}
+
+	setForeignKey(columnName, referencedTable,referencedColumn) {
+		for (const column of this.columns) {
+			if (column.name == columnName) {
+				column.setForeignKey(referencedTable,referencedColumn)
 			}
 		}
 	}
@@ -247,6 +287,7 @@ export default class Table {
 	createTable(div) {
 		let table = document.createElement("div");
 		table.className = "row border border-2 mx-3 w-25 gx-0 h-100 my-3 w-auto";
+		table.id = this.name
 
 		let keyColumn = document.createElement("div");
 		if (this.hasPrimaryKey()) {
@@ -266,7 +307,9 @@ export default class Table {
 		heading.innerText = this.name;
 		table.appendChild(heading);
 
+		
 		for (const column of this.columns) {
+			
 			if (column.hasPrimaryKey()) {
 				this.createColumn("P", keyColumn)
 			} else {
@@ -292,6 +335,7 @@ export default class Table {
 			} else {
 				nameRow.className = "row py-1 px-2 gx-0";
 			}
+			nameRow.id = this.name+ "/"+text
 
 			let nameText = document.createTextNode(text);
 			nameRow.appendChild(nameText);
