@@ -28,6 +28,114 @@ var database = []; // this should be an array of schema
 var publicSchema = new Schema("public"); // create default schema 
 database.push(publicSchema) // add public schema to database array
 
+
+  // maybe have to think about creating multiple trees
+
+  const data = [
+    { id: "roles1", parentId: "account_roles1" },
+    { id: "account_roles1", parentId: "test1" },
+    { id: "accounts1", parentId: "account_roles1"},
+    { id: "test1", parentId: null}]
+  
+   // can only be one null parent id
+   // HOW TO GET ROOT???
+
+
+function createTableData() {
+  var data = []
+  var foreignKeys = getForeignKeysInDB()
+  for (const element of foreignKeys) {
+    data.push({id:element.column.referencedTable, parentId:element.tableName})
+  }
+
+
+
+  var ids = []
+  var parentIds = []
+   // split up data into ids and parentIds
+  for (const element of data) {
+    ids.push(element.id)
+    parentIds.push(element.parentId)
+  }
+
+  //remove duplicates
+  ids = Array.from(new Set(ids))
+  parentIds = Array.from(new Set(parentIds)) 
+  //remove duplicates
+  var root = parentIds.filter(x => ids.indexOf(x)===-1)[0]
+  data.push({id:root, parentId: null})
+
+  return data
+}
+
+function getForeignKeysInDB() {
+  var keys = []
+  for (let schema of database) {
+    for (let table of schema.tables) {
+      for (let column of table.columns) {
+        if (column.getForeignKey() != undefined) {
+          keys.push({column:column.getForeignKey(), tableName:table.name})
+        }
+      }
+    }
+  }  
+  return keys
+}
+// need to dynamically generate this, could just be a for loop but need to check foreign keys
+
+
+
+
+
+function createTreeFromDatabase() {
+  const data = createTableData()
+
+ 
+  
+
+  const idMapping = data.reduce((acc, el, i) => {
+    acc[el.id] = i;
+    return acc;
+  }, {});
+
+  console.log(idMapping)
+  
+  let root;
+  data.forEach(el => {
+    // Handle the root element
+    if (el.parentId === null) {
+      root = el;
+      return;
+    }
+    // Use our mapping to locate the parent element in our data array
+    const parentEl = data[idMapping[el.parentId]];
+    // Add our current el to its parent's `children` array
+    parentEl.children = [...(parentEl.children || []), el];
+  });
+  
+
+  return root
+}
+
+
+function drawTablesRecursively(tree, tables, tableArea) {
+  for (const table of tables) {
+    if (table.name == tree.id) {
+      table.createTable(tableArea)
+    }
+  }
+  if (tree.children == undefined) {
+    return
+  } else {
+    for (const childNode of tree.children) {
+      drawTablesRecursively(childNode, tables,tableArea)
+    }
+  }
+}
+
+
+
+
 function visualise() {
   let syntaxTextArea = document.getElementById("syntaxTextArea");
   let tableArea = document.getElementById("tableArea");
@@ -42,6 +150,8 @@ function visualise() {
 
   document.getElementById("outputTab").hidden = false;
 
+
+
   var tables = []
   for (const schema of database) {
     for (const table of schema.tables) {
@@ -51,10 +161,16 @@ function visualise() {
 
   let uniqueColumnTypes = uniqueColumnTypesForAllTables(tables)
 
+  drawTablesRecursively(createTreeFromDatabase(),tables,tableArea)
+
   for (const element of tables) {
-    element.createTable(tableArea);
     element.writeSyntax(syntaxTextArea);
   }
+
+  
+
+  
+  
 
   for (const table of tables) {
     for (const column of table.columns) {
@@ -65,15 +181,14 @@ function visualise() {
         var from = table.name + "/" + column.name + "/" + column.columnType.type
         var to = foreignKey.referencedTable + "/" + foreignKey.referencedColumn + "/" + foreignKey.referencedColumnType
 
-        console.log(from)
-        console.log(to)
+     
 
         var line = new LeaderLine(
           document.getElementById(from),
           document.getElementById(to)
           )
 
-        line.path = "grid"
+        line.path = "arc"
         line.setOptions({startSocket: 'right', endSocket: 'right'})
 
       }
@@ -93,7 +208,7 @@ function validateSQL(inputString) {
   }
 
   var statements = inputString.split(";");
-  statements.pop();
+  statements.pop(); // need a check if the last value is empty
 
   var validated = true
 
