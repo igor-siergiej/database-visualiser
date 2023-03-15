@@ -5,15 +5,13 @@ export default class ColumnType {
     #typesWithNoInput = ["smallint","integer","bigint","smallserial","bigserial",
                          "serial","real","double precision",
                          "point","line","lseg","box","path","polygon","circle", "cidr",
-                         "inet", "macaddr", "macaddr8", "money","text", "bytea", "boolean","date"]
+                         "inet", "macaddr", "macaddr8", "money","text", "bytea", "boolean","date","int"]
 
     #typesWithInput = ["numeric", "decimal","timestamp", "timestamp with time zone", "timestamptz",
                        "time", "time with time zone", "timetz", "interval", "character varying", "varchar", "character",
                        "char"]
 
     setType(type, value) {
-        console.log(type)
-        console.log(value)
         type = type.toLowerCase()
         if (value === undefined) { // if no value
             if (this.#typesWithInput.includes(type) || this.#typesWithNoInput.includes(type)) {

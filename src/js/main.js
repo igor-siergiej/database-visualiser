@@ -29,8 +29,6 @@ var publicSchema = new Schema("public"); // create default schema
 database.push(publicSchema) // add public schema to database array
 
 function visualise() {
-  console.log("visualise")
-
   let syntaxTextArea = document.getElementById("syntaxTextArea");
   let tableArea = document.getElementById("tableArea");
   let filterArea = document.getElementById("filterArea");
@@ -58,6 +56,28 @@ function visualise() {
     element.writeSyntax(syntaxTextArea);
   }
 
+  console.log(database)
+
+  for (const table of tables) {
+    for (const column of table.columns) {
+      var foreignKey = column.getForeignKey()
+			if (foreignKey !== undefined) {
+       
+
+        var from =  table.name + "/" + column.name
+        var to = foreignKey.referencedTable+"/"+foreignKey.referencedColumn
+
+        console.log(from)
+        console.log(to)
+				var line = new LeaderLine(
+					document.getElementById(from),
+					document.getElementById(to))
+
+          line.path = "grid"
+			}
+    }
+  }
+
   createFilters(uniqueColumnTypes, filterArea)
 
   visualised = true;
@@ -65,7 +85,6 @@ function visualise() {
 
 // in the future if it validates then create database object as a global variable and visualise will only visualise it
 function validateSQL(inputString) {
-  console.log("validate")
   if (visualised) {
     database = []
     publicSchema = new Schema("public");
@@ -266,8 +285,5 @@ textVisualiseButton.addEventListener('click', function (event) {
   visualise(textArea.value)
 }, false)
 
-  //  var line = new LeaderLine(
-  //   document.getElementById('test'),
-  //   document.getElementById('123')
-  // );
+ 
 
