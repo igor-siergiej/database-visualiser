@@ -6,23 +6,21 @@ import Schema from './Schema';
 
 var visualised = false
 
-const fileForm = document.getElementById("fileForm");
-const textForm = document.getElementById("textForm");
-
-var isTextInputSelected = true
-
 const textTabButton = document.getElementById("text-tab-button")
 const fileTabButton = document.getElementById("file-tab-button")
 
 const fileVisualiseButton = document.getElementById("fileVisualiseButton")
 const textVisualiseButton = document.getElementById("textVisualiseButton")
+
 fileVisualiseButton.disabled = true
 textVisualiseButton.disabled = true
 
 const filePicker = document.getElementById("filePicker");
 const textArea = document.getElementById("textArea");
 
-const alertDiv = document.getElementById("alertDiv")
+const alertDiv = document.getElementById("alertDiv");
+
+var lines = []
 
 var database = []; // this should be an array of schema
 var publicSchema = new Schema("public"); // create default schema 
@@ -31,14 +29,15 @@ database.push(publicSchema) // add public schema to database array
 
   // maybe have to think about creating multiple trees
 
-  const data = [
-    { id: "roles1", parentId: "account_roles1" },
-    { id: "account_roles1", parentId: "test1" },
-    { id: "accounts1", parentId: "account_roles1"},
-    { id: "test1", parentId: null}]
+  // const data = [
+  //   { id: "roles1", parentId: "account_roles1" },
+  //   { id: "account_roles1", parentId: "test1" },
+  //   { id: "accounts1", parentId: "account_roles1"},
+  //   { id: "test1", parentId: null}]
   
    // can only be one null parent id
-   // HOW TO GET ROOT???
+   // check if there are more than one ids with null parentId
+   // 
 
 
 function createTableData() {
@@ -47,8 +46,6 @@ function createTableData() {
   for (const element of foreignKeys) {
     data.push({id:element.column.referencedTable, parentId:element.tableName})
   }
-
-
 
   var ids = []
   var parentIds = []
@@ -61,10 +58,24 @@ function createTableData() {
   //remove duplicates
   ids = Array.from(new Set(ids))
   parentIds = Array.from(new Set(parentIds)) 
-  //remove duplicates
-  var root = parentIds.filter(x => ids.indexOf(x)===-1)[0]
-  data.push({id:root, parentId: null})
 
+  // if there are no roots then there is a cyclic structure?
+  var roots = parentIds.filter(x => ids.indexOf(x)===-1)
+
+  // if there are multiple roots then need to split up into separate trees
+  // means that tables are not all joined up by foreign keys
+  if (roots.length > 1) {
+    for (const root of roots) {
+      let nodes = []
+      extractTree(root,data,nodes)
+      console.log(nodes)
+    }
+    console.log(data)
+    // separate all the trees 
+    // extract them by the root and its children
+  } else {
+    data.push({id:roots[0], parentId: null})
+  }
   return data
 }
 
@@ -90,9 +101,6 @@ function getForeignKeysInDB() {
 function createTreeFromDatabase() {
   const data = createTableData()
 
- 
-  
-
   const idMapping = data.reduce((acc, el, i) => {
     acc[el.id] = i;
     return acc;
@@ -117,6 +125,20 @@ function createTreeFromDatabase() {
   return root
 }
 
+// function getTreeFromRoot(rootNode, listOfNodes) {
+//   listOfNodes.push(rootNode)
+
+// }
+
+function extractTree(rootNode, data, listOfNodes) {
+    for (const element of data) { // get all of the children of rootNode and add to listOfNodes
+      if (element.parentId == rootNode) { // this needs to be done recursively 
+        listOfNodes.push(element)
+      }
+    }
+
+    return {id: rootNode, parentId: null, children: listOfNodes}
+}
 
 function drawTablesRecursively(tree, tables, tableArea) {
   for (const table of tables) {
@@ -145,6 +167,9 @@ function visualise() {
     tableArea.innerHTML = ""
     syntaxTextArea.innerHTML = ""
     filterArea.innerHTML = ""
+    for (var line of lines) {
+      line.remove()
+    }
     // refresh error tab inner html too
   }
 
@@ -163,16 +188,8 @@ function visualise() {
 
   drawTablesRecursively(createTreeFromDatabase(),tables,tableArea)
 
-  for (const element of tables) {
-    element.writeSyntax(syntaxTextArea);
-  }
-
-  
-
-  
-  
-
   for (const table of tables) {
+    table.writeSyntax(syntaxTextArea);
     for (const column of table.columns) {
       var foreignKey = column.getForeignKey()
       if (foreignKey !== undefined) {
@@ -183,7 +200,7 @@ function visualise() {
 
      
 
-        var line = new LeaderLine(
+        line = new LeaderLine(
           document.getElementById(from),
           document.getElementById(to)
           )
@@ -191,6 +208,7 @@ function visualise() {
         line.path = "arc"
         line.setOptions({startSocket: 'right', endSocket: 'right'})
 
+        lines.push(line)
       }
     }
   }
@@ -403,3 +421,26 @@ textVisualiseButton.addEventListener('click', function (event) {
 
 
 
+const tableViewButton = document.getElementById("table-tab")
+const syntaxViewButton = document.getElementById("syntax-tab")
+
+tableViewButton.addEventListener("click", function(event) {
+  showLines()
+})
+syntaxViewButton.addEventListener("click", function (event) {
+  hideLines()
+})
+
+function hideLines() {
+  console.log(lines)
+  for (var line of lines) {
+    line.hide("none")
+  }
+}
+
+function showLines() {
+  console.log(lines)
+  for (var line of lines) {
+    line.show("draw")
+  }
+}
