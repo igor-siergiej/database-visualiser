@@ -150,12 +150,14 @@ function drawTablesRecursively(tree, tables, tableArea) {
   }
 }
 
-function drawTreeTablesRecursively(tree, appendNode) {
+function drawTreeTablesRecursively(tree, appendNode,tables) {
   console.log(tree)
   var item = document.createElement("li")
-  var text = document.createElement("span")
-  text.innerHTML = tree.id
-  item.appendChild(text)
+  for (const table of tables) {
+    if (table.name == tree.id) {
+      table.createTable(item)
+    }
+  }
   appendNode.appendChild(item)
   if (tree.children == undefined) {
     return
@@ -163,7 +165,7 @@ function drawTreeTablesRecursively(tree, appendNode) {
     var list = document.createElement("ul")
     item.appendChild(list)
     for (const childNode of tree.children) {
-      drawTreeTablesRecursively(childNode, list)
+      drawTreeTablesRecursively(childNode, list,tables)
     }
   }
 }
@@ -202,7 +204,7 @@ function visualise() {
   if (getForeignKeysInDB().length > 0) {
     //drawTablesRecursively(createTreeFromDatabase(),tables,tableArea)
     const treeArea = document.getElementById("tree")
-    drawTreeTablesRecursively(createTreeFromDatabase(),treeArea)
+    drawTreeTablesRecursively(createTreeFromDatabase(),treeArea,tables)
   } else {
     for (const table of tables) {
       table.createTable(tableArea)
