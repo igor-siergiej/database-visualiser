@@ -68,9 +68,7 @@ function createTableData() {
     for (const root of roots) {
       let nodes = []
       extractTree(root,data,nodes)
-      console.log(nodes)
     }
-    console.log(data)
     // separate all the trees 
     // extract them by the root and its children
   } else {
@@ -105,8 +103,6 @@ function createTreeFromDatabase() {
     acc[el.id] = i;
     return acc;
   }, {});
-
-  console.log(idMapping)
   
   let root;
   data.forEach(el => {
@@ -120,8 +116,7 @@ function createTreeFromDatabase() {
     // Add our current el to its parent's `children` array
     parentEl.children = [...(parentEl.children || []), el];
   });
-  
-
+  console.log(root)
   return root
 }
 
@@ -155,6 +150,23 @@ function drawTablesRecursively(tree, tables, tableArea) {
   }
 }
 
+function drawTreeTablesRecursively(tree, appendNode) {
+  console.log(tree)
+  var item = document.createElement("li")
+  var text = document.createElement("span")
+  text.innerHTML = tree.id
+  item.appendChild(text)
+  appendNode.appendChild(item)
+  if (tree.children == undefined) {
+    return
+  } else {
+    var list = document.createElement("ul")
+    item.appendChild(list)
+    for (const childNode of tree.children) {
+      drawTreeTablesRecursively(childNode, list)
+    }
+  }
+}
 
 
 
@@ -167,15 +179,15 @@ function visualise() {
     tableArea.innerHTML = ""
     syntaxTextArea.innerHTML = ""
     filterArea.innerHTML = ""
-    for (var line of lines) {
-      line.remove()
+    if (lines.length > 0 ) {
+      for (var line of lines) {
+        line.remove()
+      }
     }
     // refresh error tab inner html too
   }
 
   document.getElementById("outputTab").hidden = false;
-
-
 
   var tables = []
   for (const schema of database) {
@@ -186,7 +198,17 @@ function visualise() {
 
   let uniqueColumnTypes = uniqueColumnTypesForAllTables(tables)
 
-  drawTablesRecursively(createTreeFromDatabase(),tables,tableArea)
+  // if there are no foreign keys then draw tables in creation order
+  if (getForeignKeysInDB().length > 0) {
+    //drawTablesRecursively(createTreeFromDatabase(),tables,tableArea)
+    const treeArea = document.getElementById("tree")
+    drawTreeTablesRecursively(createTreeFromDatabase(),treeArea)
+  } else {
+    for (const table of tables) {
+      table.createTable(tableArea)
+    }
+  }
+  
 
   for (const table of tables) {
     table.writeSyntax(syntaxTextArea);
@@ -200,15 +222,17 @@ function visualise() {
 
      
 
-        line = new LeaderLine(
-          document.getElementById(from),
-          document.getElementById(to)
-          )
+        // create function for this
 
-        line.path = "arc"
-        line.setOptions({startSocket: 'right', endSocket: 'right'})
+        // line = new LeaderLine(
+        //   document.getElementById(from),
+        //   document.getElementById(to)
+        //   )
 
-        lines.push(line)
+        // line.path = "arc"
+        // line.setOptions({startSocket: 'right', endSocket: 'right'})
+
+        // lines.push(line)
       }
     }
   }
@@ -421,6 +445,9 @@ textVisualiseButton.addEventListener('click', function (event) {
 
 
 
+// showing and hiding lines drawn between tables because they can't seem to be 
+// able to be added to a div so bootstrap cannot hide them automatically
+
 const tableViewButton = document.getElementById("table-tab")
 const syntaxViewButton = document.getElementById("syntax-tab")
 
@@ -432,14 +459,12 @@ syntaxViewButton.addEventListener("click", function (event) {
 })
 
 function hideLines() {
-  console.log(lines)
   for (var line of lines) {
     line.hide("none")
   }
 }
 
 function showLines() {
-  console.log(lines)
   for (var line of lines) {
     line.show("draw")
   }
