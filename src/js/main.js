@@ -12,11 +12,19 @@ const fileTabButton = document.getElementById("file-tab-button")
 const fileVisualiseButton = document.getElementById("fileVisualiseButton")
 const textVisualiseButton = document.getElementById("textVisualiseButton")
 
+const syntaxTextArea = document.getElementById("syntaxTextArea");
+const tableArea = document.getElementById("tableArea");
+const filterArea = document.getElementById("filterArea");
+
+const tableViewButton = document.getElementById("table-tab")
+const syntaxViewButton = document.getElementById("syntax-tab")
+
 fileVisualiseButton.disabled = true
 textVisualiseButton.disabled = true
 
 const filePicker = document.getElementById("filePicker");
 const textArea = document.getElementById("textArea");
+const treeArea = document.getElementById("tree")
 
 const alertDiv = document.getElementById("alertDiv");
 
@@ -27,29 +35,29 @@ var publicSchema = new Schema("public"); // create default schema
 database.push(publicSchema) // add public schema to database array
 
 
-  // maybe have to think about creating multiple trees
+// maybe have to think about creating multiple trees
 
-  // const data = [
-  //   { id: "roles1", parentId: "account_roles1" },
-  //   { id: "account_roles1", parentId: "test1" },
-  //   { id: "accounts1", parentId: "account_roles1"},
-  //   { id: "test1", parentId: null}]
-  
-   // can only be one null parent id
-   // check if there are more than one ids with null parentId
-   // 
+// const data = [
+//   { id: "roles1", parentId: "account_roles1" },
+//   { id: "account_roles1", parentId: "test1" },
+//   { id: "accounts1", parentId: "account_roles1"},
+//   { id: "test1", parentId: null}]
+
+// can only be one null parent id
+// check if there are more than one ids with null parentId
+// 
 
 
 function createTableData() {
   var data = []
   var foreignKeys = getForeignKeysInDB()
   for (const element of foreignKeys) {
-    data.push({id:element.column.referencedTable, parentId:element.tableName})
+    data.push({ id: element.column.referencedTable, parentId: element.tableName })
   }
 
   var ids = []
   var parentIds = []
-   // split up data into ids and parentIds
+  // split up data into ids and parentIds
   for (const element of data) {
     ids.push(element.id)
     parentIds.push(element.parentId)
@@ -57,22 +65,22 @@ function createTableData() {
 
   //remove duplicates
   ids = Array.from(new Set(ids))
-  parentIds = Array.from(new Set(parentIds)) 
+  parentIds = Array.from(new Set(parentIds))
 
   // if there are no roots then there is a cyclic structure?
-  var roots = parentIds.filter(x => ids.indexOf(x)===-1)
+  var roots = parentIds.filter(x => ids.indexOf(x) === -1)
 
   // if there are multiple roots then need to split up into separate trees
   // means that tables are not all joined up by foreign keys
   if (roots.length > 1) {
     for (const root of roots) {
       let nodes = []
-      extractTree(root,data,nodes)
+      extractTree(root, data, nodes)
     }
     // separate all the trees 
     // extract them by the root and its children
   } else {
-    data.push({id:roots[0], parentId: null})
+    data.push({ id: roots[0], parentId: null })
   }
   return data
 }
@@ -83,11 +91,11 @@ function getForeignKeysInDB() {
     for (let table of schema.tables) {
       for (let column of table.columns) {
         if (column.getForeignKey() != undefined) {
-          keys.push({column:column.getForeignKey(), tableName:table.name})
+          keys.push({ column: column.getForeignKey(), tableName: table.name })
         }
       }
     }
-  }  
+  }
   return keys
 }
 // need to dynamically generate this, could just be a for loop but need to check foreign keys
@@ -103,7 +111,7 @@ function createTreeFromDatabase() {
     acc[el.id] = i;
     return acc;
   }, {});
-  
+
   let root;
   data.forEach(el => {
     // Handle the root element
@@ -126,13 +134,13 @@ function createTreeFromDatabase() {
 // }
 
 function extractTree(rootNode, data, listOfNodes) {
-    for (const element of data) { // get all of the children of rootNode and add to listOfNodes
-      if (element.parentId == rootNode) { // this needs to be done recursively 
-        listOfNodes.push(element)
-      }
+  for (const element of data) { // get all of the children of rootNode and add to listOfNodes
+    if (element.parentId == rootNode) { // this needs to be done recursively 
+      listOfNodes.push(element)
     }
+  }
 
-    return {id: rootNode, parentId: null, children: listOfNodes}
+  return { id: rootNode, parentId: null, children: listOfNodes }
 }
 
 function drawTablesRecursively(tree, tables, tableArea) {
@@ -145,13 +153,12 @@ function drawTablesRecursively(tree, tables, tableArea) {
     return
   } else {
     for (const childNode of tree.children) {
-      drawTablesRecursively(childNode, tables,tableArea)
+      drawTablesRecursively(childNode, tables, tableArea)
     }
   }
 }
 
-function drawTreeTablesRecursively(tree, appendNode,tables) {
-  console.log(tree)
+function drawTreeTablesRecursively(tree, appendNode, tables) {
   var item = document.createElement("li")
   for (const table of tables) {
     if (table.name == tree.id) {
@@ -165,7 +172,7 @@ function drawTreeTablesRecursively(tree, appendNode,tables) {
     var list = document.createElement("ul")
     item.appendChild(list)
     for (const childNode of tree.children) {
-      drawTreeTablesRecursively(childNode, list,tables)
+      drawTreeTablesRecursively(childNode, list, tables)
     }
   }
 }
@@ -173,15 +180,13 @@ function drawTreeTablesRecursively(tree, appendNode,tables) {
 
 
 function visualise() {
-  let syntaxTextArea = document.getElementById("syntaxTextArea");
-  let tableArea = document.getElementById("tableArea");
-  let filterArea = document.getElementById("filterArea");
-
   if (visualised) { // if the table has already been visualised then reset the html of the outputs
     tableArea.innerHTML = ""
     syntaxTextArea.innerHTML = ""
     filterArea.innerHTML = ""
-    if (lines.length > 0 ) {
+    treeArea.innerHTML = ""
+
+    if (lines.length > 0) {
       for (var line of lines) {
         line.remove()
       }
@@ -203,14 +208,14 @@ function visualise() {
   // if there are no foreign keys then draw tables in creation order
   if (getForeignKeysInDB().length > 0) {
     //drawTablesRecursively(createTreeFromDatabase(),tables,tableArea)
-    const treeArea = document.getElementById("tree")
-    drawTreeTablesRecursively(createTreeFromDatabase(),treeArea,tables)
+
+    drawTreeTablesRecursively(createTreeFromDatabase(), treeArea, tables)
   } else {
     for (const table of tables) {
       table.createTable(tableArea)
     }
   }
-  
+
 
   for (const table of tables) {
     table.writeSyntax(syntaxTextArea);
@@ -222,7 +227,7 @@ function visualise() {
         var from = table.name + "/" + column.name + "/" + column.columnType.type
         var to = foreignKey.referencedTable + "/" + foreignKey.referencedColumn + "/" + foreignKey.referencedColumnType
 
-     
+
 
         // create function for this
 
@@ -245,11 +250,9 @@ function visualise() {
 }
 
 function validateSQL(inputString) {
-  if (visualised) { // reset the database if it has been already visualised
-    database = []
-    publicSchema = new Schema("public");
-    database.push(publicSchema)
-  }
+  database = []
+  publicSchema = new Schema("public");
+  database.push(publicSchema)
 
   var statements = inputString.split(";");
   statements.pop(); // need a check if the last value is empty
@@ -450,13 +453,12 @@ textVisualiseButton.addEventListener('click', function (event) {
 // showing and hiding lines drawn between tables because they can't seem to be 
 // able to be added to a div so bootstrap cannot hide them automatically
 
-const tableViewButton = document.getElementById("table-tab")
-const syntaxViewButton = document.getElementById("syntax-tab")
 
-tableViewButton.addEventListener("click", function(event) {
+
+tableViewButton.addEventListener("click", function () {
   showLines()
 })
-syntaxViewButton.addEventListener("click", function (event) {
+syntaxViewButton.addEventListener("click", function () {
   hideLines()
 })
 

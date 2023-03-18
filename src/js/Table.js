@@ -275,7 +275,6 @@ export default class Table {
 				}
 			}
 		}
-		
 	}
 
 	setForeignKey(columnName, referencedTable,referencedColumn,referencedColumnType) {
@@ -297,8 +296,12 @@ export default class Table {
 
 	createTable(div) {
 		let table = document.createElement("div");
-		table.className = "row border border-2 mx-3 w-25 gx-0 h-100 my-3 w-auto";
+		table.className = "table row border border-2 mx-3 gx-0  my-3";
+		table.style = "width: fit-content;"
 		table.id = this.name
+
+		let headingColumn = document.createElement("div")
+		headingColumn.className = "row-lg"
 
 		let keyColumn = document.createElement("div");
 		if (this.hasPrimaryKey()) {
@@ -308,16 +311,19 @@ export default class Table {
 		}
 
 		let nameColumn = document.createElement("div");
-		nameColumn.className = "col border border-2 h-100 gx-0";
+		nameColumn.className = "col-lg border border-2  gx-0";
 
 		let typeColumn = document.createElement("div");
-		typeColumn.className = "col border border-2 h-100 gx-0";
+		typeColumn.className = "col-lg border border-2  gx-0";
 		typeColumn.id = "typeColumn"
 
 		let heading = document.createElement("h3");
 		heading.className = "text-center border my-0 bg-primary";
 		heading.innerText = this.name;
-		table.appendChild(heading);
+
+
+		headingColumn.appendChild(heading);
+		table.appendChild(headingColumn)
 
 		
 		for (const column of this.columns) {

@@ -28,8 +28,8 @@
 
         <li class="nav-item">
 
-          <button class="nav-link active" id="text-tab-button" data-bs-toggle="tab" data-bs-target="#textInput" type="button"
-            role="tab" aria-controls="textInput" aria-selected="true">Text Input</button>
+          <button class="nav-link active" id="text-tab-button" data-bs-toggle="tab" data-bs-target="#textInput"
+            type="button" role="tab" aria-controls="textInput" aria-selected="true">Text Input</button>
 
         </li>
 
@@ -45,41 +45,41 @@
 
       <div class="tab-content">
 
-        <div class="tab-pane fade py-3" id="fileInput" role="tabpanel" >
+        <div class="tab-pane fade py-3" id="fileInput" role="tabpanel">
 
-          
 
-            <label for="filePicker" class="form-label">Upload .PSQL File Here:</label>
 
-            <input class="form-control form-control-lg" id="filePicker" type="file" required>
+          <label for="filePicker" class="form-label">Upload .PSQL File Here:</label>
 
-            <div class="container text-center">
+          <input class="form-control form-control-lg" id="filePicker" type="file" required>
 
-              <button id="fileVisualiseButton" class="btn btn-primary my-3 py-3 w-25" >Visualise
-                Database</button>
+          <div class="container text-center">
 
-            </div>
+            <button id="fileVisualiseButton" class="btn btn-primary my-3 py-3 w-25">Visualise
+              Database</button>
 
-          
+          </div>
+
+
 
         </div>
 
-        <div class="tab-pane fade show active py-3" id="textInput" role="tabpanel" >
+        <div class="tab-pane fade show active py-3" id="textInput" role="tabpanel">
 
-        
 
-            <label for="textArea" class="form-label">Paste SQL Here:</label>
 
-            <textarea class="form-control " id="textArea" rows="10" aria-label="Paste SQL here" required></textarea>
+          <label for="textArea" class="form-label">Paste SQL Here:</label>
 
-            <div class="container text-center">
+          <textarea class="form-control " id="textArea" rows="10" aria-label="Paste SQL here" required></textarea>
 
-              <button id="textVisualiseButton" class="btn btn-primary my-3 py-3 w-25">Visualise
-                Database</button>
+          <div class="container text-center">
 
-            </div>
+            <button id="textVisualiseButton" class="btn btn-primary my-3 py-3 w-25">Visualise
+              Database</button>
 
-         
+          </div>
+
+
 
           <div id="alertDiv"></div>
 
@@ -120,12 +120,9 @@
 
         <div class=" tab-pane fade show active" id="tableTab" role="tabpanel" aria-labelledby="table-tab">
 
-          <div class="row row-cols-md-3 justify-content-around" id="tableArea">
-          </div>
+          <div class="row row-cols-md-3 justify-content-around" id="tableArea"></div>
 
-          <div>
-            <ul class="row row-cols-md-3 justify-content-around tree" id="tree"> </ul>
-          </div>
+          <ul class="tree container d-flex justify-content-center" id="tree"></ul>
 
         </div>
 
