@@ -47,14 +47,16 @@ textarea {
     margin: 0;
     padding: 0;
     position: relative;
+    display: flex;
+    justify-content: center;
+}
+li {
+    display: flex;
+    justify-content: center;
 }
 .tree {
     margin: 0 0 1em;
     text-align: center;
-}
-.tree,
-.tree ul {
-    display: table;
 }
 .tree ul {
     width: 100%;
@@ -65,7 +67,7 @@ textarea {
     vertical-align: top;
 }
 .tree li:before {
-    outline: solid 1px #666;
+    outline: solid 10px #1eff00;
     content: "";
     left: 0;
     position: absolute;
@@ -79,18 +81,16 @@ textarea {
     right: 50%;
 }
 .tree code,
-.tree span {
-    border: solid .1em #666;
+.tree .table {
+    border: solid 10px #1eff00;
     border-radius: .2em;
-    display: inline-block;
-    margin: 0 .2em .5em;
-    padding: .2em .5em;
+    display: inline-flex;
     position: relative;
 }
 .tree ul:before,
 .tree code:before,
-.tree span:before {
-    outline: solid 1px #666;
+.tree .table:before {
+    outline: solid 10px #1eff00;
     content: "";
     height: .5em;
     left: 50%;
@@ -100,7 +100,7 @@ textarea {
     top: -.5em;
 }
 .tree code:before,
-.tree span:before {
+.tree .table:before {
     top: -.55em;
 }
 .tree>li {
@@ -109,6 +109,6 @@ textarea {
 .tree>li:before,
 .tree>li:after,
 .tree>li>code:before,
-.tree>li>span:before {
+.tree>li>.table:before {
     outline: none;
 }
