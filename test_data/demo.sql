@@ -26,5 +26,5 @@ CREATE TABLE account_roles (
 CREATE TABLE test1(
 columnName1 serial,
 columnName2 serial,
-FOREIGN KEY(columnName1) REFERENCES account_roles (user_id);
+FOREIGN KEY(columnName1) REFERENCES account_roles (user_id));
 
