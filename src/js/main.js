@@ -132,22 +132,6 @@ function extractTree(rootNode, data, listOfNodes) {
   return { id: rootNode, parentId: null, children: listOfNodes }
 }
 
-// is this still needed?
-function drawTablesRecursively(tree, tables, tableArea) {
-  for (const table of tables) {
-    if (table.name == tree.id) {
-      table.createTable(tableArea)
-    }
-  }
-  if (tree.children == undefined) {
-    return
-  } else {
-    for (const childNode of tree.children) {
-      drawTablesRecursively(childNode, tables, tableArea)
-    }
-  }
-}
-
 function drawTreeTablesRecursively(tree, appendNode, tables) {
   var item = document.createElement("li")
   for (const table of tables) {
@@ -166,8 +150,6 @@ function drawTreeTablesRecursively(tree, appendNode, tables) {
     }
   }
 }
-
-
 
 function visualise() {
   if (visualised) { // if the table has already been visualised then reset the html of the outputs
@@ -450,10 +432,10 @@ fileVisualiseButton.addEventListener('click', function () {
 // showing and hiding lines drawn between tables because they can't seem to be 
 // able to be added to a div so bootstrap cannot hide them automatically
 
-tableViewButton.addEventListener("click", function () {
+tableViewButton.addEventListener("click", function (event) {
   showLines()
 })
-syntaxViewButton.addEventListener("click", function () {
+syntaxViewButton.addEventListener("click", function (event) {
   hideLines()
 })
 
