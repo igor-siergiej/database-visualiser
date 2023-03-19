@@ -34,7 +34,6 @@ var database = []; // this should be an array of schema
 var publicSchema = new Schema("public"); // create default schema 
 database.push(publicSchema) // add public schema to database array
 
-
 // maybe have to think about creating multiple trees
 
 // const data = [
@@ -100,10 +99,6 @@ function getForeignKeysInDB() {
 }
 // need to dynamically generate this, could just be a for loop but need to check foreign keys
 
-
-
-
-
 function createTreeFromDatabase() {
   const data = createTableData()
 
@@ -124,14 +119,8 @@ function createTreeFromDatabase() {
     // Add our current el to its parent's `children` array
     parentEl.children = [...(parentEl.children || []), el];
   });
-  console.log(root)
   return root
 }
-
-// function getTreeFromRoot(rootNode, listOfNodes) {
-//   listOfNodes.push(rootNode)
-
-// }
 
 function extractTree(rootNode, data, listOfNodes) {
   for (const element of data) { // get all of the children of rootNode and add to listOfNodes
@@ -143,6 +132,7 @@ function extractTree(rootNode, data, listOfNodes) {
   return { id: rootNode, parentId: null, children: listOfNodes }
 }
 
+// is this still needed?
 function drawTablesRecursively(tree, tables, tableArea) {
   for (const table of tables) {
     if (table.name == tree.id) {
@@ -162,7 +152,7 @@ function drawTreeTablesRecursively(tree, appendNode, tables) {
   var item = document.createElement("li")
   for (const table of tables) {
     if (table.name == tree.id) {
-      table.createTable(item)
+      table.createTreeTable(item)
     }
   }
   appendNode.appendChild(item)
@@ -194,7 +184,9 @@ function visualise() {
     // refresh error tab inner html too
   }
 
+  // reveal output tab only once database is visualised
   document.getElementById("outputTab").hidden = false;
+
 
   var tables = []
   for (const schema of database) {
@@ -203,12 +195,9 @@ function visualise() {
     }
   }
 
-  let uniqueColumnTypes = uniqueColumnTypesForAllTables(tables)
-
+  
   // if there are no foreign keys then draw tables in creation order
   if (getForeignKeysInDB().length > 0) {
-    //drawTablesRecursively(createTreeFromDatabase(),tables,tableArea)
-
     drawTreeTablesRecursively(createTreeFromDatabase(), treeArea, tables)
   } else {
     for (const table of tables) {
@@ -222,8 +211,6 @@ function visualise() {
     for (const column of table.columns) {
       var foreignKey = column.getForeignKey()
       if (foreignKey !== undefined) {
-
-
         var from = table.name + "/" + column.name + "/" + column.columnType.type
         var to = foreignKey.referencedTable + "/" + foreignKey.referencedColumn + "/" + foreignKey.referencedColumnType
 
@@ -231,20 +218,20 @@ function visualise() {
 
         // create function for this
 
-        // line = new LeaderLine(
-        //   document.getElementById(from),
-        //   document.getElementById(to)
-        //   )
+        line = new LeaderLine(
+          document.getElementById(from),
+          document.getElementById(to)
+        )
 
-        // line.path = "arc"
-        // line.setOptions({startSocket: 'right', endSocket: 'right'})
+        line.path = "line"
+        line.setOptions({ startSocket: 'right', endSocket: 'right' })
 
-        // lines.push(line)
+        lines.push(line)
       }
     }
   }
 
-  createFilters(uniqueColumnTypes, filterArea)
+  createFilters(uniqueColumnTypesForAllTables(tables), filterArea)
 
   visualised = true;
 }
@@ -291,13 +278,35 @@ function validateSQL(inputString) {
   return validated
 }
 
-function fileValidation() {
-  const fileName = document.getElementById("filePicker").files[0].name;
-  var regex = new RegExp("^.*\.(txt|psql|sql)$")
-  if (regex.test(fileName.toLowerCase())) {
-    return true
+function validateFilePickerText(fileText) {
+  if (validateSQL(fileText)) {
+    fileVisualiseButton.disabled = false
+    filePicker.classList.remove("is-invalid")
+    filePicker.classList.add("is-valid")
+    if (alertDiv.firstChild) { // if alertsDiv already has an alert then clear the div
+      alertDiv.innerHTML = ""
+    }
   } else {
-    return false
+    fileVisualiseButton.disabled = true
+    filePicker.classList.remove("is-valid")
+    filePicker.classList.add("is-invalid")
+  }
+}
+
+function validateFilePicker() {
+  const file = filePicker.files[0]
+  const filename = file.name
+  var regex = new RegExp("^.*\.(txt|psql|sql)$")
+  if (regex.test(filename.toLowerCase())) {
+    var reader = new FileReader();
+    reader.readAsText(file, "UTF-8");
+    reader.addEventListener('load', (event) => {
+      validateFilePickerText(event.target.result)
+    })
+  } else {
+    createAlert(new Error(`Filename ${filename} is invalid`), alertDiv)
+    filePicker.classList.remove("is-valid")
+    filePicker.classList.add("is-invalid")
   }
 }
 
@@ -384,13 +393,20 @@ function createCheckbox(type) {
   return checkboxDiv
 }
 
-const processChange = debounce(() => validateTextArea());
+const delayedValidateTextArea = debounce(() => validateTextArea());
+const delayedValidateFilePicker = debounce(() => validateFilePicker());
 
 textArea.addEventListener("input", function () {
   textArea.classList.remove("is-invalid")
   textArea.classList.remove("is-valid")
-  processChange()
+  delayedValidateTextArea()
 });
+
+filePicker.addEventListener('change', function () {
+  filePicker.classList.remove("is-invalid")
+  filePicker.classList.remove("is-valid")
+  delayedValidateFilePicker()
+})
 
 document.getElementById("outputTab").hidden = true;
 
@@ -406,8 +422,6 @@ function highlightWords(type, checkbox) {
     }
   }
 }
-
-
 
 function debounce(func, timeout = 500) {
   let timer;
@@ -425,35 +439,16 @@ fileTabButton.addEventListener("click", function (event) {
   isTextInputSelected = false
 })
 
-// replace this in the future with visualise button event handler
-
-// fileForm.addEventListener('submit', function (event) {
-//   event.preventDefault()
-//   event.stopPropagation()
-//   if (fileForm.checkValidity() && fileValidation()) {
-//     filePicker.classList.remove("is-invalid")
-//     filePicker.classList.add("is-valid")
-//     var reader = new FileReader();
-//     reader.readAsText(document.getElementById("filePicker").files[0], "UTF-8");
-//     reader.addEventListener('load', (event) => {
-//       visualise(event.target.result)
-//     })
-//   } else {
-//     filePicker.classList.add("is-invalid")
-//     filePicker.classList.remove("is-valid")
-//   }
-// }, false)
-
-textVisualiseButton.addEventListener('click', function (event) {
+textVisualiseButton.addEventListener('click', function () {
   visualise(textArea.value)
 }, false)
 
-
+fileVisualiseButton.addEventListener('click', function () {
+  visualise(document.getElementById("filePicker").files[0].value)
+})
 
 // showing and hiding lines drawn between tables because they can't seem to be 
 // able to be added to a div so bootstrap cannot hide them automatically
-
-
 
 tableViewButton.addEventListener("click", function () {
   showLines()

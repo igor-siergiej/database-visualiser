@@ -32,7 +32,7 @@ export default class Table {
 		var indexOfOpenBracket;
 
 		// checking what is after "CREATE"
-		switch (tokenizedArray[1].value) { 
+		switch (tokenizedArray[1].value) {
 			// If it's "GLOBAL" or "LOCAL", check if "TEMP" or "TEMPORARY" is used
 			case "GLOBAL":
 			case "LOCAL":
@@ -50,29 +50,29 @@ export default class Table {
 				}
 
 				// check if "TABLE" word is present
-				this.checkIfTableFlagExists(3,tokenizedArray)
+				this.checkIfTableFlagExists(3, tokenizedArray)
 
 				// get the index of the open bracket based on if "IF NOT EXISTS" flag exists 
 				// and if schema name is used in the table name and validating everything.
-				indexOfOpenBracket = this.checkCreateTableStatement(3,tokenizedArray,database)
+				indexOfOpenBracket = this.checkCreateTableStatement(3, tokenizedArray, database)
 				break;
 
 			case "UNLOGGED":
 				this.unlogged = true
-				this.checkIfTableFlagExists(2,tokenizedArray)
-				indexOfOpenBracket = this.checkCreateTableStatement(2,tokenizedArray,database)
+				this.checkIfTableFlagExists(2, tokenizedArray)
+				indexOfOpenBracket = this.checkCreateTableStatement(2, tokenizedArray, database)
 				break;
 
 			case "TEMP":
 			case "TEMPORARY":
 				this.temp = true
-				this.checkIfTableFlagExists(2,tokenizedArray)
-				indexOfOpenBracket = this.checkCreateTableStatement(2,tokenizedArray,database)
+				this.checkIfTableFlagExists(2, tokenizedArray)
+				indexOfOpenBracket = this.checkCreateTableStatement(2, tokenizedArray, database)
 				break;
 
 			case "TABLE":
 				// don't need to check for table flag becuase it already exists
-				indexOfOpenBracket = this.checkCreateTableStatement(1,tokenizedArray,database)
+				indexOfOpenBracket = this.checkCreateTableStatement(1, tokenizedArray, database)
 				break;
 
 			default:
@@ -99,11 +99,11 @@ export default class Table {
 		var columns = [];
 
 		for (const element of columnStrings) {
-			
+
 			// tokenize the column string
 			const tokenizedInputString = jsTokens(element);
 			var tokenizedColumnArray = Array.from(tokenizedInputString)
-			
+
 			// remove white spaces
 			tokenizedColumnArray = tokenizedColumnArray.filter(function (token) {
 				return token.type != "WhiteSpace";
@@ -125,7 +125,7 @@ export default class Table {
 		}
 	}
 
-	checkCreateTableStatement(startingIndex,tokenizedArray,database) {
+	checkCreateTableStatement(startingIndex, tokenizedArray, database) {
 		var indexOfOpenBracket
 		if (this.checkIfNotExists(startingIndex, tokenizedArray)) {
 			if (this.setName(startingIndex + 4, tokenizedArray, database)) {
@@ -217,7 +217,7 @@ export default class Table {
 
 	parseTableConstraints(tableConstraintsList, database) {
 		for (const constraintStatement of tableConstraintsList) {
-			switch(constraintStatement[0].value) {
+			switch (constraintStatement[0].value) {
 				case "PRIMARY":
 					if (constraintStatement[1].value == "KEY") {
 						if (constraintStatement[2].value == "(") {
@@ -232,7 +232,7 @@ export default class Table {
 					} else {
 						throw new Error(`Expected "KEY" instead of ${constraintStatement[1].value}`)
 					}
-				break;
+					break;
 
 				case "FOREIGN":
 					if (constraintStatement[1].value == "KEY") {
@@ -252,21 +252,21 @@ export default class Table {
 									}
 								}
 							}
-							this.setForeignKey(columnName,referencedTable,referencedColumn,referencedColumnType)
+							this.setForeignKey(columnName, referencedTable, referencedColumn, referencedColumnType)
 						} else {
 							// throw error that open bracket expected
 						}
 					} else {
 						throw new Error(`Expected "KEY" instead of ${constraintStatement[1].value}`)
 					}
-				break;
+					break;
 
 				default:
 					throw new Error(`${constraintStatement[0].value} is not a valid constraint`)
 			}
 		}
 	}
-	
+
 	setPrimaryKey(columnNames) {
 		for (const columnName of columnNames) {
 			for (const column of this.columns) {
@@ -277,10 +277,10 @@ export default class Table {
 		}
 	}
 
-	setForeignKey(columnName, referencedTable,referencedColumn,referencedColumnType) {
+	setForeignKey(columnName, referencedTable, referencedColumn, referencedColumnType) {
 		for (const column of this.columns) {
 			if (column.name == columnName) {
-				column.setForeignKey(referencedTable,referencedColumn,referencedColumnType)
+				column.setForeignKey(referencedTable, referencedColumn, referencedColumnType)
 			}
 		}
 	}
@@ -294,9 +294,9 @@ export default class Table {
 		return false
 	}
 
-	createTable(div) {
+	createTreeTable(div) {
 		let table = document.createElement("div");
-		table.className = "table row border border-2 mx-3 gx-0  my-3";
+		table.className = "table row border border-2 mx-3 gx-0 my-3";
 		table.style = "width: fit-content;"
 		table.id = this.name
 
@@ -320,14 +320,11 @@ export default class Table {
 		let heading = document.createElement("h3");
 		heading.className = "text-center border my-0 bg-primary";
 		heading.innerText = this.name;
+		headingColumn.appendChild(heading)
+		table.appendChild(headingColumn);
 
-
-		headingColumn.appendChild(heading);
-		table.appendChild(headingColumn)
-
-		
 		for (const column of this.columns) {
-			
+
 			if (column.hasPrimaryKey()) {
 				this.createColumn("P", keyColumn)
 			} else {
@@ -348,7 +345,53 @@ export default class Table {
 		div.appendChild(table);
 	}
 
-	createColumn(text, div,column) {
+	createTable(div) {
+		let table = document.createElement("div");
+		table.className = "row border border-2 mx-3 w-25 gx-0 h-100 my-3 w-auto";
+		table.id = this.name
+
+		let keyColumn = document.createElement("div");
+		if (this.hasPrimaryKey()) {
+			keyColumn.className = "col-1 border border-2 gx-0";
+		} else {
+			keyColumn.className = "col-1 border border-2 gx-0 error";
+		}
+
+		let nameColumn = document.createElement("div");
+		nameColumn.className = "col border border-2 h-100 gx-0";
+
+		let typeColumn = document.createElement("div");
+		typeColumn.className = "col border border-2 h-100 gx-0";
+		typeColumn.id = "typeColumn"
+
+		let heading = document.createElement("h3");
+		heading.className = "text-center border my-0 bg-primary";
+		heading.innerText = this.name;
+		table.appendChild(heading);
+
+		for (const column of this.columns) {
+
+			if (column.hasPrimaryKey()) {
+				this.createColumn("P", keyColumn)
+			} else {
+				this.createColumn("", keyColumn)
+			}
+
+			this.createColumn(column.name, nameColumn)
+			this.createColumn(column.columnType.getValue(), typeColumn, column)
+			// type column has to contain table name, column name and datatype
+		}
+
+		// fix this in the future and find a better way to set ids to draw lines 
+		// or just keep it as it is but rework function to make it look better
+		table.appendChild(keyColumn);
+		table.appendChild(nameColumn);
+		table.appendChild(typeColumn);
+
+		div.appendChild(table);
+	}
+
+	createColumn(text, div, column) {
 		if (text != "") {
 			let nameRow = document.createElement("div");
 			if (text != "P") {
@@ -357,7 +400,7 @@ export default class Table {
 				nameRow.className = "row py-1 px-2 gx-0";
 			}
 			if (div.id == "typeColumn") { // not ideal but works
-				nameRow.id = this.name+"/"+column.name + "/" + column.columnType.type;
+				nameRow.id = this.name + "/" + column.name + "/" + column.columnType.type;
 			}
 
 			let nameText = document.createTextNode(text);

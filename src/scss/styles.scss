@@ -48,11 +48,9 @@ textarea {
     padding: 0;
     position: relative;
     display: flex;
-    justify-content: center;
 }
 li {
     display: flex;
-    justify-content: center;
 }
 .tree {
     margin: 0 0 1em;
@@ -67,12 +65,7 @@ li {
     vertical-align: top;
 }
 .tree li:before {
-    outline: solid 10px #1eff00;
-    content: "";
-    left: 0;
     position: absolute;
-    right: 0;
-    top: 0;
 }
 .tree li:first-child:before {
     left: 50%;
@@ -82,16 +75,12 @@ li {
 }
 .tree code,
 .tree .table {
-    border: solid 10px #1eff00;
-    border-radius: .2em;
     display: inline-flex;
     position: relative;
 }
 .tree ul:before,
 .tree code:before,
 .tree .table:before {
-    outline: solid 10px #1eff00;
-    content: "";
     height: .5em;
     left: 50%;
     position: absolute;
