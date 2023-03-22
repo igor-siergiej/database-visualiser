@@ -2,6 +2,7 @@ import jsTokens from "js-tokens";
 import Column from './Column';
 import Util from "./Util";
 import LeaderLine from "leader-line-new";
+import { SyntaxError } from "./SyntaxError";
 
 export default class Table {
 	name;
@@ -37,7 +38,7 @@ export default class Table {
 			case "GLOBAL":
 			case "LOCAL":
 				if (tokenizedArray[2].value != "TEMPORARY" && tokenizedArray[2].value != "TEMP") {
-					throw Error("GLOBAL or LOCAL flag used without TEMPORARY flag")
+					throw new SyntaxError("GLOBAL or LOCAL flag used without TEMPORARY flag", tokenizedArray[1].value)
 				} else {
 					// If "TEMP" flag is used set the correct flags
 					if (tokenizedArray[1].value == "GLOBAL") {
@@ -76,8 +77,8 @@ export default class Table {
 				break;
 
 			default:
-				// if flag is not recognised then throw error
-				throw Error("INVALID FLAG IN CREATE STATEMENT")
+				// if flag is not recognised then throw new error
+				throw new SyntaxError("INVALID FLAG IN CREATE STATEMENT", tokenizedArray[1].value)
 		}
 
 		// split everything before the open bracket to remove the CREATE TABLE
@@ -150,10 +151,10 @@ export default class Table {
 					this.ifNotExists = true
 					return true
 				} else {
-					throw new Error("Unexpected word in \"IF NOT EXISTS\"")
+					throw new SyntaxError("Unexpected word in \"IF NOT EXISTS\"")
 				}
 			} else {
-				throw new Error("Unexpected word in \"IF NOT EXISTS\"")
+				throw new SyntaxError("Unexpected word in \"IF NOT EXISTS\"")
 			}
 		} else {
 			return false
@@ -162,7 +163,7 @@ export default class Table {
 
 	checkIfTableFlagExists(indexOfTable, tokenizedArray) {
 		if (tokenizedArray[indexOfTable].value != "TABLE") {
-			throw Error("Missing \"TABLE\"")
+			throw new SyntaxError("Missing \"TABLE\"")
 		}
 	}
 
@@ -172,7 +173,7 @@ export default class Table {
 		// this means that a schema name is before table name
 		if (tokenizedArray[nameIndex + 1].value == ".") {
 			if (this.temp) {
-				throw new Error("Temporary tables exist in a special schema, so a schema name cannot be given when creating a temporary table")
+				throw new SyntaxError("Temporary tables exist in a special schema, so a schema name cannot be given when creating a temporary table")
 			}
 			var schemaName = name
 			var name = tokenizedArray[nameIndex + 2].value
@@ -184,13 +185,13 @@ export default class Table {
 						this.schema = schemaName
 						return true
 					} else {
-						throw new Error(`Schema "${schemaName}" does not exist`)
+						throw new SyntaxError(`Schema "${schemaName}" does not exist`)
 					}
 				} else {
-					throw new Error(`Schema name "${schemaName}" is not valid`)
+					throw new SyntaxSyntaxError(`Schema name "${schemaName}" is not valid`)
 				}
 			} else {
-				throw new Error(`Name "${name}" is not valid`)
+				throw new SyntaxError(`Name "${name}" is not valid`)
 			}
 
 			// this means that only table name is present
@@ -198,10 +199,10 @@ export default class Table {
 			if (Util.isNameValid(name)) {
 				this.name = name;
 			} else {
-				throw new Error(`Name "${name}" is not valid`)
+				throw new SyntaxError(`Name "${name}" is not valid`)
 			}
 		} else {
-			throw new Error("Invalid syntax, should be an open bracket or invalid table name")
+			throw new SyntaxError("Invalid syntax, should be an open bracket or invalid table name")
 		}
 	}
 
@@ -230,7 +231,7 @@ export default class Table {
 							// throw error that open bracket expected
 						}
 					} else {
-						throw new Error(`Expected "KEY" instead of ${constraintStatement[1].value}`)
+						throw new SyntaxError(`Expected "KEY" instead of ${constraintStatement[1].value}`)
 					}
 					break;
 
@@ -257,12 +258,12 @@ export default class Table {
 							// throw error that open bracket expected
 						}
 					} else {
-						throw new Error(`Expected "KEY" instead of ${constraintStatement[1].value}`)
+						throw new SyntaxError(`Expected "KEY" instead of ${constraintStatement[1].value}`)
 					}
 					break;
 
 				default:
-					throw new Error(`${constraintStatement[0].value} is not a valid constraint`)
+					throw new SyntaxError(`${constraintStatement[0].value} is not a valid constraint`)
 			}
 		}
 	}
@@ -411,6 +412,7 @@ export default class Table {
 	}
 
 	writeSyntax(textArea) {
+		// create CSS classes for these
 		var typeText = document.createElement("span");
 		typeText.className = "typeColor"
 

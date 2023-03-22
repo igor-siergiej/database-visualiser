@@ -1,6 +1,7 @@
 import ColumnType from './ColumnType';
 import ForeignKey from './ForeignKey';
 import Util from './Util';
+import { SyntaxError } from './SyntaxError';
 
 export default class Column {
     name;
@@ -25,7 +26,7 @@ export default class Column {
         if (Util.isNameValid(tokenizedArray[0].value)) {
             this.name = tokenizedArray[0].value // 
         } else {
-            throw new Error(`Column name\"${tokenizedArray[0].value}\" invalid`)
+            throw new SyntaxError(`Column name\"${tokenizedArray[0].value}\" invalid`)
         }
 
         // removes name from array
@@ -39,7 +40,7 @@ export default class Column {
                 tokenizedArray = tokenizedArray.splice(4)
             } else {
                 if (tokenizedArray[3].value == ")") {
-                    throw new Error(`Column Type\"${tokenizedArray[2].value}\"is invalid`)
+                    throw new SyntaxError(`Column Type\"${tokenizedArray[2].value}\"is invalid`)
                 }
                 columnType.setType(tokenizedArray[0].value)
                 tokenizedArray = tokenizedArray.splice(1)
