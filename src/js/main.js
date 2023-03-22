@@ -26,7 +26,14 @@ const filePicker = document.getElementById("filePicker");
 const textArea = document.getElementById("textArea");
 const treeArea = document.getElementById("tree")
 
+const backdrop = document.getElementById("backdrop");
+const highlights = document.getElementById("highlights")
+
 const alertDiv = document.getElementById("alertDiv");
+
+textArea.addEventListener("scroll", function(event) {
+  backdrop.scrollTop = textArea.scrollTop
+});
 
 var lines = []
 
@@ -379,6 +386,9 @@ const delayedValidateTextArea = debounce(() => validateTextArea());
 const delayedValidateFilePicker = debounce(() => validateFilePicker());
 
 textArea.addEventListener("input", function () {
+  highlights.innerHTML = `<mark>${textArea.value}</mark>`;
+  //update the text of the fake textARea
+
   textArea.classList.remove("is-invalid")
   textArea.classList.remove("is-valid")
   delayedValidateTextArea()

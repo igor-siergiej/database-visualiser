@@ -9,9 +9,9 @@ $input-group-addon-bg: #725AC1;
 textarea {
     resize: vertical;
     max-height: 800px;
- }
+}
 
- br {
+br {
     display: block;
     margin-bottom: 0em;
 }
@@ -32,7 +32,7 @@ textarea {
     color: orange !important;
 }
 
-.highlightColor{
+.highlightColor {
     color: green !important;
 }
 
@@ -49,35 +49,44 @@ textarea {
     position: relative;
     display: flex;
 }
+
 li {
     display: flex;
 }
+
 .tree {
     margin: 0 0 1em;
     text-align: center;
 }
+
 .tree ul {
     width: 100%;
 }
+
 .tree li {
     display: table-cell;
     padding: .5em 0;
     vertical-align: top;
 }
+
 .tree li:before {
     position: absolute;
 }
+
 .tree li:first-child:before {
     left: 50%;
 }
+
 .tree li:last-child:before {
     right: 50%;
 }
+
 .tree code,
 .tree .table {
     display: inline-flex;
     position: relative;
 }
+
 .tree ul:before,
 .tree code:before,
 .tree .table:before {
@@ -85,19 +94,59 @@ li {
     left: 50%;
     position: absolute;
 }
+
 .tree ul:before {
     top: -.5em;
 }
+
 .tree code:before,
 .tree .table:before {
     top: -.55em;
 }
+
 .tree>li {
     margin-top: 0;
 }
+
 .tree>li:before,
 .tree>li:after,
 .tree>li>code:before,
 .tree>li>.table:before {
     outline: none;
+}
+
+.box {
+    position: relative !important;
+}
+
+#highlights {
+    white-space: pre-wrap;
+	word-wrap: break-word;
+	color: transparent;
+}
+
+#backdrop {
+    overflow: auto;
+    height: 600px;
+    position: absolute;
+    display: block;
+    z-index: 1;
+    width: 100%;
+    background-color: transparent !important;
+}
+
+textarea {
+    margin: 0;
+    border-radius: 0;
+    background-color: transparent !important;
+    display: block;
+    position: absolute;
+    z-index: 2;
+    resize: none;
+    height: 600px;
+}
+
+mark {
+    background-color: #79bb00;
+    color: transparent;
 }
