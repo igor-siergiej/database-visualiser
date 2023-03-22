@@ -3,6 +3,7 @@ import Table from './Table';
 import LeaderLine from 'leader-line-new';
 import jsTokens from "js-tokens";
 import Schema from './Schema';
+import { SyntaxError } from './SyntaxError';
 
 var visualised = false
 
@@ -254,17 +255,23 @@ function validateSQL(inputString) {
           }
         }
       } else {
-        throw Error("Unsupported Statement")
+        throw new SyntaxError("Unsupported Statement", words[0])
       }
     }
 
-  } catch (error) {
-    // feedback to user with error
-    console.log(error)
+  } catch (syntaxError) {
+    console.log(syntaxError)
+    highlightSyntaxError(syntaxError.getErrorWord())
+    createAlert(syntaxError, alertDiv)
     validated = false
-    createAlert(error, alertDiv)
   }
   return validated
+}
+
+function highlightSyntaxError(errorWord) {
+  var text = textArea.value
+  var highlightedText = text.replace(errorWord,`<mark>${errorWord}</mark>`)
+  highlights.innerHTML = highlightedText
 }
 
 function validateFilePickerText(fileText) {
@@ -293,7 +300,7 @@ function validateFilePicker() {
       validateFilePickerText(event.target.result)
     })
   } else {
-    createAlert(new Error(`Filename ${filename} is invalid`), alertDiv)
+    createAlert(new SyntaxError(`Filename ${filename} is invalid`), alertDiv)
     filePicker.classList.remove("is-valid")
     filePicker.classList.add("is-invalid")
   }
@@ -385,8 +392,10 @@ function createCheckbox(type) {
 const delayedValidateTextArea = debounce(() => validateTextArea());
 const delayedValidateFilePicker = debounce(() => validateFilePicker());
 
+highlights.innerHTML = textArea.value;
+
 textArea.addEventListener("input", function () {
-  highlights.innerHTML = `<mark>${textArea.value}</mark>`;
+  highlights.innerHTML = textArea.value;
   //update the text of the fake textARea
 
   textArea.classList.remove("is-invalid")
