@@ -42,7 +42,6 @@
 
       </ul>
 
-
       <div class="tab-content">
 
         <div class="tab-pane fade py-3" id="fileInput" role="tabpanel">
@@ -64,20 +63,31 @@
 
           <label for="textArea" class="form-label">Paste SQL Here:</label>
 
-          <textarea class="form-control " id="textArea" rows="10" aria-label="Paste SQL here" required></textarea>
+            <div class="box">
+              <div class="" id="backdrop">
+                <div class="form-control" id="highlights">
+                   
+                </div>
+              </div>
+              <textarea class="form-control" id="textArea" aria-label="Paste SQL here" required></textarea>
+            </div>
 
-          <div class="container text-center">
 
-            <button id="textVisualiseButton" class="btn btn-primary my-3 py-3 w-25">Visualise
-              Database</button>
+          <div class="container text-center" style="margin-top: 600px;">
+
+            <button id="textVisualiseButton" class="btn btn-primary my-3 py-3 w-25">
+              Visualise Database
+            </button>
 
           </div>
+
+          <div id="alertDiv"></div>
 
         </div>
 
       </div>
 
-      <div id="alertDiv"></div>
+      
 
     </section>
 
