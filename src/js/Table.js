@@ -1,8 +1,7 @@
 import jsTokens from "js-tokens";
 import Column from './Column';
 import Util from "./Util";
-import LeaderLine from "leader-line-new";
-import { SyntaxError } from "./SyntaxError";
+import {SyntaxError} from "./SyntaxError";
 
 export default class Table {
 	name;
@@ -30,18 +29,22 @@ export default class Table {
 		});
 
 		// tokenizedArray[0] this should be "CREATE" but is already checked for	
+
 		var indexOfOpenBracket;
 
+		var secondWord = tokenizedArray[1].value
+		var thirdWord = tokenizedArray[2].value
+
 		// checking what is after "CREATE"
-		switch (tokenizedArray[1].value) {
+		switch (secondWord.toUpperCase()) {
 			// If it's "GLOBAL" or "LOCAL", check if "TEMP" or "TEMPORARY" is used
 			case "GLOBAL":
 			case "LOCAL":
-				if (tokenizedArray[2].value != "TEMPORARY" && tokenizedArray[2].value != "TEMP") {
+				if (thirdWord != "TEMPORARY" && thirdWord != "TEMP") {
 					throw new SyntaxError("GLOBAL or LOCAL flag used without TEMPORARY flag", tokenizedArray[1].value)
 				} else {
 					// If "TEMP" flag is used set the correct flags
-					if (tokenizedArray[1].value == "GLOBAL") {
+					if (secondWord == "GLOBAL") {
 						this.temp = true
 						this.global = true
 					} else {
@@ -78,7 +81,8 @@ export default class Table {
 
 			default:
 				// if flag is not recognised then throw new error
-				throw new SyntaxError("INVALID FLAG IN CREATE STATEMENT", tokenizedArray[1].value)
+				throw new SyntaxError(`\"${tokenizedArray[1].value}\" is not a valid flag in a CREATE TABLE statement.`
+					, tokenizedArray[1].value)
 		}
 
 		// split everything before the open bracket to remove the CREATE TABLE
@@ -114,7 +118,8 @@ export default class Table {
 		}
 
 		for (const columnArray of columns) {
-			if (columnArray[0].value == "PRIMARY" || columnArray[0].value == "FOREIGN") { // this means we reached table constraints
+			var firstWord = columnArray[0].value.toUpperCase()
+			if (firstWord == "PRIMARY" || firstWord == "FOREIGN") { // this means we reached table constraints
 				// need the rest of the arrays joined and passed to parseTableConstraints()
 				this.parseTableConstraints(columns.slice(columns.indexOf(columnArray)), database)
 				break
@@ -145,16 +150,19 @@ export default class Table {
 	}
 
 	checkIfNotExists(indexOfTable, tokenizedArray) {
-		if (tokenizedArray[indexOfTable + 1].value == "IF") {
-			if (tokenizedArray[indexOfTable + 2].value == "NOT") {
-				if (tokenizedArray[indexOfTable + 3].value == "EXISTS") {
+		var firstWord = tokenizedArray[indexOfTable + 1].value
+		var secondWord = tokenizedArray[indexOfTable + 2].value
+		var thirdWord = tokenizedArray[indexOfTable + 3].value
+		if (firstWord.toUpperCase() == "IF") {
+			if (secondWord.toUpperCase() == "NOT") {
+				if (thirdWord.toUpperCase() == "EXISTS") {
 					this.ifNotExists = true
 					return true
 				} else {
-					throw new SyntaxError("Unexpected word in \"IF NOT EXISTS\"")
+					throw new SyntaxError("Unexpected word in \"IF NOT EXISTS\"", thirdWord)
 				}
 			} else {
-				throw new SyntaxError("Unexpected word in \"IF NOT EXISTS\"")
+				throw new SyntaxError("Unexpected word in \"IF NOT EXISTS\"", secondWord)
 			}
 		} else {
 			return false
@@ -162,8 +170,9 @@ export default class Table {
 	}
 
 	checkIfTableFlagExists(indexOfTable, tokenizedArray) {
-		if (tokenizedArray[indexOfTable].value != "TABLE") {
-			throw new SyntaxError("Missing \"TABLE\"")
+		var word = tokenizedArray[indexOfTable].value
+		if (word.toUpperCase() != "TABLE") {
+			throw new SyntaxError(`\"${word}\" should be "TABLE"`, word)
 		}
 	}
 
@@ -173,7 +182,7 @@ export default class Table {
 		// this means that a schema name is before table name
 		if (tokenizedArray[nameIndex + 1].value == ".") {
 			if (this.temp) {
-				throw new SyntaxError("Temporary tables exist in a special schema, so a schema name cannot be given when creating a temporary table")
+				throw new SyntaxError("Temporary tables exist in a special schema, so a schema name cannot be given when creating a temporary table",name)
 			}
 			var schemaName = name
 			var name = tokenizedArray[nameIndex + 2].value
@@ -185,13 +194,13 @@ export default class Table {
 						this.schema = schemaName
 						return true
 					} else {
-						throw new SyntaxError(`Schema "${schemaName}" does not exist`)
+						throw new SyntaxError(`Schema "${schemaName}" does not exist`, schemaName)
 					}
 				} else {
-					throw new SyntaxSyntaxError(`Schema name "${schemaName}" is not valid`)
+					throw new SyntaxError(`Schema name "${schemaName}" is not valid`, schemaName)
 				}
 			} else {
-				throw new SyntaxError(`Name "${name}" is not valid`)
+				throw new SyntaxError(`Name "${name}" is not valid`, name)
 			}
 
 			// this means that only table name is present
@@ -199,10 +208,10 @@ export default class Table {
 			if (Util.isNameValid(name)) {
 				this.name = name;
 			} else {
-				throw new SyntaxError(`Name "${name}" is not valid`)
+				throw new SyntaxError(`Name "${name}" is not valid`, name)
 			}
 		} else {
-			throw new SyntaxError("Invalid syntax, should be an open bracket or invalid table name")
+			throw new SyntaxError("Invalid syntax, should be an open bracket or invalid table name",tokenizedArray[nameIndex + 0].value + tokenizedArray[nameIndex + 1].value)
 		}
 	}
 
@@ -218,26 +227,29 @@ export default class Table {
 
 	parseTableConstraints(tableConstraintsList, database) {
 		for (const constraintStatement of tableConstraintsList) {
-			switch (constraintStatement[0].value) {
+			var firstWord = constraintStatement[0].value
+			var secondWord = constraintStatement[1].value
+			var thirdWord = constraintStatement[2].value
+			switch (firstWord.toUpperCase()) {
 				case "PRIMARY":
-					if (constraintStatement[1].value == "KEY") {
-						if (constraintStatement[2].value == "(") {
+					if (secondWord.toUpperCase() == "KEY") {
+						if (thirdWord == "(") {
 							var columnNames = [];
 							// while values are either "," or valid column name add them to columnNames
 							columnNames.push(constraintStatement[3].value)
 							columnNames.push(constraintStatement[5].value)
 							this.setPrimaryKey(columnNames)
 						} else {
-							// throw error that open bracket expected
+							throw new SyntaxError(`Expected open bracket instead of: "${thirdWord}"`,thirdWord)
 						}
 					} else {
-						throw new SyntaxError(`Expected "KEY" instead of ${constraintStatement[1].value}`)
+						throw new SyntaxError(`Expected "KEY" instead of: "${secondWord}"`,secondWord)
 					}
 					break;
 
 				case "FOREIGN":
-					if (constraintStatement[1].value == "KEY") {
-						if (constraintStatement[2].value == "(") {
+					if (secondWord.toUpperCase() == "KEY") {
+						if (thirdWord == "(") {
 							var columnName = constraintStatement[3].value
 							var referencedTable = constraintStatement[6].value
 							var referencedColumn = constraintStatement[8].value
@@ -255,15 +267,14 @@ export default class Table {
 							}
 							this.setForeignKey(columnName, referencedTable, referencedColumn, referencedColumnType)
 						} else {
-							// throw error that open bracket expected
+							throw new SyntaxError(`Expected open bracket instead of: ${thirdWord}`,thirdWord)
 						}
 					} else {
-						throw new SyntaxError(`Expected "KEY" instead of ${constraintStatement[1].value}`)
+						throw new SyntaxError(`Expected "KEY" instead of: ${secondWord}`, secondWord)
 					}
 					break;
-
 				default:
-					throw new SyntaxError(`${constraintStatement[0].value} is not a valid constraint`)
+					throw new SyntaxError(`${firstWord} is not a valid constraint`,firstWord)
 			}
 		}
 	}
@@ -460,7 +471,7 @@ export default class Table {
 		for (const element of this.columns) {
 			columnTypes.push(element.columnType.getType())
 		}
-		
+
 		return Array.from(new Set(columnTypes))
 	}
 }
