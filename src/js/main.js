@@ -32,7 +32,7 @@ const highlights = document.getElementById("highlights")
 
 const alertDiv = document.getElementById("alertDiv");
 
-textArea.addEventListener("scroll", function(event) {
+textArea.addEventListener("scroll", function (event) {
   backdrop.scrollTop = textArea.scrollTop
 });
 
@@ -185,7 +185,7 @@ function visualise() {
     }
   }
 
-  
+
   // if there are no foreign keys then draw tables in creation order
   if (getForeignKeysInDB().length > 0) {
     drawTreeTablesRecursively(createTreeFromDatabase(), treeArea, tables)
@@ -231,6 +231,9 @@ function validateSQL(inputString) {
   publicSchema = new Schema("public");
   database.push(publicSchema)
 
+  // removes lines beginning with -- (comment in SQL)
+  inputString = inputString.replace(/^--.*$/gm, '');
+
   var statements = inputString.split(";");
   statements.pop(); // need a check if the last value is empty
 
@@ -243,22 +246,38 @@ function validateSQL(inputString) {
 
       var words = statement.split(" ")
 
-      if (words[0].toUpperCase() === "CREATE") {
-        if (words[1].toUpperCase() == "SCHEMA") {
+      var firstWord = words[0].toUpperCase()
+      var secondWord = words[1].toUpperCase()
+
+      if (firstWord == "CREATE") {
+        if (secondWord == "SCHEMA") {
           // create schema object
         } else {
-          let table = new Table(statement, database); // this will be added to database object later
+          let table = new Table(statement, database);
+
+          // if schema exists is already checked in Table constructor
           for (const schema of database) {
             if (table.schema == schema.name) {
               schema.addTable(table)
             }
           }
         }
+      } else if (firstWord == "ALTER") {
+        if (secondWord == "SCHEMA") {
+          // alter schema object
+        } else {
+          // alter table object
+        }
       } else {
-        throw new SyntaxError("Unsupported Statement", words[0])
+        // ignore these statements because they are not relative to visualising/structure
+        if (firstWord == "SET" || firstWord == "SELECT") {
+          continue;
+        } else {
+          throw new SyntaxError("Unsupported Statement", words[0])
+        }
+
       }
     }
-
   } catch (syntaxError) {
     console.log(syntaxError)
     highlightSyntaxError(syntaxError.getErrorWord())
@@ -270,7 +289,8 @@ function validateSQL(inputString) {
 
 function highlightSyntaxError(errorWord) {
   var text = textArea.value
-  var highlightedText = text.replace(errorWord,`<mark>${errorWord}</mark>`)
+  // find word to highlight and surround it with a error HTML tag
+  var highlightedText = text.replace(errorWord, `<error>${errorWord}</error>`)
   highlights.innerHTML = highlightedText
 }
 
@@ -347,7 +367,7 @@ function createAlert(error, alertsDiv) {
   alertDiv.setAttribute("role", "alert")
 
   let boldError = document.createElement("strong")
-  boldError.innerHTML = "Error: "
+  boldError.innerHTML = "Syntax Error: "
   let alertText = document.createTextNode(error.message)
 
   let dismissButton = document.createElement("button")
