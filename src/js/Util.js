@@ -13,6 +13,22 @@ export default class Util {
 		return valid
 	}
 
+    static isColumnNameValid(columnName, columns) {
+        var isColumnNameFound = false
+        for (const column of columns) {
+            if (column.name == columnName) {
+                isColumnNameFound = true
+            }
+        }
+
+        // if columnName is valid and not duplicate in table
+        if (this.isNameValid(columnName) && !isColumnNameFound) { 
+            return true
+        } else {
+            return false
+        }
+    }
+
     // write a function to join punctuators for a tokenized array
     static joinPunctuators(tokenizedArray) {
         for (var i = 0; i < tokenizedArray.length;i++) {

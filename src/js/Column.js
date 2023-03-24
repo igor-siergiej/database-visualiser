@@ -9,70 +9,51 @@ export default class Column {
     #primaryKey = "";
     #foreignKey;
     nullable = true;
+    unique = false;
     constraints;
 
-    constructor(tokenizedArray) {
+    constructor(tokenizedArray, columns) {
         Util.joinPunctuators(tokenizedArray)
-
-        //if the input array contains primary and key then remove them from the 
-        if (tokenizedArray.find(e => e.value === "PRIMARY") && tokenizedArray.find(e => e.value === "KEY")) {
-            this.addKey("P") // need to check if the keywords are next to eachother
-            tokenizedArray = tokenizedArray.filter(element => element.value !== "PRIMARY")
-            tokenizedArray = tokenizedArray.filter(element => element.value !== "KEY")
-            // is there a better way of doing this?
+        for (const element of tokenizedArray) {
+            console.log(element)
         }
 
         // first element should be name
-        if (Util.isNameValid(tokenizedArray[0].value)) {
-            this.name = tokenizedArray[0].value // 
+        var columnName = tokenizedArray[0].value
+        if (Util.isColumnNameValid(columnName, columns)) {
+            this.name = columnName
         } else {
-            throw new SyntaxError(`Column name\"${tokenizedArray[0].value}\" invalid`)
+            throw new SyntaxError(`Column name "${columnName}" is invalid or duplicated`, columnName)
         }
-
-        // removes name from array
-        tokenizedArray = tokenizedArray.splice(1);
 
         var columnType = new ColumnType();
 
-        if (tokenizedArray[3] !== undefined) {
-            if (tokenizedArray[1].value == "(" && tokenizedArray[3].value == ")") {
-                columnType.setType(tokenizedArray[0].value, tokenizedArray[2].value)
-                tokenizedArray = tokenizedArray.splice(4)
-            } else {
-                if (tokenizedArray[3].value == ")") {
-                    throw new SyntaxError(`Column Type\"${tokenizedArray[2].value}\"is invalid`)
+        var dataType = tokenizedArray[1].value
+
+        if (tokenizedArray[2] !== undefined) { // checking if there are enough arguments to parse
+            var openBracket = tokenizedArray[2].value
+
+            if (openBracket == "(" && tokenizedArray[4].value == ")") { //brackets for dataType
+                columnType.setType(dataType, tokenizedArray[3].value) //set type with dataType and value
+            } else if (openBracket == "(") { // open bracket is present but closed is not
+                if (tokenizedArray[3].value == ")") { // nothing in between the brackets means no value
+                    throw new SyntaxError(`Empty Column Type Value`, "()")
+                } else {
+                    throw new SyntaxError(`Missing closing bracket for Column Type`, tokenizedArray[3].value)
                 }
-                columnType.setType(tokenizedArray[0].value)
-                tokenizedArray = tokenizedArray.splice(1)
+            } else if (openBracket == ")") {
+                throw new SyntaxError(`Missing open bracket for Column Type`, dataType)
+            } else {
+                columnType.setType(dataType)
             }
-        } else {
-            columnType.setType(tokenizedArray[0].value)    
-            tokenizedArray = tokenizedArray.splice(1)         
+        } else {// if there is only columnName and dataType
+            columnType.setType(dataType)          
         }
+
+        // need to get index to start parsing constraints or go back to removing columnName and Type
     
         this.columnType = columnType
-
-        // if (tokenizedArray.find(e => e.value === "(")) { // data type with no value
-
-        //     var joinedArray = tokenizedArray.map(function (element) {
-        //         return element['value'];
-        //     });
-
-        //     joinedArray = joinedArray.join(" ")
-
-        //     const matchInsideBrackets = /(?<=\().*?(?=\))/;
-
-        //     var matchedValues = joinedArray.match(matchInsideBrackets)
-
-        //     this.columnType = new ColumnType(tokenizedArray[0].value, matchedValues[0].trim())
-        //     tokenizedArray = tokenizedArray.splice(4) // this will remove open bracket, value inside and close bracket
-        // } else {
-        //     this.columnType = new ColumnType(tokenizedArray[0].value)
-        //     tokenizedArray = tokenizedArray.splice(1) // this will just remove the datatype
-
-        // }
         this.constraints = tokenizedArray
-        // if there are words here that do not match keywords then flag as error
     }
 
     writeConstraintSyntax(textArea) {
