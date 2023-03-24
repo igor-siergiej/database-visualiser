@@ -280,8 +280,11 @@ function validateSQL(inputString) {
     }
   } catch (syntaxError) {
     console.log(syntaxError)
-    highlightSyntaxError(syntaxError.getErrorWord())
-    createAlert(syntaxError, alertDiv)
+    if (syntaxError instanceof SyntaxError) {
+      highlightSyntaxError(syntaxError.getErrorWord())
+      createAlert(syntaxError, alertDiv)
+      validated = false
+    }
     validated = false
   }
   return validated

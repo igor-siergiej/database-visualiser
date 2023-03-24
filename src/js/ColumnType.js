@@ -1,3 +1,5 @@
+import { SyntaxError } from "./SyntaxError";
+
 export default class ColumnType {
     type;
     value;
@@ -17,19 +19,19 @@ export default class ColumnType {
             if (this.#typesWithInput.includes(type) || this.#typesWithNoInput.includes(type)) {
                 this.type = type;
             } else {
-                throw new Error(`The columnType \"${type}\" does not exist`)
+                throw new SyntaxError(`The columnType \"${type}\" does not exist`, type)
             }             
         } else { // if there is a value
             if (this.#typesWithNoInput.includes(type)) {
-                throw new Error(`The columnType \"${type}\" should not have a parameter`)
+                throw new SyntaxError(`The columnType \"${type}\" should not have a parameter`, type)
             } else if (this.#typesWithInput.includes(type)) {
                 if (isNaN(value)) {
-                    throw new Error(`\"${value}\" is not a valid value`)
+                    throw new SyntaxError(`\"${value}\" is not a valid value`, value)
                 }
                 this.type = type;
                 this.value = value;
             } else {
-                throw new Error(`The columnType \"${type}\" does not exist`)
+                throw new SyntaxError(`The columnType \"${type}\" does not exist`, type)
             }
         }
     }

@@ -101,6 +101,14 @@ export default class Table {
 		// split the string to individual columns
 		var columnStrings = tokenizedArrayValues.split(commaOutsideOfBrackets)
 
+		// checking that there is a closing bracket for the statement
+		var lastColumn = columnStrings[columnStrings.length-1]
+		if (lastColumn[lastColumn.length-1] != ")") {
+			throw new SyntaxError(`Missing closing bracket for statement`, ")")
+		} else {
+			columnStrings[columnStrings.length-1] = lastColumn.substring(0,lastColumn.length-1);
+		}
+
 		var columns = [];
 
 		for (const element of columnStrings) {
@@ -125,7 +133,7 @@ export default class Table {
 				break
 			} else {
 				// this means there were no table constraints
-				var column = new Column(columnArray);
+				var column = new Column(columnArray, this.columns);
 				this.columns.push(column);
 			}
 		}
