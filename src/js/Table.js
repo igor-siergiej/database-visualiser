@@ -250,7 +250,7 @@ export default class Table {
 				for (const table of schema.tables) {
 					tables.push(table)
 				}
-				continue
+				break
 			}
 		}
 		return Util.doesNameExist(tableName,tables)
