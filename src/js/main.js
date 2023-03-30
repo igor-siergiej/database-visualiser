@@ -39,7 +39,7 @@ textArea.addEventListener("scroll", function (event) {
 var lines = []
 
 var database = []; // this should be an array of schema
-var publicSchema = new Schema("public"); // create default schema 
+var publicSchema = new Schema("public",database); // create default schema
 database.push(publicSchema) // add public schema to database array
 
 // maybe have to think about creating multiple trees
@@ -228,7 +228,7 @@ function visualise() {
 
 function validateSQL(inputString) {
   database = []
-  publicSchema = new Schema("public");
+  publicSchema = new Schema("public",database);
   database.push(publicSchema)
 
   // removes lines beginning with -- (comment in SQL)
@@ -251,8 +251,9 @@ function validateSQL(inputString) {
 
       if (firstWord == "CREATE") {
         if (secondWord == "SCHEMA") {
-          // create schema object
-        } else {
+          let schema = new Schema(statement,database);
+          database.push(schema)
+        } else if (secondWord == "TABLE") {
           let table = new Table(statement, database);
 
           // if schema exists is already checked in Table constructor
@@ -261,12 +262,16 @@ function validateSQL(inputString) {
               schema.addTable(table)
             }
           }
+        } else {
+          throw new SyntaxError(`Unrecognised Flag: ${secondWord}`,secondWord)
         }
       } else if (firstWord == "ALTER") {
         if (secondWord == "SCHEMA") {
           // alter schema object
-        } else {
+        } else if (secondWord == "TABLE") {
           // alter table object
+        } else {
+          throw new SyntaxError(`Unrecognised Flag: ${secondWord}`,secondWord)
         }
       } else {
         // ignore these statements because they are not relative to visualising/structure
@@ -419,8 +424,8 @@ highlights.innerHTML = textArea.value;
 
 textArea.addEventListener("input", function () {
   highlights.innerHTML = textArea.value;
-  //update the text of the fake textARea
-
+  //update the text of the fake textArea
+  
   textArea.classList.remove("is-invalid")
   textArea.classList.remove("is-valid")
   delayedValidateTextArea()
