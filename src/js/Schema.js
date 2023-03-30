@@ -1,4 +1,5 @@
 import Util from "./Util";
+import { SyntaxError } from "./SyntaxError";
 
 export default class Schema {
     name;

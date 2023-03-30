@@ -36,6 +36,14 @@ textArea.addEventListener("scroll", function (event) {
   backdrop.scrollTop = textArea.scrollTop
 });
 
+textTabButton.addEventListener("click", clearAlertDiv)
+
+fileTabButton.addEventListener("click", clearAlertDiv)
+
+function clearAlertDiv() {
+  alertDiv.innerHTML = ""
+}
+
 var lines = []
 
 var database = []; // this should be an array of schema
@@ -251,8 +259,14 @@ function validateSQL(inputString) {
 
       if (firstWord == "CREATE") {
         if (secondWord == "SCHEMA") {
-          let schema = new Schema(statement,database);
-          database.push(schema)
+          words = words.splice(2)
+          if (words.length > 1) {
+            throw new SyntaxError(`Unexpected statement "${words[1]}"`, words[1])
+          } else {
+            let schema = new Schema(words[0],database);
+            database.push(schema)
+          }
+          
         } else if (secondWord == "TABLE") {
           let table = new Table(statement, database);
 
@@ -425,7 +439,7 @@ highlights.innerHTML = textArea.value;
 textArea.addEventListener("input", function () {
   highlights.innerHTML = textArea.value;
   //update the text of the fake textArea
-  
+
   textArea.classList.remove("is-invalid")
   textArea.classList.remove("is-valid")
   delayedValidateTextArea()
@@ -459,14 +473,6 @@ function debounce(func, timeout = 500) {
     timer = setTimeout(() => { func.apply(this, args); }, timeout);
   };
 }
-
-textTabButton.addEventListener("click", function (event) {
-  isTextInputSelected = true
-})
-
-fileTabButton.addEventListener("click", function (event) {
-  isTextInputSelected = false
-})
 
 textVisualiseButton.addEventListener('click', function () {
   visualise(textArea.value)
