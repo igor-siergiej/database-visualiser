@@ -8,21 +8,22 @@ export default class Column {
     columnType;
     #primaryKey = "";
     #foreignKey;
-    nullable = true;
+    nullable;
     unique = false;
-    constraints;
 
     constructor(tokenizedArray, columns) {
         Util.joinPunctuators(tokenizedArray)
-        
-
 
         // first element should be name
         var columnName = tokenizedArray[0].value
-        if (Util.isColumnNameValid(columnName, columns)) {
-            this.name = columnName
+        if (Util.isNameValid(columnName)) {
+            if (!Util.doesNameExist(columnName, columns)) {
+                this.name = columnName
+            } else {
+                throw new SyntaxError(`The column name "${columnName}" already exists`, columnName)
+            }
         } else {
-            throw new SyntaxError(`Column name "${columnName}" is invalid or duplicated`, columnName)
+            throw new SyntaxError(`The Column name "${columnName}" is invalid`, columnName)
         }
 
         var columnType = new ColumnType();
@@ -47,25 +48,25 @@ export default class Column {
                 tokenizedArray = tokenizedArray.splice(2)
             }
         } else {// if there is only columnName and dataType
-            columnType.setType(dataType) 
-            tokenizedArray = tokenizedArray.splice(2)         
+            columnType.setType(dataType)
+            tokenizedArray = tokenizedArray.splice(2)
         }
 
         this.columnType = columnType
+        this.parseColumnConstraints(tokenizedArray)
+    }
 
-        for (const element of tokenizedArray) {
-            console.log(element)
-        }
-
+    parseColumnConstraints(tokenizedArray) {
         while (tokenizedArray.length > 0) {
             var word = tokenizedArray[0].value
             switch (word.toUpperCase()) {
                 case "NULL":
+                    this.nullable = true
                     break;
                 case "NOT":
                     if (tokenizedArray[1].value == "NULL") {
                         this.nullable = false
-                        tokenizedArray.splice(0,2)
+                        tokenizedArray.splice(0, 2)
                     } else {
                         throw new SyntaxError(`Expecting NULL instead of "${tokenizedArray[1].value}"`, tokenizedArray[1].value)
                     }
@@ -73,44 +74,37 @@ export default class Column {
                 case "PRIMARY":
                     if (tokenizedArray[1].value == "KEY") {
                         this.addKey("P")
-                        tokenizedArray.splice(0,2)
+                        tokenizedArray.splice(0, 2)
                     }
                     break;
                 case "UNIQUE":
                     this.unique = true
                     tokenizedArray.splice(0)
                     break;
-                    default:
-                        throw new SyntaxError(`Unrecognised Constraint: ${word}`, word)
+                default:
+                    throw new SyntaxError(`Unrecognised Constraint: ${word}`, word)
             }
         }
-
-       
-
-        
-        this.constraints = tokenizedArray
     }
 
     writeConstraintSyntax(textArea) {
+        var typeValueText = document.createElement("span");
+        typeValueText.className = "typeValueColor"
 
-        if (this.constraints.length != 0) {
-            for (const element of this.constraints) {
-                var typeValueText = document.createElement("span");
-                typeValueText.className = "typeValueColor"
+        var constraintText = document.createElement("span");
+        constraintText.className = "constraintColor"
 
-                var constraintText = document.createElement("span");
-                constraintText.className = "constraintColor"
+        if (this.unique) {
+            constraintText.textContent = " " + "UNIQUE"
+            textArea.appendChild(constraintText)
+        }
 
-                if (element.type == "IdentifierName") {
-                    if (element.value == "NULL") {
-                        typeValueText.textContent = " " + element.value
-                        textArea.appendChild(typeValueText)
-                    } else {
-                        constraintText.textContent = " " + element.value
-                        textArea.appendChild(constraintText)
-                    }
-                }
-            }
+        if (this.nullable == false) {
+            typeValueText.textContent = " " + "NOT NULL"
+            textArea.appendChild(typeValueText)
+        } else  if (this.nullable == true) {
+            typeValueText.textContent = " " + "NULL"
+            textArea.appendChild(typeValueText)
         }
         textArea.innerHTML += "<br>"
     }
@@ -128,8 +122,8 @@ export default class Column {
         return false
     }
 
-    setForeignKey(referencedTable,referencedColumn,columnType) {
-        this.#foreignKey = new ForeignKey(referencedTable,referencedColumn,columnType)
+    setForeignKey(referencedTable, referencedColumn, columnType) {
+        this.#foreignKey = new ForeignKey(referencedTable, referencedColumn, columnType)
     }
 
     getForeignKey() {

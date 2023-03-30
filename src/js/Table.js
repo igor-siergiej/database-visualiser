@@ -1,7 +1,7 @@
 import jsTokens from "js-tokens";
 import Column from './Column';
 import Util from "./Util";
-import {SyntaxError} from "./SyntaxError";
+import { SyntaxError } from "./SyntaxError";
 
 export default class Table {
 	name;
@@ -102,11 +102,11 @@ export default class Table {
 		var columnStrings = tokenizedArrayValues.split(commaOutsideOfBrackets)
 
 		// checking that there is a closing bracket for the statement
-		var lastColumn = columnStrings[columnStrings.length-1]
-		if (lastColumn[lastColumn.length-1] != ")") {
+		var lastColumn = columnStrings[columnStrings.length - 1]
+		if (lastColumn[lastColumn.length - 1] != ")") {
 			throw new SyntaxError(`Missing closing bracket for statement`, ")")
 		} else {
-			columnStrings[columnStrings.length-1] = lastColumn.substring(0,lastColumn.length-1);
+			columnStrings[columnStrings.length - 1] = lastColumn.substring(0, lastColumn.length - 1);
 		}
 
 		var columns = [];
@@ -185,22 +185,28 @@ export default class Table {
 	}
 
 	setName(nameIndex, tokenizedArray, database) {
-		var name = tokenizedArray[nameIndex].value
+		var tableName = tokenizedArray[nameIndex].value
 
 		// this means that a schema name is before table name
 		if (tokenizedArray[nameIndex + 1].value == ".") {
 			if (this.temp) {
-				throw new SyntaxError("Temporary tables exist in a special schema, so a schema name cannot be given when creating a temporary table",name)
+				throw new SyntaxError("Temporary tables exist in a special schema, so a schema name cannot be given when creating a temporary table", name)
 			}
-			var schemaName = name
-			var name = tokenizedArray[nameIndex + 2].value
+			var schemaName = tableName
+			var tableName = tokenizedArray[nameIndex + 2].value
 
-			if (Util.isNameValid(name)) {
+
+			if (Util.isNameValid(tableName)) {
 				if (Util.isNameValid(schemaName)) {
-					if (this.doesSchemaExist(database, schemaName)) {
-						this.name = name
-						this.schema = schemaName
-						return true
+					if (this.doesSchemaExist(schemaName, database)) {
+						// get the tables where schema is schemaName
+						if (!this.doesTableExist(tableName,schemaName, database)) { // does table already exist in schema
+							this.name = tableName
+							this.schema = schemaName
+							return true
+						} else {
+							throw new SyntaxError(`Table "${tableName}" already exists in schema "${schemaName}"`, tableName)
+						}
 					} else {
 						throw new SyntaxError(`Schema "${schemaName}" does not exist`, schemaName)
 					}
@@ -208,22 +214,26 @@ export default class Table {
 					throw new SyntaxError(`Schema name "${schemaName}" is not valid`, schemaName)
 				}
 			} else {
-				throw new SyntaxError(`Name "${name}" is not valid`, name)
+				throw new SyntaxError(`Name "${tableName}" is not valid`, tableName)
 			}
 
 			// this means that only table name is present
 		} else if (tokenizedArray[nameIndex + 1].value == "(") {
-			if (Util.isNameValid(name)) {
-				this.name = name;
+			if (Util.isNameValid(tableName)) {
+				if (!this.doesTableExist(tableName,this.schema, database)) {
+					this.name = tableName;
+				} else {
+					throw new SyntaxError(`Table name "${tableName}" already exists`, tableName)
+				}
 			} else {
-				throw new SyntaxError(`Name "${name}" is not valid`, name)
+				throw new SyntaxError(`Name "${tableName}" is not valid`, tableName)
 			}
 		} else {
-			throw new SyntaxError("Invalid syntax, should be an open bracket or invalid table name",tokenizedArray[nameIndex + 0].value + tokenizedArray[nameIndex + 1].value)
+			throw new SyntaxError("Invalid syntax, should be an open bracket or invalid table name", tokenizedArray[nameIndex + 0].value + tokenizedArray[nameIndex + 1].value)
 		}
 	}
 
-	doesSchemaExist(database, schemaName) {
+	doesSchemaExist(schemaName, database) {
 		var match = false
 		for (const schema of database) {
 			if (schema.name == schemaName) {
@@ -231,6 +241,19 @@ export default class Table {
 			}
 		}
 		return match
+	}
+
+	doesTableExist(tableName, schemaName, database) {
+		var tables = []
+		for (const schema of database) {
+			if (schema.name == schemaName) {
+				for (const table of schema.tables) {
+					tables.push(table)
+				}
+				continue
+			}
+		}
+		return Util.doesNameExist(tableName,tables)
 	}
 
 	parseTableConstraints(tableConstraintsList, database) {
@@ -248,10 +271,10 @@ export default class Table {
 							columnNames.push(constraintStatement[5].value)
 							this.setPrimaryKey(columnNames)
 						} else {
-							throw new SyntaxError(`Expected open bracket instead of: "${thirdWord}"`,thirdWord)
+							throw new SyntaxError(`Expected open bracket instead of: "${thirdWord}"`, thirdWord)
 						}
 					} else {
-						throw new SyntaxError(`Expected "KEY" instead of: "${secondWord}"`,secondWord)
+						throw new SyntaxError(`Expected "KEY" instead of: "${secondWord}"`, secondWord)
 					}
 					break;
 
@@ -275,14 +298,14 @@ export default class Table {
 							}
 							this.setForeignKey(columnName, referencedTable, referencedColumn, referencedColumnType)
 						} else {
-							throw new SyntaxError(`Expected open bracket instead of: ${thirdWord}`,thirdWord)
+							throw new SyntaxError(`Expected open bracket instead of: ${thirdWord}`, thirdWord)
 						}
 					} else {
 						throw new SyntaxError(`Expected "KEY" instead of: ${secondWord}`, secondWord)
 					}
 					break;
 				default:
-					throw new SyntaxError(`${firstWord} is not a valid constraint`,firstWord)
+					throw new SyntaxError(`${firstWord} is not a valid constraint`, firstWord)
 			}
 		}
 	}

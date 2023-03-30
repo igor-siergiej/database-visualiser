@@ -123,16 +123,17 @@ li {
     white-space: pre-wrap;
 	word-wrap: break-word;
 	color: transparent;
+    
 }
 
 #backdrop {
     overflow: auto;
-    height: 600px;
     position: absolute;
     display: block;
     z-index: 1;
     width: 100%;
     background-color: transparent !important;
+    height: 600px;
 }
 
 textarea {
