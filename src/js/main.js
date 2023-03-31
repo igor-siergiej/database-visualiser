@@ -4,6 +4,7 @@ import LeaderLine from 'leader-line-new';
 import jsTokens from "js-tokens";
 import Schema from './Schema';
 import { SyntaxError } from './SyntaxError';
+import Database from './Database';
 
 var visualised = false
 
@@ -46,9 +47,9 @@ function clearAlertDiv() {
 
 var lines = []
 
-var database = []; // this should be an array of schema
-var publicSchema = new Schema("public",database); // create default schema
-database.push(publicSchema) // add public schema to database array
+var database = new Database(); // this should be an array of schema
+var publicSchema = new Schema("public",database.getSchemas()); // create default schema
+database.addSchema(publicSchema) // add public schema to database array
 
 // maybe have to think about creating multiple trees
 
@@ -102,7 +103,7 @@ function createTableData() {
 
 function getForeignKeysInDB() {
   var keys = []
-  for (let schema of database) {
+  for (let schema of database.getSchemas()) {
     for (let table of schema.tables) {
       for (let column of table.columns) {
         if (column.getForeignKey() != undefined) {
@@ -187,7 +188,7 @@ function visualise() {
 
 
   var tables = []
-  for (const schema of database) {
+  for (const schema of database.getSchemas()) {
     for (const table of schema.tables) {
       tables.push(table)
     }
@@ -235,9 +236,9 @@ function visualise() {
 }
 
 function validateSQL(inputString) {
-  database = []
-  publicSchema = new Schema("public",database);
-  database.push(publicSchema)
+  database = new Database();
+  publicSchema = new Schema("public",database.getSchemas());
+  database.addSchema(publicSchema)
 
   // removes lines beginning with -- (comment in SQL)
   inputString = inputString.replace(/^--.*$/gm, '');
@@ -263,15 +264,15 @@ function validateSQL(inputString) {
           if (words.length > 1) {
             throw new SyntaxError(`Unexpected statement "${words[1]}"`, words[1])
           } else {
-            let schema = new Schema(words[0],database);
-            database.push(schema)
+            let schema = new Schema(words[0],database.getSchemas());
+            database.addSchema(schema)
           }
           
         } else if (secondWord == "TABLE") {
-          let table = new Table(statement, database);
+          let table = new Table(statement, database.getSchemas());
 
           // if schema exists is already checked in Table constructor
-          for (const schema of database) {
+          for (const schema of database.getSchemas()) {
             if (table.schema == schema.name) {
               schema.addTable(table)
             }
@@ -281,9 +282,9 @@ function validateSQL(inputString) {
         }
       } else if (firstWord == "ALTER") {
         if (secondWord == "SCHEMA") {
-          // alter schema object
+          database.alterSchema(words.splice(2))
         } else if (secondWord == "TABLE") {
-          // alter table object
+          database.alterTable(words.splice(2))
         } else {
           throw new SyntaxError(`Unrecognised Flag: ${secondWord}`,secondWord)
         }
