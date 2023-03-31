@@ -24,4 +24,8 @@ export default class Schema {
     addTable(table) {
         this.tables.push(table)
     }
+
+    alterTable(statement) {
+
+    }
 }

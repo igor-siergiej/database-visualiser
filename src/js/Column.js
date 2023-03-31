@@ -29,6 +29,14 @@ export default class Column {
         var columnType = new ColumnType();
         var dataType = tokenizedArray[1].value
 
+        // set dataType to everything going through tokenizedArray until the end or until a constraint is detected or open bracket?
+        if (columnType.isTypeValid(dataType + " " + tokenizedArray[2].value)) { // need to push splicing index and array indexes
+            dataType += " " + tokenizedArray[2].value
+            tokenizedArray.splice(1)
+        }
+
+        // check if column type has two words i.e. "character varying"
+
         if (tokenizedArray[2] !== undefined) { // checking if there are enough arguments to parse
             var openBracket = tokenizedArray[2].value
 
@@ -47,7 +55,7 @@ export default class Column {
                 columnType.setType(dataType)
                 tokenizedArray = tokenizedArray.splice(2)
             }
-        } else {// if there is only columnName and dataType
+        } else {// if there is only columnName and dataType (2 arguments)
             columnType.setType(dataType)
             tokenizedArray = tokenizedArray.splice(2)
         }
@@ -81,6 +89,9 @@ export default class Column {
                     this.unique = true
                     tokenizedArray.splice(0)
                     break;
+                case "DEFAULT":
+                    tokenizedArray.splice(0)
+                    break;
                 default:
                     throw new SyntaxError(`Unrecognised Constraint: ${word}`, word)
             }
@@ -102,7 +113,7 @@ export default class Column {
         if (this.nullable == false) {
             typeValueText.textContent = " " + "NOT NULL"
             textArea.appendChild(typeValueText)
-        } else  if (this.nullable == true) {
+        } else if (this.nullable == true) {
             typeValueText.textContent = " " + "NULL"
             textArea.appendChild(typeValueText)
         }
