@@ -27,15 +27,32 @@ export default class Column {
         }
 
         var columnType = new ColumnType();
-        var dataType = tokenizedArray[1].value
 
-        // set dataType to everything going through tokenizedArray until the end or until a constraint is detected or open bracket?
-        if (columnType.isTypeValid(dataType + " " + tokenizedArray[2].value)) { // need to push splicing index and array indexes
-            dataType += " " + tokenizedArray[2].value
-            tokenizedArray.splice(1)
+        // this should be the same throughout code base and be part of some class
+        // switch case in parsing Column constraints should maybe be replaced by this list
+        var listOfColumnConstraints = ["PRIMARY", "NOT", "NULL", "UNIQUE"]
+        var dataType = ""
+
+        // start from second word since first is columnName
+        var i = 1 
+
+        // add words to dataType until we reach a constraint or "(" or end of array
+        while (i < tokenizedArray.length && 
+               !listOfColumnConstraints.includes(tokenizedArray[i].value) && 
+               tokenizedArray[i].value != "(") {
+            dataType += tokenizedArray[i].value + " "
+            i++
         }
 
-        // check if column type has two words i.e. "character varying"
+        // trim to remove space at end
+        dataType = dataType.trim()
+        
+        // remove all of the words that we grouped above
+        tokenizedArray = tokenizedArray.filter(function(element) {
+            return !dataType.includes(element.value)
+        })
+        // add the dataType back into the array to make parsing work
+        tokenizedArray.splice(1,0,dataType)
 
         if (tokenizedArray[2] !== undefined) { // checking if there are enough arguments to parse
             var openBracket = tokenizedArray[2].value
@@ -67,6 +84,7 @@ export default class Column {
     parseColumnConstraints(tokenizedArray) {
         while (tokenizedArray.length > 0) {
             var word = tokenizedArray[0].value
+            // loop over an array and check if it equals 
             switch (word.toUpperCase()) {
                 case "NULL":
                     this.nullable = true

@@ -11,7 +11,8 @@ export default class ColumnType {
 
     typesWithInput = ["numeric", "decimal","timestamp", "timestamp with time zone", "timestamptz",
                        "time", "time with time zone", "timetz", "interval", "character varying", "varchar", "character",
-                       "char", "timestamp with time zone", "time with time zone"]
+                       "char", "timestamp with time zone", "time with time zone","timestamp without time zone",
+                       "time without time zone"]
 
     setType(type, value) {
         console.log(type,value)
