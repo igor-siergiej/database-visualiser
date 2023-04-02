@@ -126,6 +126,9 @@ export default class Table {
 		}
 
 		for (const columnArray of columns) {
+			if (columnArray[0] == undefined) { // if columnArray is empty means that there is an extra comma
+				throw new SyntaxError(`Empty column, there probably exists an extra comma in table ${this.name}`, this.name)
+			}
 			var firstWord = columnArray[0].value.toUpperCase()
 			if (firstWord == "PRIMARY" || firstWord == "FOREIGN") { // this means we reached table constraints
 				// need the rest of the arrays joined and passed to parseTableConstraints()
