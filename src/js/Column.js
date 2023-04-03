@@ -27,18 +27,16 @@ export default class Column {
         }
 
         var columnType = new ColumnType();
-
-        // this should be the same throughout code base and be part of some class
-        // switch case in parsing Column constraints should maybe be replaced by this list
-        var listOfColumnConstraints = ["PRIMARY", "NOT", "NULL", "UNIQUE"]
         var dataType = ""
 
         // start from second word since first is columnName
         var i = 1 
 
+        var columnConstraints = ["PRIMARY", "NOT", "NULL", "UNIQUE"]
+
         // add words to dataType until we reach a constraint or "(" or end of array
         while (i < tokenizedArray.length && 
-               !listOfColumnConstraints.includes(tokenizedArray[i].value) && 
+               !columnConstraints.includes(tokenizedArray[i].value) && 
                tokenizedArray[i].value != "(") {
             dataType += tokenizedArray[i].value + " "
             i++
@@ -84,7 +82,7 @@ export default class Column {
     parseColumnConstraints(tokenizedArray) {
         while (tokenizedArray.length > 0) {
             var word = tokenizedArray[0].value
-            // loop over an array and check if it equals 
+            
             switch (word.toUpperCase()) {
                 case "NULL":
                     this.nullable = true
