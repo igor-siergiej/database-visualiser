@@ -87,6 +87,7 @@ export default class Table {
 
 		// split everything before the open bracket to remove the CREATE TABLE
 		tokenizedArray = tokenizedArray.slice(indexOfOpenBracket + 1);
+		
 
 		// just get the values from tokenized array
 		var tokenizedArrayValues = tokenizedArray.map(function (element) {
@@ -116,6 +117,13 @@ export default class Table {
 			// tokenize the column string
 			const tokenizedInputString = jsTokens(element);
 			var tokenizedColumnArray = Array.from(tokenizedInputString)
+
+			// if there is an unclosed quote then throw error
+			for (const token of tokenizedColumnArray) {
+				if (token.type == "StringLiteral" && token.closed == false) {
+					throw new SyntaxError(`Single quote found without a closing one`, token.value)
+				}
+			}
 
 			// remove white spaces
 			tokenizedColumnArray = tokenizedColumnArray.filter(function (token) {

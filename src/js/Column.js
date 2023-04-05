@@ -16,6 +16,11 @@ export default class Column {
 
         // first element should be name
         var columnName = tokenizedArray[0].value
+
+        //if columnName is a stringLiteral remove the quotes
+        if (tokenizedArray[0].type == "StringLiteral") {
+            columnName = columnName.substring(1,columnName.length -1)
+        }
         if (Util.isNameValid(columnName)) {
             if (!Util.doesNameExist(columnName, columns)) {
                 this.name = columnName
@@ -74,7 +79,6 @@ export default class Column {
             columnType.setType(dataType)
             tokenizedArray = tokenizedArray.splice(2)
         }
-
         this.columnType = columnType
         this.parseColumnConstraints(tokenizedArray)
     }
