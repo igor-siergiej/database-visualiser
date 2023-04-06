@@ -12,6 +12,7 @@ export default class Table {
 	ifNotExists = false;
 	schema = "public"
 	columns = [];
+	owner;
 
 	constructor(inputString, database) {
 		// tokenize input string

@@ -4,6 +4,7 @@ import { SyntaxError } from "./SyntaxError";
 export default class Schema {
     name;
     tables = [];
+    owner;
 
     constructor(schemaName, database) {
         if (Util.isNameValid(schemaName)) {
@@ -26,6 +27,10 @@ export default class Schema {
     }
 
     alterTable(statement) {
+        
+    }
 
+    setOwner(owner) {
+        this.owner = owner;
     }
 }

@@ -19,9 +19,8 @@ export default class Column {
 
         //if columnName is a stringLiteral remove the quotes
         if (tokenizedArray[0].type == "StringLiteral") {
-            columnName = columnName.substring(1,columnName.length -1)
-        }
-        if (Util.isNameValid(columnName)) {
+            this.name = columnName.substring(1,columnName.length -1)
+        } else if (Util.isNameValid(columnName)) {
             if (!Util.doesNameExist(columnName, columns)) {
                 this.name = columnName
             } else {
@@ -37,11 +36,11 @@ export default class Column {
         // start from second word since first is columnName
         var i = 1 
 
-        var columnConstraints = ["PRIMARY", "NOT", "NULL", "UNIQUE"]
+        var columnConstraints = ["PRIMARY", "NOT", "NULL", "UNIQUE","DEFAULT"]
 
         // add words to dataType until we reach a constraint or "(" or end of array
         while (i < tokenizedArray.length && 
-               !columnConstraints.includes(tokenizedArray[i].value) && 
+               !columnConstraints.includes(tokenizedArray[i].value.toUpperCase()) && 
                tokenizedArray[i].value != "(") {
             dataType += tokenizedArray[i].value + " "
             i++
