@@ -255,7 +255,7 @@ function validateSQL(inputString) {
 
       var words = statement.split(" ")
 
-      var firstWord = words[0].toUpperCase()
+      var firstWord = words[0].toUpperCase().trim()
       var secondWord = words[1].toUpperCase()
 
       if (firstWord == "CREATE") {
@@ -280,7 +280,7 @@ function validateSQL(inputString) {
         } else {
           throw new SyntaxError(`Unrecognised Flag: ${secondWord}`,secondWord)
         }
-      } else if (firstWord == "ALTER") {
+      } else if (firstWord == "ALTER" || firstWord == "\\.ALTER") {
         if (secondWord == "SCHEMA") {
           database.alterSchema(words.splice(2))
         } else if (secondWord == "TABLE") {
@@ -290,10 +290,10 @@ function validateSQL(inputString) {
         }
       } else {
         // ignore these statements because they are not relative to visualising/structure
-        if (firstWord == "SET" || firstWord == "SELECT") {
+        if (firstWord == "SET" || firstWord == "SELECT" || firstWord == "\\.COPY" || firstWord == "COPY") {
           continue;
         } else {
-          throw new SyntaxError("Unsupported Statement", words[0])
+          throw new SyntaxError(`Unsupported Statement: ${firstWord}`, firstWord)
         }
 
       }
@@ -307,6 +307,8 @@ function validateSQL(inputString) {
     }
     validated = false
   }
+  // DEBUG ONLY
+  console.log(database)
   return validated
 }
 

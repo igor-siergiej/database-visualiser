@@ -15,7 +15,6 @@ export default class ColumnType {
                        "time without time zone"]
 
     setType(type, value) {
-        console.log(type,value)
         type = type.toLowerCase()
         if (value === undefined) { // if no value
             if (this.typesWithInput.includes(type) || this.typesWithNoInput.includes(type)) {

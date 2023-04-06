@@ -14,10 +14,57 @@ export default class Database {
     }
 
     alterSchema(statement) {
-        console.log(statement)
+        var schemaName = statement[0]
+
+        if (!Util.doesNameExist(schemaName,this.schemas)) {
+            throw new SyntaxError(`Schema "${schemaName} does not exist`, schemaName)
+        }
+    
+        var flag = statement[1]
+
+        switch (flag.toUpperCase()) {
+            case "RENAME":
+                if (statement[2] == "TO") {
+                    var newName = statement[3]
+
+                    if (Util.isNameValid(newName)) {
+                        if (Util.doesNameExist(newName, this.schemas)) {
+                            for (const schema of this.schemas) {
+                                if (schema.name == schemaName) {
+                                    schema.name = newName
+                                }
+                            }
+                        } else {
+                            throw new SyntaxError(`Schema "${newName}" does not exist`, newName)
+                        }
+                    } else {
+                        throw new SyntaxError(`Schema "${newName}" is not valid`, newName)
+                    }
+                } else {
+                    throw new SyntaxError(`Unrecognised flag "${statement[2]}`, statement[2])
+                }
+                break;
+            case "OWNER":
+                if (statement[2] == "TO") {
+                    var newOwner = statement[3]
+                    if (Util.doesNameExist(newOwner, this.schemas)) {
+                        for (const schema of this.schemas) {
+                            if (schema.name == schemaName) {
+                                schema.owner = newOwner
+                            }
+                        }
+                    }
+                } else {
+                    throw new SyntaxError(`Unrecognised flag "${statement[2]}`, statement[2])
+                }
+                break;
+            default:
+                throw new SyntaxError(`Unrecognised flag "${flag.toUpperCase()}`, flag)
+        }
     }
 
-    alterTable() {
+    alterTable(statement) {
+        console.log("alter Table:",statement)
 
     }
 }
