@@ -1,21 +1,20 @@
+
 \chapter{Background \& Objectives}
 
 \section{Background}
-%What was your background preparation for the project? What similar systems did you assess? What was your motivation and interest in this project?
 
-%This section should discuss your preparation for the project, including background reading, your analysis of the problem and the process or method you have followed to help structure your work.  It is likely that you will reuse part of your outline project specification, but as you write this report at the end of the project you should have more to discuss. 
+Database tables are hard to visualise and understand the relationships between them, the project is meant to make this process of design easier and more efficient. This application should spot trivial mistakes like a table not having a primary key or tables with no foreign key constraints, it will also spot syntax errors in the text if it is entered via the text area or there was an error in uploading the psql dump file.
 
-% maybe have a small paragraph with what the project is about or generally what it contains and what are the parts and goals?
-
-The background research consisted of reviewing any other projects that aimed at achieving a similar goal to this project and see their approach for inspiration. Mostly SQL parsing is done by either looking at every character in a string or using Regex, from this research the decision was made to use a combination of both of these approaches to make sure the parsing was thorough but not tedious to write and maintain. 
+The background research consisted of reviewing any other projects that aimed at achieving a similar goal to this project and see their approach for inspiration. Mostly SQL parsing is done by either looking at every character in a string or using Regular Expressions, from this research the decision was made to use a combination of both of these approaches to make sure the parsing was thorough but not tedious to write and maintain. Most of the current open-source SQL parsers were not fit for this application or lacking the functionality for parsing SQL Data Definition Language. This meant that the main focus on this project needed to be creating SQL parsing from scratch.
 
 The main areas of research for this project are as follows:
 
 \begin{itemize}
 	\item JavaScript Framework
 	\item CSS Framework
-	\item Server Hosting
 	\item Working Environment
+	\item Server Hosting
+	\item Version Control
 \end{itemize}
 
 \subsection{JavaScript Framework}
@@ -24,29 +23,42 @@ At the beginning of the project, a decision was made for the database visualiser
 
 \subsection{CSS Framework}
 
-
-
-\subsection{Server Hosting}
-
-
+Since the main focus of this project is the functionality of the SQL parser the styling of the webpage could be handled by a CSS Framework. It was decided to use the newest version of Bootstrap \cite{Bootstrap} since it has components that can be used by default which made the design aspect easier and faster. Tailwind was another option for the CSS framework however it didn't provide these components which is why Bootstrap was chosen.
 
 \subsection{Working Environment}
 
+To start working on the website, a local development server was created to provide a runtime environment. Node.js was used with Visual Studio Code \cite{Code} as the IDE were the main elements of the working Environment.
 
+\subsection{Server Hosting}
+
+The Database Visualiser is meant to be used by many students at once so it is meant to be made available on the internet which meant that server hosting was needed. Free server hosting services\cite{Infinity} were used in the beginning, this was done to test that building the webpage locally worked when deployed to the server. Later on in the development process the built webpage was deployed to the University's servers which was a more reliable option since the demonstrations would take place on campus.
 
 \subsection{Version Control}
 
-
+Version Control was used in this project to mainly back up the code base. Since only one developer was working on this project it was not needed but it worked together with the lifecycle model and process used. Due to its popularity in the industry GitHub \cite{Github} was used.
 
 \section{Analysis}
-Taking into account the problem and what you learned from the background work, what was your analysis of the problem? How did your analysis help to decompose the problem into the main tasks that you would undertake? Were there alternative approaches? Why did you choose one approach compared to the alternatives? 
 
-There should be a clear statement of the objectives of the work, which you will evaluate at the end of the work. 
 
-In most cases, the agreed objectives or requirements will be the result of a compromise between what would ideally have been produced and what was determined to be possible in the time available. A discussion of the process of arriving at the final list is usually appropriate.
 
-As mentioned in the lectures, think about possible security issues for the project topic. Whilst these might not be relevant for all projects, do consider if there are relevant for your project. Where there are relevant security issues, discuss how they will this affect the work that you are doing. Carry forward this discussion into relevant areas for design, implementation and testing.
+%Taking into account the problem and what you learned from the background work, what was your analysis of the problem? How did your analysis help to decompose the problem into the main tasks that you would undertake? Were there alternative approaches? Why did you choose one approach compared to the alternatives? 
+
+%There should be a clear statement of the objectives of the work, which you will evaluate at the end of the work. 
+
+%In most cases, the agreed objectives or requirements will be the result of a compromise between what would ideally have been produced and what was determined to be possible in the time available. A discussion of the process of arriving at the final list is usually appropriate.
+
+%As mentioned in the lectures, think about possible security issues for the project topic. Whilst these might not be relevant for all projects, do consider if there are relevant for your project. Where there are relevant security issues, discuss how they will this affect the work that you are doing. Carry forward this discussion into relevant areas for design, implementation and testing.
 
 \section{Process}
-You need to describe briefly the life cycle model or research method that you used. You do not need to write about all of the different process models that you are aware of. Focus on the process model that you have used. It is possible that you needed to adapt an existing process model to suit your project; clearly identify what you used and how you adapted it for your needs.
 
+For this project a process of adapted Scrumban was used. The elements of Scrum that were incorporated were: 
+\begin{itemize}
+	\item Week-length sprints with weekly review and retrospective sessions for iterative planning at regular intervals.
+	\item These meetings dictated how much work was pulled into the sprint based on complexity and priority of the work.
+	\item Assured necessary levels of analysis and design before starting development.
+\end{itemize}
+The elements of Kanban that were incorporated were:
+\begin{itemize}
+	\item In addition to the weekly review and retrospective sessions, a short time was dedicated to process improvement.
+	\item Kanban board to provide visualisation of the current items that were in progress, To-Do or in the Sprint Backlog.
+\end{itemize}
