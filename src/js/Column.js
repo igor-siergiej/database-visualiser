@@ -12,10 +12,10 @@ export default class Column {
     unique = false;
 
     constructor(tokenizedArray, columns) {
-        Util.joinPunctuators(tokenizedArray)
+        //Util.joinPunctuators(tokenizedArray)
 
         // first element should be name
-        var columnName = tokenizedArray[0].value
+        var columnName = tokenizedArray[0].value 
 
         //if columnName is a stringLiteral remove the quotes
         if (tokenizedArray[0].type == "StringLiteral") {
@@ -48,7 +48,7 @@ export default class Column {
 
         // trim to remove space at end
         dataType = dataType.trim()
-        
+
         // remove all of the words that we grouped above
         tokenizedArray = tokenizedArray.filter(function(element) {
             return !dataType.includes(element.value)
@@ -65,8 +65,12 @@ export default class Column {
             } else if (openBracket == "(") { // open bracket is present but closed is not
                 if (tokenizedArray[3].value == ")") { // nothing in between the brackets means no value
                     throw new SyntaxError(`Empty Column Type Value`, "()")
+                } else if (tokenizedArray[4].value == ",") {
+                    columnType.setType(dataType, tokenizedArray[3].value, tokenizedArray[5].value)
+                    tokenizedArray = tokenizedArray.splice(7)
                 } else {
                     throw new SyntaxError(`Missing closing bracket for Column Type`, tokenizedArray[3].value)
+
                 }
             } else if (openBracket == ")") {
                 throw new SyntaxError(`Missing open bracket for Column Type`, dataType)
@@ -74,7 +78,7 @@ export default class Column {
                 columnType.setType(dataType)
                 tokenizedArray = tokenizedArray.splice(2)
             }
-        } else {// if there is only columnName and dataType (2 arguments)
+        } else {// if there is only columnName and dataType (2 words)
             columnType.setType(dataType)
             tokenizedArray = tokenizedArray.splice(2)
         }
