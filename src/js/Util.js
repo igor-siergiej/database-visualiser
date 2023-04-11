@@ -49,4 +49,12 @@ export default class Util {
             }
         }
     }
+
+    static debounce(func, timeout = 500) {
+        let timer;
+        return (...args) => {
+          clearTimeout(timer);
+          timer = setTimeout(() => { func.apply(this, args); }, timeout);
+        };
+      }
 }

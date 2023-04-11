@@ -77,8 +77,9 @@ export default class Database {
         let tables = []
         for (const schema of this.schemas) {
             for (const table of schema.tables) {
-                
+                tables.push(table)
             }
         }
+        return tables
     }
 }
