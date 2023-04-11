@@ -110,7 +110,7 @@ export default class Column {
                     break;
                 case "UNIQUE":
                     this.unique = true
-                    tokenizedArray.splice(0)
+                    tokenizedArray.shift()
                     break;
                 case "REFERENCES":
                     // TODO foreign key
@@ -128,28 +128,35 @@ export default class Column {
         }
     }
 
-    writeConstraintSyntax(textArea) {
-        var typeValueText = document.createElement("span");
-        typeValueText.className = "typeValueColor"
+    writeSyntax(syntaxArea) {
+        if (this.columnType.doesTypeHaveValue()) {
+            Util.writeSyntax(this.columnType.type,syntaxArea,Util.typeColor)
+            Util.writeSyntax(" (",syntaxArea)
 
-        var constraintText = document.createElement("span");
-        constraintText.className = "constraintColor"
+            Util.writeSyntax(this.columnType.value,syntaxArea,Util.typeValueColor)
+            Util.writeSyntax(")",syntaxArea) 
+        } else {
+            Util.writeSyntax(this.columnType.type,syntaxArea,Util.typeColor)
+        }
+    }
 
+    writeConstraintSyntax(syntaxArea) {
+        if (this.#primaryKey == "P") {
+            Util.writeSyntax(" PRIMARY KEY",syntaxArea, Util.typeColor)
+        }
         if (this.unique) {
-            constraintText.textContent = " " + "UNIQUE"
-            textArea.appendChild(constraintText)
+            Util.writeSyntax(" UNIQUE", syntaxArea, Util.constraintColor)
         }
 
         if (this.nullable == false) {
-            typeValueText.textContent = " " + "NOT NULL"
-            textArea.appendChild(typeValueText)
+            Util.writeSyntax(" NOT",syntaxArea,Util.constraintColor)
+            Util.writeSyntax(" NULL",syntaxArea,Util.typeValueColor)
         } else if (this.nullable == true) {
-            typeValueText.textContent = " " + "NULL"
-            textArea.appendChild(typeValueText)
+            Util.writeSyntax(" NULL", syntaxArea, Util.typeValueColor)
         }
-        textArea.innerHTML += "<br>"
+        Util.writeSyntax("<br>",syntaxArea)
     }
-
+  
     addKey(key) {
         if (key == "P") {
             this.#primaryKey = "P"
