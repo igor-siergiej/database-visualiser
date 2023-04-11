@@ -465,44 +465,19 @@ export default class Table {
 		}
 	}
 
-	writeSyntax(textArea) {
-		// create CSS classes for these
-		var typeText = document.createElement("span");
-		typeText.className = "typeColor"
 
-		var typeValueText = document.createElement("span");
-		typeValueText.className = "typeValueColor"
 
-		var constraintText = document.createElement("span");
-		constraintText.className = "constraintColor"
+	writeSyntax(syntaxArea) {
+		Util.writeSyntax("CREATE TABLE ", syntaxArea, Util.typeColor)
+		Util.writeSyntax(this.name + " (<br>", syntaxArea)
 
-		typeText.textContent = "CREATE TABLE "
-		textArea.appendChild(typeText)
-		textArea.innerHTML += this.name + " (" + "<br>"
-
-		// create function for writing in colours
-
-		//Write a method in column to create the syntax per column??
 		for (const column of this.columns) {
-			textArea.innerHTML += "&emsp;"
-			textArea.innerHTML += column.name + " "
-			if (column.columnType.doesTypeHaveValue()) {
-				typeText.textContent = column.columnType.type
-				typeText.id = column.columnType.type
-				textArea.appendChild(typeText)
-				textArea.innerHTML += " (";
-				typeValueText.textContent = column.columnType.value
-				textArea.appendChild(typeValueText)
-				textArea.innerHTML += ")"
-			} else {
-				typeText.textContent = column.columnType.getValue()
-				typeText.id = column.columnType.getValue();
-				textArea.appendChild(typeText)
-			}
-			column.writeConstraintSyntax(textArea)
+			Util.writeSyntax("&emsp;" + column.name + " ",syntaxArea)
+			column.writeSyntax(syntaxArea)
+			column.writeConstraintSyntax(syntaxArea)
 		}
-		textArea.innerHTML += ");"
-		textArea.innerHTML += "<br>"
+		
+		Util.writeSyntax("); <br>",syntaxArea)
 	}
 
 	createErrors() {
