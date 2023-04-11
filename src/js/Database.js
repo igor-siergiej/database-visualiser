@@ -64,7 +64,21 @@ export default class Database {
     }
 
     alterTable(statement) {
-        console.log("alter Table:",statement)
+        // need to check if schema name or just name was given
+        // and check if the table exists
+        // check in pgyadmin4 if you can enter just table name without schema
+        if (!Util.doesNameExist(schemaName,this.schemas)) {
+            throw new SyntaxError(`Schema "${schemaName} does not exist`, schemaName)
+        }
 
+    }
+
+    getAllTables() {
+        let tables = []
+        for (const schema of this.schemas) {
+            for (const table of schema.tables) {
+                
+            }
+        }
     }
 }

@@ -26,10 +26,6 @@ export default class Schema {
         this.tables.push(table)
     }
 
-    alterTable(statement) {
-        
-    }
-
     setOwner(owner) {
         this.owner = owner;
     }
