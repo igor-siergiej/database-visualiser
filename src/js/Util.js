@@ -39,4 +39,14 @@ export default class Util {
             }
         }
     }
+
+    static getAllTables(tableName, database) {
+        for(const schema of database.schemas) {
+            for (const table of schema.tables) {
+                if (table.name == tableName) {
+                    return schema
+                }
+            }
+        }
+    }
 }

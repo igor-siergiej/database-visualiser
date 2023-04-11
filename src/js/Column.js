@@ -112,8 +112,15 @@ export default class Column {
                     this.unique = true
                     tokenizedArray.splice(0)
                     break;
+                case "REFERENCES":
+                    // TODO foreign key
+                    break;
+                case "CHECK":
+                    // TODO dunnno
+                    break;
                 case "DEFAULT":
                     tokenizedArray.splice(0)
+                    // look at dump.sql and properly remove check checks
                     break;
                 default:
                     throw new SyntaxError(`Unrecognised Constraint: ${word}`, word)

@@ -409,14 +409,17 @@ function createAlert(error, alertsDiv) {
 }
 
 function createCheckbox(type) {
+  var columnDiv = document.createElement("div");
+  columnDiv.className = "col"
+
   var checkboxDiv = document.createElement("div");
-  checkboxDiv.className = "form-check checkbox-xl";
+  checkboxDiv.className = "form-check checkbox-xl py-2 px-1";
 
   var checkbox = document.createElement("input");
   checkbox.type = "checkbox"
   checkbox.id = type
   checkbox.value = ""
-  checkbox.className = "form-check-input mx-3"
+  checkbox.className = "form-check-input mx-3 filter"
 
   var label = document.createElement("label");
 
@@ -429,9 +432,11 @@ function createCheckbox(type) {
     highlightWords(type, this)
   })
 
+
   checkboxDiv.appendChild(checkbox);
   checkboxDiv.appendChild(label);
-  return checkboxDiv
+  columnDiv.appendChild(checkboxDiv)
+  return columnDiv
 }
 
 const delayedValidateTextArea = debounce(() => validateTextArea());
