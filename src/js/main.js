@@ -5,6 +5,7 @@ import jsTokens from "js-tokens";
 import Schema from './Schema';
 import { SyntaxError } from './SyntaxError';
 import Database from './Database';
+import Util from './Util';
 
 var visualised = false
 
@@ -20,6 +21,7 @@ const filterArea = document.getElementById("filterArea");
 
 const tableViewButton = document.getElementById("table-tab")
 const syntaxViewButton = document.getElementById("syntax-tab")
+const errorViewButton = document.getElementById("error-tab")
 
 fileVisualiseButton.disabled = true
 textVisualiseButton.disabled = true
@@ -186,14 +188,14 @@ function visualise() {
   // reveal output tab only once database is visualised
   document.getElementById("outputTab").hidden = false;
 
-
   var tables = []
+
+  // adds all tables in db to tables
   for (const schema of database.getSchemas()) {
     for (const table of schema.tables) {
       tables.push(table)
     }
   }
-
 
   // if there are no foreign keys then draw tables in creation order
   if (getForeignKeysInDB().length > 0) {
@@ -204,24 +206,48 @@ function visualise() {
     }
   }
 
+  writeSyntax(syntaxTextArea,tables)
 
+  //check if table view is active then create lines
+  if (window.getComputedStyle(tableArea).visibility !== "hidden") {
+    createLines(tables)
+  }
+
+  createFilters(uniqueColumnTypesForAllTables(tables), filterArea)
+
+  visualised = true;
+}
+
+// this should probably be in a try catch block because it error crashes often
+function createLines(tables) {
+  lines = []
   for (const table of tables) {
-    table.writeSyntax(syntaxTextArea);
     for (const column of table.columns) {
       var foreignKey = column.getForeignKey()
       if (foreignKey !== undefined) {
-        var from = table.name + "/" + column.name + "/" + column.columnType.type
-        var to = foreignKey.referencedTable + "/" + foreignKey.referencedColumn + "/" + foreignKey.referencedColumnType
+        // need the id to be unique and start from the type column
+        // therefore need table and column name and column type
+        var from = table.name + "/" + 
+                   column.name + "/" + 
+                   column.columnType.type
 
+        // same as above need this id to be unique per schema
+        // that's why table, column and type are required to be in the id
+        var to = foreignKey.referencedTable + "/" + 
+                 foreignKey.referencedColumn + "/" + 
+                 foreignKey.referencedColumnType
 
-
-        // create function for this
-
-        line = new LeaderLine(
+        var line = new LeaderLine(
           document.getElementById(from),
           document.getElementById(to)
         )
 
+        line.startPlugColor= '#1a6be0'
+        line.endPlugColor= '#1efdaa'
+        line.startPlug = "square"
+        line.endPlug = "arrow1"
+        line.gradient = true
+        line.dropShadow = true
         line.path = "line"
         line.setOptions({ startSocket: 'right', endSocket: 'right' })
 
@@ -229,10 +255,18 @@ function visualise() {
       }
     }
   }
+}
 
-  createFilters(uniqueColumnTypesForAllTables(tables), filterArea)
+function removeLines() {
+  for (var line of lines) {
+    line.hide("none")
+  }
+}
 
-  visualised = true;
+function writeSyntax(syntaxTextArea, tables) {
+  for (const table of tables) {
+    table.writeSyntax(syntaxTextArea);
+  }
 }
 
 function validateSQL(inputString) {
@@ -432,15 +466,14 @@ function createCheckbox(type) {
     highlightWords(type, this)
   })
 
-
   checkboxDiv.appendChild(checkbox);
   checkboxDiv.appendChild(label);
   columnDiv.appendChild(checkboxDiv)
   return columnDiv
 }
 
-const delayedValidateTextArea = debounce(() => validateTextArea());
-const delayedValidateFilePicker = debounce(() => validateFilePicker());
+const delayedValidateTextArea = Util.debounce(() => validateTextArea());
+const delayedValidateFilePicker = Util.debounce(() => validateFilePicker());
 
 highlights.innerHTML = textArea.value;
 
@@ -474,14 +507,6 @@ function highlightWords(type, checkbox) {
   }
 }
 
-function debounce(func, timeout = 500) {
-  let timer;
-  return (...args) => {
-    clearTimeout(timer);
-    timer = setTimeout(() => { func.apply(this, args); }, timeout);
-  };
-}
-
 textVisualiseButton.addEventListener('click', function () {
   visualise(textArea.value)
 }, false)
@@ -494,20 +519,12 @@ fileVisualiseButton.addEventListener('click', function () {
 // able to be added to a div so bootstrap cannot hide them automatically
 
 tableViewButton.addEventListener("click", function (event) {
-  showLines()
+  createLines(database.getAllTables())
 })
 syntaxViewButton.addEventListener("click", function (event) {
-  hideLines()
+  removeLines()
 })
 
-function hideLines() {
-  for (var line of lines) {
-    line.hide("none")
-  }
-}
-
-function showLines() {
-  for (var line of lines) {
-    line.show("draw")
-  }
-}
+errorViewButton.addEventListener("click", function(event) {
+  removeLines()
+})
