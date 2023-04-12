@@ -12,7 +12,7 @@ export default class Column {
     unique = false;
 
     constructor(tokenizedArray, columns) {
-        //Util.joinPunctuators(tokenizedArray)
+        Util.joinPunctuators(tokenizedArray)
 
         // first element should be name
         var columnName = tokenizedArray[0].value 
@@ -69,7 +69,7 @@ export default class Column {
                     columnType.setType(dataType, tokenizedArray[3].value, tokenizedArray[5].value)
                     tokenizedArray = tokenizedArray.splice(7)
                 } else {
-                    throw new SyntaxError(`Missing closing bracket for Column Type`, tokenizedArray[3].value)
+                    throw new SyntaxError(`Missing closing bracket for Column Type: ${tokenizedArray[4].value}`, tokenizedArray[4].value)
 
                 }
             } else if (openBracket == ")") {
