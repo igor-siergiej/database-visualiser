@@ -16,17 +16,16 @@ export default class ColumnType {
                        "time without time zone"]
 
     setType(type, value, secondValue) {
-        type = type.toLowerCase()
         if (value === undefined) { // if no value
-            if (this.typesWithInput.includes(type) || this.typesWithNoInput.includes(type)) {
+            if (this.typesWithInput.includes(type.toLowerCase()) || this.typesWithNoInput.includes(type.toLowerCase())) {
                 this.type = type;
             } else {
-                throw new SyntaxError(`The columnType \"${type}\" does not exist`, type)
+                throw new SyntaxError(`The columnType \"${type.replace(/\s/g, "")}\" does not exist`, type.replace(/\s/g, ""))
             }             
         } else { // if there is a value
-            if (this.typesWithNoInput.includes(type)) {
+            if (this.typesWithNoInput.includes(type.toLowerCase())) {
                 throw new SyntaxError(`The columnType \"${type}\" should not have a parameter`, type)
-            } else if (this.typesWithInput.includes(type)) {
+            } else if (this.typesWithInput.includes(type.toLowerCase())) {
                 if (isNaN(value)) {
                     throw new SyntaxError(`\"${value}\" is not a valid value`, value)
                 }
@@ -39,7 +38,7 @@ export default class ColumnType {
                     this.secondValue = secondValue
                 }
             } else {
-                throw new SyntaxError(`The columnType \"${type}\" does not exist`, type)
+                throw new SyntaxError(`The columnType \"${type.replace(/\s/g, "")}\" does not exist`, type.replace(/\s/g, ""))
             }
         }
     }
