@@ -33,8 +33,15 @@ export default class Table {
 
 		var indexOfOpenBracket;
 
-		var secondWord = tokenizedArray[1].value
-		var thirdWord = tokenizedArray[2].value
+		var secondWord
+		if (tokenizedArray[1] != undefined) {
+			secondWord = tokenizedArray[1].value
+		}
+
+		var thirdWord
+		if (tokenizedArray[2] != undefined) {
+			thirdWord = tokenizedArray[2].value
+		}
 
 		// checking what is after "CREATE"
 		switch (secondWord.toUpperCase()) {
@@ -88,6 +95,10 @@ export default class Table {
 
 		// split everything before the open bracket to remove the CREATE TABLE
 		tokenizedArray = tokenizedArray.slice(indexOfOpenBracket + 1);
+
+		if (indexOfOpenBracket == -1) {
+			throw new SyntaxError(`Missing columns`)
+		}
 		
 
 		// just get the values from tokenized array
@@ -153,6 +164,9 @@ export default class Table {
 
 	checkCreateTableStatement(startingIndex, tokenizedArray, database) {
 		var indexOfOpenBracket
+		if (tokenizedArray[3] == undefined) {
+			return -1
+		}
 		if (this.checkIfNotExists(startingIndex, tokenizedArray)) {
 			if (this.setName(startingIndex + 4, tokenizedArray, database)) {
 				indexOfOpenBracket = startingIndex + 7
@@ -424,14 +438,9 @@ export default class Table {
 		heading.innerText = this.name;
 		table.appendChild(heading);
 
-		for (const column of this.columns) {
+		for (const column of this.columns) { 
 
-			if (column.hasPrimaryKey()) {
-				this.createColumn("P", keyColumn)
-			} else {
-				this.createColumn("", keyColumn)
-			}
-
+			
 			this.createColumn(column.name, nameColumn)
 			this.createColumn(column.columnType.getValue(), typeColumn, column)
 			// type column has to contain table name, column name and datatype
@@ -449,10 +458,14 @@ export default class Table {
 	createColumn(text, div, column) {
 		if (text != "") {
 			let nameRow = document.createElement("div");
+
 			if (text != "P") {
 				nameRow.className = "row py-1 px-2 gx-0 border";
 			} else {
-				nameRow.className = "row py-1 px-2 gx-0";
+				nameRow.className = "row";
+				nameRow.innerHTML =`<i class="bi bi-key-fill"></i>`
+				div.appendChild(nameRow)
+				return
 			}
 			if (div.id == "typeColumn") { // not ideal but works
 				nameRow.id = this.name + "/" + column.name + "/" + column.columnType.type;
@@ -464,7 +477,7 @@ export default class Table {
 			div.appendChild(nameRow)
 		}
 	}
-
+ 
 
 
 	writeSyntax(syntaxArea) {

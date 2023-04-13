@@ -3,6 +3,7 @@ import { SyntaxError } from "./SyntaxError";
 
 export default class Database {
     schemas = []
+    errors = []
 
 
     addSchema(schema) {
