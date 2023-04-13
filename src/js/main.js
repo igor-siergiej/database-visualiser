@@ -44,39 +44,33 @@ textTabButton.addEventListener("click", clearAlertDiv)
 fileTabButton.addEventListener("click", clearAlertDiv)
 
 function clearAlertDiv() {
+  createLines(database.getAllTables())
   alertDiv.innerHTML = ""
 }
 
 var lines = []
 
 var database = new Database(); // this should be an array of schema
-var publicSchema = new Schema("public",database.getSchemas()); // create default schema
+var publicSchema = new Schema("public", database.getSchemas()); // create default schema
 database.addSchema(publicSchema) // add public schema to database array
-
-// maybe have to think about creating multiple trees
-
-// const data = [
-//   { id: "roles1", parentId: "account_roles1" },
-//   { id: "account_roles1", parentId: "test1" },
-//   { id: "accounts1", parentId: "account_roles1"},
-//   { id: "test1", parentId: null}]
-
-// can only be one null parent id
-// check if there are more than one ids with null parentId
-// 
 
 
 function createTableData() {
+  // 2D array of trees
   var data = []
+  var keys = []
+
+  // turn all foreign keys into key-value pairs
   var foreignKeys = getForeignKeysInDB()
   for (const element of foreignKeys) {
-    data.push({ id: element.column.referencedTable, parentId: element.tableName })
+    keys.push({ id: element.column.referencedTable, parentId: element.tableName })
   }
 
   var ids = []
   var parentIds = []
-  // split up data into ids and parentIds
-  for (const element of data) {
+
+  // split up data into ids and parentIds arrays
+  for (const element of keys) {
     ids.push(element.id)
     parentIds.push(element.parentId)
   }
@@ -88,17 +82,22 @@ function createTableData() {
   // if there are no roots then there is a cyclic structure?
   var roots = parentIds.filter(x => ids.indexOf(x) === -1)
 
+  console.log("keys", keys, "roots:", roots)
+
   // if there are multiple roots then need to split up into separate trees
   // means that tables are not all joined up by foreign keys
   if (roots.length > 1) {
     for (const root of roots) {
       let nodes = []
-      extractTree(root, data, nodes)
+      // get all keys that belong to the root and its childrens
+      extractTree(root, keys, nodes)
+      // add the root node to that array
+      nodes.push({ id: root, parentId: null })
+      data.push(nodes)
     }
-    // separate all the trees 
-    // extract them by the root and its children
   } else {
-    data.push({ id: roots[0], parentId: null })
+    keys.push({ id: roots[0], parentId: null })
+    data.push(keys)
   }
   return data
 }
@@ -118,10 +117,7 @@ function getForeignKeysInDB() {
 }
 // need to dynamically generate this, could just be a for loop but need to check foreign keys
 
-function createTreeFromDatabase() {
-  const data = createTableData()
-  console.log(data)
-
+function createTree(data) {
   const idMapping = data.reduce((acc, el, i) => {
     acc[el.id] = i;
     return acc;
@@ -143,13 +139,13 @@ function createTreeFromDatabase() {
 }
 
 function extractTree(rootNode, data, listOfNodes) {
-  for (const element of data) { // get all of the children of rootNode and add to listOfNodes
-    if (element.parentId == rootNode) { // this needs to be done recursively 
+  //get all nodes where the parent id is rootNode recursively
+  for (const element of data) { 
+    if (element.parentId == rootNode) {  
       listOfNodes.push(element)
+      extractTree(element.id, data, listOfNodes)
     }
   }
-
-  return { id: rootNode, parentId: null, children: listOfNodes }
 }
 
 function drawTreeTablesRecursively(tree, appendNode, tables) {
@@ -200,14 +196,34 @@ function visualise() {
 
   // if there are no foreign keys then draw tables in creation order
   if (getForeignKeysInDB().length > 0) {
-    drawTreeTablesRecursively(createTreeFromDatabase(), treeArea, tables)
+    var tablesList = tables
+    var dataList = createTableData()
+    for (const data of dataList) {
+      var tree = createTree(data)
+      drawTreeTablesRecursively(tree, treeArea, tables)
+      console.log(tablesList)
+      console.log(data)
+      var treeNames = []
+      for (const table of data) {
+        treeNames.push(table.id)
+      }
+      tablesList = tablesList.filter( (el) => !treeNames.includes(el.name));
+
+    
+      // remove tables that are part of tree from tablesList
+      // check if there are left over tables that are not part of tree structure
+    }
+   for (const table of tablesList) {
+    table.createTable(tableArea)
+   }
+
   } else {
     for (const table of tables) {
       table.createTable(tableArea)
     }
   }
 
-  writeSyntax(syntaxTextArea,tables)
+  writeSyntax(syntaxTextArea, tables)
 
   //check if table view is active then create lines
   if (window.getComputedStyle(tableArea).visibility !== "hidden") {
@@ -221,6 +237,7 @@ function visualise() {
 
 // this should probably be in a try catch block because it error crashes often
 function createLines(tables) {
+  removeLines()
   lines = []
   try {
     for (const table of tables) {
@@ -229,35 +246,35 @@ function createLines(tables) {
         if (foreignKey !== undefined) {
           // need the id to be unique and start from the type column
           // therefore need table and column name and column type
-          var from = table.name + "/" + 
-                     column.name + "/" + 
-                     column.columnType.type
-  
+          var from = table.name + "/" +
+            column.name + "/" +
+            column.columnType.type
+
           // same as above need this id to be unique per schema
           // that's why table, column and type are required to be in the id
-          var to = foreignKey.referencedTable + "/" + 
-                   foreignKey.referencedColumn + "/" + 
-                   foreignKey.referencedColumnType
-  
+          var to = foreignKey.referencedTable + "/" +
+            foreignKey.referencedColumn + "/" +
+            foreignKey.referencedColumnType
+
           var line = new LeaderLine(
             document.getElementById(from),
             document.getElementById(to)
           )
-  
-          line.startPlugColor= '#1a6be0'
-          line.endPlugColor= '#1efdaa'
+
+          line.startPlugColor = '#1a6be0'
+          line.endPlugColor = '#1efdaa'
           line.startPlug = "square"
           line.endPlug = "arrow1"
           line.gradient = true
           line.dropShadow = true
           line.path = "line"
           line.setOptions({ startSocket: 'right', endSocket: 'right' })
-  
+
           lines.push(line)
         }
       }
     }
-  } catch (error){
+  } catch (error) {
     console.log(error)
     console.log(getForeignKeysInDB())
     createAlert(new Error("Arrows failed to draw"), alertDiv)
@@ -278,38 +295,46 @@ function writeSyntax(syntaxTextArea, tables) {
 
 function validateSQL(inputString) {
   database = new Database();
-  publicSchema = new Schema("public",database.getSchemas());
+  publicSchema = new Schema("public", database.getSchemas());
   database.addSchema(publicSchema)
 
   // removes lines beginning with -- (comment in SQL)
   inputString = inputString.replace(/^--.*$/gm, '');
 
-  var statements = inputString.split(";");
-  statements.pop(); // need a check if the last value is empty
-
-  var validated = true
 
   try { // try to create datamodel and the first error it throws will be displayed to user as error
+    var statements
+    if (inputString.includes(";")) {
+      statements = inputString.split(";");
+      if (statements[statements.length - 1].replace(/(\r\n|\n|\r)/gm, "").trim() == "") {
+        statements.pop();
+      }
+    } else {
+      throw new SyntaxError(`Missing Semicolon in statement`, inputString)
+    }
+
+    var validated = true
+
     for (var statement of statements) {
       statement = statement.replace(/(\r\n|\n|\r)/gm, ""); // replaces new lines
       statement = statement.trim() // removes white spaces before and after statement
 
       var words = statement.split(" ")
 
-      var firstWord = words[0].toUpperCase().trim()
-      var secondWord = words[1].toUpperCase()
+      var firstWord = words[0].trim()
+      var secondWord = words[1]
 
-      if (firstWord == "CREATE") {
-        if (secondWord == "SCHEMA") {
+      if (firstWord.toUpperCase() == "CREATE") {
+        if (secondWord.toUpperCase() == "SCHEMA") {
           words = words.splice(2)
           if (words.length > 1) {
             throw new SyntaxError(`Unexpected statement "${words[1]}"`, words[1])
           } else {
-            let schema = new Schema(words[0],database.getSchemas());
+            let schema = new Schema(words[0], database.getSchemas());
             database.addSchema(schema)
           }
-          
-        } else if (secondWord == "TABLE") {
+
+        } else if (secondWord.toUpperCase() == "TABLE") {
           let table = new Table(statement, database.getSchemas());
 
           // if schema exists is already checked in Table constructor
@@ -319,19 +344,19 @@ function validateSQL(inputString) {
             }
           }
         } else {
-          throw new SyntaxError(`Unrecognised Flag: ${secondWord}`,secondWord)
+          throw new SyntaxError(`Unrecognised Flag: ${secondWord}`, secondWord)
         }
-      } else if (firstWord == "ALTER" || firstWord == "\\.ALTER") {
-        if (secondWord == "SCHEMA") {
+      } else if (firstWord.toUpperCase() == "ALTER" || firstWord.toUpperCase() == "\\.ALTER") {
+        if (secondWord.toUpperCase() == "SCHEMA") {
           database.alterSchema(words.splice(2))
         } else if (secondWord == "TABLE") {
           database.alterTable(words.splice(2))
         } else {
-          throw new SyntaxError(`Unrecognised Flag: ${secondWord}`,secondWord)
+          throw new SyntaxError(`Unrecognised Flag: ${secondWord}`, secondWord)
         }
       } else {
         // ignore these statements because they are not relative to visualising/structure
-        if (firstWord == "SET" || firstWord == "SELECT" || firstWord == "\\.COPY" || firstWord == "COPY") {
+        if (firstWord.toUpperCase() == "SET" || firstWord.toUpperCase() == "SELECT" || firstWord.toUpperCase() == "\\.COPY" || firstWord.toUpperCase() == "COPY") {
           continue;
         } else {
           throw new SyntaxError(`Unsupported Statement: ${firstWord}`, firstWord)
@@ -344,8 +369,6 @@ function validateSQL(inputString) {
     if (syntaxError instanceof SyntaxError) {
       highlightSyntaxError(syntaxError.getErrorWord())
       createAlert(syntaxError, alertDiv)
-      console.log(textArea)
-      console.log(highlights)
       validated = false
     }
     validated = false
@@ -535,6 +558,6 @@ syntaxViewButton.addEventListener("click", function (event) {
   removeLines()
 })
 
-errorViewButton.addEventListener("click", function(event) {
+errorViewButton.addEventListener("click", function (event) {
   removeLines()
 })

@@ -12,7 +12,7 @@ export default class Column {
     unique = false;
 
     constructor(tokenizedArray, columns) {
-        Util.joinPunctuators(tokenizedArray)
+        //Util.joinPunctuators(tokenizedArray)
 
         // first element should be name
         var columnName = tokenizedArray[0].value 
