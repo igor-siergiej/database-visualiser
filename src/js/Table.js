@@ -85,7 +85,7 @@ export default class Table {
 		if (indexOfOpenBracket == -1) {
 			throw new SyntaxError(`Missing columns`)
 		}
-		
+
 
 		// just get the values from tokenized array
 		var tokenizedArrayValues = tokenizedArray.map(function (element) {
@@ -142,7 +142,7 @@ export default class Table {
 				break
 			} else {
 				// this means there were no table constraints
-				var column = new Column(columnArray, this.columns,database);
+				var column = new Column(columnArray, this.columns, database);
 				this.columns.push(column);
 			}
 		}
@@ -212,7 +212,7 @@ export default class Table {
 				if (Util.isNameValid(schemaName)) {
 					if (this.doesSchemaExist(schemaName, database.getSchemas())) {
 						// get the tables where schema is schemaName
-						if (!this.doesTableExist(tableName,schemaName, database.getSchemas())) { // does table already exist in schema
+						if (!this.doesTableExist(tableName, schemaName, database.getSchemas())) { // does table already exist in schema
 							this.name = tableName
 							this.schema = schemaName
 							return true
@@ -232,7 +232,7 @@ export default class Table {
 			// this means that only table name is present
 		} else if (tokenizedArray[nameIndex + 1].value == "(") {
 			if (Util.isNameValid(tableName)) {
-				if (!this.doesTableExist(tableName,this.schema, database.getSchemas())) {
+				if (!this.doesTableExist(tableName, this.schema, database.getSchemas())) {
 					this.name = tableName;
 				} else {
 					throw new SyntaxError(`Table name "${tableName}" already exists`, tableName)
@@ -265,11 +265,11 @@ export default class Table {
 				break
 			}
 		}
-		return Util.doesNameExist(tableName,tables)
+		return Util.doesNameExist(tableName, tables)
 	}
 
 	parseTableConstraints(tableConstraintsList, database) {
-		for (const constraintStatement of tableConstraintsList) {
+		for (var constraintStatement of tableConstraintsList) {
 			var firstWord = constraintStatement[0].value
 			var secondWord = constraintStatement[1].value
 			var thirdWord = constraintStatement[2].value
@@ -293,22 +293,92 @@ export default class Table {
 				case "FOREIGN":// need to add functionality for multiple columns in foreign key
 					if (secondWord.toUpperCase() == "KEY") {
 						if (thirdWord == "(") {
-							var columnName = constraintStatement[3].value
-							var referencedTable = constraintStatement[6].value
-							var referencedColumn = constraintStatement[8].value
-							var referencedColumnType
-							for (const schema of database.getSchemas()) {
-								for (const table of schema.tables) {
-									if (table.name == referencedTable) {
-										for (const column of table.columns) {
-											if (column.name == referencedColumn) {
-												referencedColumnType = column.columnType.type
-											}
-										}
+
+							var columnNames = ""
+							var i = 3
+							console.log(constraintStatement)
+							while (constraintStatement[i].value != ")") {
+								if (constraintStatement[i + 1] == undefined || constraintStatement[i + 1].value == "(") {
+									throw new SyntaxError(`Missing closing bracket in foreign key constraint`)
+								}
+								if (constraintStatement[i].value != ",") {
+									if (!Util.doesNameExist(constraintStatement[i].value, this.columns)) {
+										throw new SyntaxError(`Table name "${constraintStatement[i].value}" does not exist`, constraintStatement[i].value)
 									}
 								}
+								columnNames += constraintStatement[i].value
+								i++
 							}
-							this.setForeignKey(columnName, referencedTable, referencedColumn, referencedColumnType)
+							columnNames = columnNames.split(",")
+							console.log(columnNames, i)
+
+							if (constraintStatement[i + 1].value.toUpperCase() == "REFERENCES") {
+								// removing previous elements of constraintStatement 
+								constraintStatement = constraintStatement.splice(i+2)
+
+								var table
+								var openBracketIndex
+								console.log(constraintStatement)
+
+								if (constraintStatement[1].value == ".") {
+									// if schema exists
+									if (Util.doesNameExist(constraintStatement[0].value, database.getSchemas())) {
+										var tempTable = database.getTable(constraintStatement[2].value, constraintStatement[0].value)
+										if (tempTable != undefined) {
+											openBracketIndex = 3
+											table = tempTable
+										} else {
+											throw new SyntaxError(`Table "${constraintStatement[2].value}" does not exist`, constraintStatement[2].value)
+										}
+									} else {
+										throw new SyntaxError(`Schema "${constraintStatement[0].value}" does not exist`, constraintStatement[0].value)
+									}
+								} else {
+									var tempTable = database.getTable(constraintStatement[0].value)
+									if (tempTable != undefined) {
+										table = tempTable
+										openBracketIndex = 1
+									} else {
+										throw new SyntaxError(`Table "${constraintStatement[0].value}" does not exist`, constraintStatement[0].value)
+									}
+								}
+							} else {
+								// unrecognised constraint
+							} 
+
+							var j = openBracketIndex + 1
+							var referencedColumnNames = ""
+
+
+							while (constraintStatement[j].value != ")") {
+								if (constraintStatement[j + 1] == undefined || constraintStatement[j + 1].value == "(") {
+									throw new SyntaxError(`Missing closing bracket in foreign key constraint`)
+								}
+								if (constraintStatement[j].value != ",") {
+									if (!Util.doesNameExist(constraintStatement[j].value, table.columns)) {
+										throw new SyntaxError(`Column "${constraintStatement[j].value}" does not exist in table "${table.name}"`, constraintStatement[j].value)
+									}
+								}
+								referencedColumnNames += constraintStatement[j].value
+								j++
+							}
+							referencedColumnNames = referencedColumnNames.split(",")
+							
+							// make sure the number of columns are the same in foreign key constraint
+							if (referencedColumnNames.length != columnNames.length) {
+								throw new SyntaxError("Number of referenced column names does not match number of column names in foreign key constraint")
+							}
+
+							for (i = 0; i < columnNames.length; i++) {
+								var columnType
+								for (const column of table.columns) {
+									if (column.name == referencedColumnNames[i]) {
+										columnType = column.columnType.type
+									}
+								}
+								this.setForeignKey(columnNames[i], table.name,referencedColumnNames[i],columnType)
+							}
+							
 						} else {
 							throw new SyntaxError(`Expected open bracket instead of: ${thirdWord}`, thirdWord)
 						}
@@ -424,9 +494,9 @@ export default class Table {
 		heading.innerText = this.name;
 		table.appendChild(heading);
 
-		for (const column of this.columns) { 
+		for (const column of this.columns) {
 
-			
+
 			this.createColumn(column.name, nameColumn)
 			this.createColumn(column.columnType.getValue(), typeColumn, column)
 			// type column has to contain table name, column name and datatype
@@ -438,7 +508,7 @@ export default class Table {
 		table.appendChild(nameColumn);
 		table.appendChild(typeColumn);
 
-		div.appendChild(table);	
+		div.appendChild(table);
 	}
 
 	createColumn(text, div, column) {
@@ -449,7 +519,7 @@ export default class Table {
 				nameRow.className = "row py-1 px-2 gx-0 border";
 			} else {
 				nameRow.className = "row gx-0 gy-0";
-				nameRow.innerHTML =`<i class="bi bi-key-fill"></i>`
+				nameRow.innerHTML = `<i class="bi bi-key-fill"></i>`
 				div.appendChild(nameRow)
 				return
 			}
@@ -469,12 +539,12 @@ export default class Table {
 		Util.writeSyntax(this.name + " (<br>", syntaxArea)
 
 		for (const column of this.columns) {
-			Util.writeSyntax("&emsp;" + column.name + " ",syntaxArea)
+			Util.writeSyntax("&emsp;" + column.name + " ", syntaxArea)
 			column.writeSyntax(syntaxArea)
 			column.writeConstraintSyntax(syntaxArea)
 		}
-		
-		Util.writeSyntax("); <br>",syntaxArea)
+
+		Util.writeSyntax("); <br>", syntaxArea)
 	}
 
 	createErrors() {

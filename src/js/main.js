@@ -68,6 +68,18 @@ function createTableData() {
   var ids = []
   var parentIds = []
 
+  console.log(keys)
+  const isDuplicate = (item, arr) => { 
+    return arr.some(el => item.id === el.id && item.parentId === el.parentId);
+  }
+
+  var uniqueKeys = []
+  for(const item of keys) {
+    if(!isDuplicate(item, uniqueKeys)) uniqueKeys.push(item);
+  }
+
+  keys = uniqueKeys
+
   // split up data into ids and parentIds arrays
   for (const element of keys) {
     ids.push(element.id)
@@ -325,8 +337,6 @@ function validateSQL(inputString) {
       tokenizedArray = tokenizedArray.filter(function (token) {
         return token.type != "WhiteSpace";
       });
-
-      console.log("Statement",statement,"TokenizedArray",tokenizedArray)
 
       var firstWord = tokenizedArray[0].value
       var secondWord = tokenizedArray[1].value
