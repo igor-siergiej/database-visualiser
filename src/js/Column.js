@@ -155,7 +155,7 @@ export default class Column {
                                 } else {
                                     throw new SyntaxError(`Expected closing bracket instead of "${tokenizedArray[openBracketIndex+2].value}"`,tokenizedArray[openBracketIndex+2].value)
                                 }
-                            } else {
+                            } else { // else assume the primary key columns of that table
                                 throw new SyntaxError(`Expected open bracket instead of "${tokenizedArray[openBracketIndex].value}"`,tokenizedArray[openBracketIndex].value)
                             }
                         } else {
