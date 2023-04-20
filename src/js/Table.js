@@ -14,21 +14,7 @@ export default class Table {
 	columns = [];
 	owner;
 
-	constructor(inputString, database) {
-		// tokenize input string
-		const tokenizedInputString = jsTokens(inputString);
-		let tokenizedArray = Array.from(tokenizedInputString);
-
-		// removes newlines
-		tokenizedArray = tokenizedArray.filter(function (token) {
-			return token.type != "LineTerminatorSequence";
-		});
-
-		// removes whitespaces
-		tokenizedArray = tokenizedArray.filter(function (token) {
-			return token.type != "WhiteSpace";
-		});
-
+	constructor(tokenizedArray, database) {
 		// tokenizedArray[0] this should be "CREATE" but is already checked for	
 
 		var indexOfOpenBracket;
@@ -156,7 +142,7 @@ export default class Table {
 				break
 			} else {
 				// this means there were no table constraints
-				var column = new Column(columnArray, this.columns);
+				var column = new Column(columnArray, this.columns,database);
 				this.columns.push(column);
 			}
 		}
@@ -224,9 +210,9 @@ export default class Table {
 
 			if (Util.isNameValid(tableName)) {
 				if (Util.isNameValid(schemaName)) {
-					if (this.doesSchemaExist(schemaName, database)) {
+					if (this.doesSchemaExist(schemaName, database.getSchemas())) {
 						// get the tables where schema is schemaName
-						if (!this.doesTableExist(tableName,schemaName, database)) { // does table already exist in schema
+						if (!this.doesTableExist(tableName,schemaName, database.getSchemas())) { // does table already exist in schema
 							this.name = tableName
 							this.schema = schemaName
 							return true
@@ -246,7 +232,7 @@ export default class Table {
 			// this means that only table name is present
 		} else if (tokenizedArray[nameIndex + 1].value == "(") {
 			if (Util.isNameValid(tableName)) {
-				if (!this.doesTableExist(tableName,this.schema, database)) {
+				if (!this.doesTableExist(tableName,this.schema, database.getSchemas())) {
 					this.name = tableName;
 				} else {
 					throw new SyntaxError(`Table name "${tableName}" already exists`, tableName)
@@ -259,9 +245,9 @@ export default class Table {
 		}
 	}
 
-	doesSchemaExist(schemaName, database) {
+	doesSchemaExist(schemaName, schemas) {
 		var match = false
-		for (const schema of database) {
+		for (const schema of schemas) {
 			if (schema.name == schemaName) {
 				match = true
 			}
@@ -269,9 +255,9 @@ export default class Table {
 		return match
 	}
 
-	doesTableExist(tableName, schemaName, database) {
+	doesTableExist(tableName, schemaName, schemas) {
 		var tables = []
-		for (const schema of database) {
+		for (const schema of schemas) {
 			if (schema.name == schemaName) {
 				for (const table of schema.tables) {
 					tables.push(table)
@@ -311,7 +297,7 @@ export default class Table {
 							var referencedTable = constraintStatement[6].value
 							var referencedColumn = constraintStatement[8].value
 							var referencedColumnType
-							for (const schema of database) {
+							for (const schema of database.getSchemas()) {
 								for (const table of schema.tables) {
 									if (table.name == referencedTable) {
 										for (const column of table.columns) {

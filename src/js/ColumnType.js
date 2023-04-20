@@ -20,7 +20,7 @@ export default class ColumnType {
             if (this.typesWithInput.includes(type.toLowerCase()) || this.typesWithNoInput.includes(type.toLowerCase())) {
                 this.type = type;
             } else {
-                throw new SyntaxError(`The columnType \"${type.replace(/\s/g, "")}\" does not exist`, type.replace(/\s/g, ""))
+                throw new SyntaxError(`The columnType \"${type}\" does not exist`, type)
             }             
         } else { // if there is a value
             if (this.typesWithNoInput.includes(type.toLowerCase())) {

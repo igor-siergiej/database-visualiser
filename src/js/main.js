@@ -44,7 +44,6 @@ textTabButton.addEventListener("click", clearAlertDiv)
 fileTabButton.addEventListener("click", clearAlertDiv)
 
 function clearAlertDiv() {
-  createLines(database.getAllTables())
   alertDiv.innerHTML = ""
 }
 
@@ -140,8 +139,8 @@ function createTree(data) {
 
 function extractTree(rootNode, data, listOfNodes) {
   //get all nodes where the parent id is rootNode recursively
-  for (const element of data) { 
-    if (element.parentId == rootNode) {  
+  for (const element of data) {
+    if (element.parentId == rootNode) {
       listOfNodes.push(element)
       extractTree(element.id, data, listOfNodes)
     }
@@ -173,12 +172,6 @@ function visualise() {
     syntaxTextArea.innerHTML = ""
     filterArea.innerHTML = ""
     treeArea.innerHTML = ""
-
-    if (lines.length > 0) {
-      for (var line of lines) {
-        line.remove()
-      }
-    }
     // refresh error tab inner html too
   }
 
@@ -205,15 +198,15 @@ function visualise() {
       for (const table of data) {
         treeNames.push(table.id)
       }
-      tablesList = tablesList.filter( (el) => !treeNames.includes(el.name));
+      tablesList = tablesList.filter((el) => !treeNames.includes(el.name));
 
-    
+
       // remove tables that are part of tree from tablesList
       // check if there are left over tables that are not part of tree structure
     }
-   for (const table of tablesList) {
-    table.createTable(tableArea)
-   }
+    for (const table of tablesList) {
+      table.createTable(tableArea)
+    }
 
   } else {
     for (const table of tables) {
@@ -235,7 +228,7 @@ function visualise() {
 
 // this should probably be in a try catch block because it error crashes often
 function createLines(tables) {
-  lines = []
+  removeLines()
   try {
     for (const table of tables) {
       for (const column of table.columns) {
@@ -253,7 +246,7 @@ function createLines(tables) {
             foreignKey.referencedColumn + "/" +
             foreignKey.referencedColumnType
 
-            console.log(from,to)
+          console.log(from, to)
 
           var line = new LeaderLine(
             document.getElementById(from),
@@ -280,8 +273,8 @@ function createLines(tables) {
 }
 
 function removeLines() {
-  for (var line of lines) {
-    line.hide("none")
+  for (const line of lines) {
+    line.remove()
   }
 }
 
@@ -292,6 +285,7 @@ function writeSyntax(syntaxTextArea, tables) {
 }
 
 function validateSQL(inputString) {
+  clearAlertDiv()
   database = new Database();
   publicSchema = new Schema("public", database.getSchemas());
   database.addSchema(publicSchema)
@@ -317,23 +311,36 @@ function validateSQL(inputString) {
       statement = statement.replace(/(\r\n|\n|\r)/gm, ""); // replaces new lines
       statement = statement.trim() // removes white spaces before and after statement
 
-      var words = statement.split(" ")
+      // tokenize input string
+      const tokenizedInputString = jsTokens(statement);
+      let tokenizedArray = Array.from(tokenizedInputString);
 
-      var firstWord = words[0].trim()
-      var secondWord = words[1]
+      // removes newlines
+      tokenizedArray = tokenizedArray.filter(function (token) {
+        return token.type != "LineTerminatorSequence";
+      });
+
+      // removes whitespaces
+      tokenizedArray = tokenizedArray.filter(function (token) {
+        return token.type != "WhiteSpace";
+      });
+
+      console.log("Statement",statement,"TokenizedArray",tokenizedArray)
+
+      var firstWord = tokenizedArray[0].value
+      var secondWord = tokenizedArray[1].value
 
       if (firstWord.toUpperCase() == "CREATE") {
         if (secondWord.toUpperCase() == "SCHEMA") {
-          words = words.splice(2)
-          if (words.length > 1) {
-            throw new SyntaxError(`Unexpected statement "${words[1]}"`, words[1])
+          tokenizedArray = tokenizedArray.splice(2)
+          if (tokenizedArray.length > 1) {
+            throw new SyntaxError(`Unexpected statement "${tokenizedArray[1].value}"`, tokenizedArray[1].value)
           } else {
-            let schema = new Schema(words[0], database.getSchemas());
+            let schema = new Schema(tokenizedArray[0].value, database.getSchemas());
             database.addSchema(schema)
           }
-
         } else if (secondWord.toUpperCase() == "TABLE") {
-          let table = new Table(statement, database.getSchemas());
+          let table = new Table(tokenizedArray, database);
 
           // if schema exists is already checked in Table constructor
           for (const schema of database.getSchemas()) {
@@ -346,15 +353,15 @@ function validateSQL(inputString) {
         }
       } else if (firstWord.toUpperCase() == "ALTER" || firstWord.toUpperCase() == "\\.ALTER") {
         if (secondWord.toUpperCase() == "SCHEMA") {
-          database.alterSchema(words.splice(2))
+          database.alterSchema(tokenizedArray.splice(2))
         } else if (secondWord == "TABLE") {
-          database.alterTable(words.splice(2))
+          database.alterTable(tokenizedArray.splice(2))
         } else {
           throw new SyntaxError(`Unrecognised Flag: ${secondWord}`, secondWord)
         }
       } else {
         // ignore these statements because they are not relative to visualising/structure
-        if (firstWord.toUpperCase() == "SET" || firstWord.toUpperCase() == "SELECT" || firstWord.toUpperCase() == "\\.COPY" || firstWord.toUpperCase() == "COPY") {
+        if (firstWord.toUpperCase() == "SET" || firstWord.toUpperCase() == "SELECT" || firstWord.toUpperCase() == "\\" || firstWord.toUpperCase() == "COPY") {
           continue;
         } else {
           throw new SyntaxError(`Unsupported Statement: ${firstWord}`, firstWord)
@@ -494,7 +501,7 @@ function createCheckbox(type) {
   label.appendChild(document.createTextNode(type))
 
   checkbox.addEventListener('change', function () {
-    highlightWords(type, this)
+    highlighttokenizedArray(type, this)
   })
 
   checkboxDiv.appendChild(checkbox);
@@ -525,15 +532,15 @@ filePicker.addEventListener('change', function () {
 
 document.getElementById("outputTab").hidden = true;
 
-function highlightWords(type, checkbox) {
-  var words = document.querySelectorAll(`[id=${type}]`);
+function highlighttokenizedArray(type, checkbox) {
+  var tokenizedArray = document.querySelectorAll(`[id=${type}]`);
   if (checkbox.checked) {
-    for (let i = 0; i < words.length; i++) {
-      words[i].classList.add("highlightColor")
+    for (let i = 0; i < tokenizedArray.length; i++) {
+      tokenizedArray[i].classList.add("highlightColor")
     }
   } else {
-    for (let i = 0; i < words.length; i++) {
-      words[i].classList.remove("highlightColor")
+    for (let i = 0; i < tokenizedArray.length; i++) {
+      tokenizedArray[i].classList.remove("highlightColor")
     }
   }
 }
