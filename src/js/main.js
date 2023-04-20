@@ -273,9 +273,10 @@ function createLines(tables) {
 }
 
 function removeLines() {
-  for (const line of lines) {
+  for (var line of lines) {
     line.remove()
   }
+  lines = []
 }
 
 function writeSyntax(syntaxTextArea, tables) {
