@@ -11,7 +11,7 @@ export default class Column {
     nullable;
     unique = false;
 
-    constructor(tokenizedArray, columns) {
+    constructor(tokenizedArray, columns, database) {
         //Util.joinPunctuators(tokenizedArray)
 
         // first element should be name
@@ -36,7 +36,7 @@ export default class Column {
         // start from second word since first is columnName
         var i = 1 
 
-        var columnConstraints = ["PRIMARY", "NOT", "NULL", "UNIQUE","DEFAULT"]
+        var columnConstraints = ["PRIMARY", "NOT", "NULL", "UNIQUE","DEFAULT", "REFERENCES"]
 
         // add words to dataType until we reach a constraint or "(" or end of array
         while (i < tokenizedArray.length && 
@@ -83,10 +83,10 @@ export default class Column {
             tokenizedArray = tokenizedArray.splice(2)
         }
         this.columnType = columnType
-        this.parseColumnConstraints(tokenizedArray)
+        this.parseColumnConstraints(tokenizedArray,database)
     }
 
-    parseColumnConstraints(tokenizedArray) {
+    parseColumnConstraints(tokenizedArray,database) {
         while (tokenizedArray.length > 0) {
             var word = tokenizedArray[0].value
             
@@ -113,7 +113,57 @@ export default class Column {
                     tokenizedArray.shift()
                     break;
                 case "REFERENCES":
-                    // TODO foreign key
+                    var table
+                    var openBracketIndex
+
+                    if (tokenizedArray[2].value == ".") {
+                        // if schema exists
+                        if (Util.doesNameExist(tokenizedArray[1].value,database.getSchemas())) {
+                            var tempTable = database.getTable(tokenizedArray[3].value,tokenizedArray[1].value)
+                            if (tempTable != undefined) {
+                                openBracketIndex = 4
+                                table = tempTable
+                            } else {
+                                throw new SyntaxError(`Table "${tokenizedArray[3].value}" does not exist`, tokenizedArray[3].value)
+                            }
+                        } else {
+                            throw new SyntaxError(`Schema "${tokenizedArray[1].value}" does not exist`, tokenizedArray[1].value)
+                        }
+                    } else {
+                        var tempTable = database.getTable(tokenizedArray[1].value)
+                        if (tempTable != undefined) {
+                            table = tempTable
+                            openBracketIndex = 2
+                        } else {
+                            throw new SyntaxError(`Table "${tokenizedArray[1].value}" does not exist`, tokenizedArray[1].value)
+                        }
+                    }
+                    if (tokenizedArray[openBracketIndex] != undefined) {
+                        if (tokenizedArray[openBracketIndex+2] != undefined) {
+                            if (tokenizedArray[openBracketIndex].value == "(") {
+                                if (tokenizedArray[openBracketIndex+2].value == ")") {
+                                    var foundColumn
+                                    for (const element of table.columns) {
+                                        if (element.name == tokenizedArray[openBracketIndex+1].value){
+                                            foundColumn = element
+                                        }
+                                    }
+                                    if (foundColumn != undefined) {
+                                        this.#foreignKey = new ForeignKey(table.name,foundColumn.name,foundColumn.columnType.type)
+                                        tokenizedArray.splice(0,openBracketIndex+3)
+                                    }
+                                } else {
+                                    throw new SyntaxError(`Expected closing bracket instead of "${tokenizedArray[openBracketIndex+2].value}"`,tokenizedArray[openBracketIndex+2].value)
+                                }
+                            } else {
+                                throw new SyntaxError(`Expected open bracket instead of "${tokenizedArray[openBracketIndex].value}"`,tokenizedArray[openBracketIndex].value)
+                            }
+                        } else {
+                            throw new SyntaxError(`Missing flag near "${tokenizedArray[tokenizedArray.length-1].value}"`,tokenizedArray[tokenizedArray.length-1].value)
+                        }
+                    } else {
+                        throw new SyntaxError(`Missing flag near "${tokenizedArray[tokenizedArray.length-1].value}"`,tokenizedArray[tokenizedArray.length-1].value)
+                    }
                     break;
                 case "CHECK":
                     // TODO dunnno
