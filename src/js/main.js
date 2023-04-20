@@ -201,8 +201,6 @@ function visualise() {
     for (const data of dataList) {
       var tree = createTree(data)
       drawTreeTablesRecursively(tree, treeArea, tables)
-      console.log(tablesList)
-      console.log(data)
       var treeNames = []
       for (const table of data) {
         treeNames.push(table.id)
@@ -237,7 +235,6 @@ function visualise() {
 
 // this should probably be in a try catch block because it error crashes often
 function createLines(tables) {
-  removeLines()
   lines = []
   try {
     for (const table of tables) {
@@ -255,6 +252,8 @@ function createLines(tables) {
           var to = foreignKey.referencedTable + "/" +
             foreignKey.referencedColumn + "/" +
             foreignKey.referencedColumnType
+
+            console.log(from,to)
 
           var line = new LeaderLine(
             document.getElementById(from),
@@ -277,7 +276,6 @@ function createLines(tables) {
   } catch (error) {
     console.log(error)
     console.log(getForeignKeysInDB())
-    createAlert(new Error("Arrows failed to draw"), alertDiv)
   }
 }
 
