@@ -304,7 +304,7 @@ export default class Table {
 					}
 					break;
 
-				case "FOREIGN":
+				case "FOREIGN":// need to add functionality for multiple columns in foreign key
 					if (secondWord.toUpperCase() == "KEY") {
 						if (thirdWord == "(") {
 							var columnName = constraintStatement[3].value
@@ -452,7 +452,7 @@ export default class Table {
 		table.appendChild(nameColumn);
 		table.appendChild(typeColumn);
 
-		div.appendChild(table);
+		div.appendChild(table);	
 	}
 
 	createColumn(text, div, column) {
@@ -462,7 +462,7 @@ export default class Table {
 			if (text != "P") {
 				nameRow.className = "row py-1 px-2 gx-0 border";
 			} else {
-				nameRow.className = "row";
+				nameRow.className = "row gx-0 gy-0";
 				nameRow.innerHTML =`<i class="bi bi-key-fill"></i>`
 				div.appendChild(nameRow)
 				return
@@ -477,8 +477,6 @@ export default class Table {
 			div.appendChild(nameRow)
 		}
 	}
- 
-
 
 	writeSyntax(syntaxArea) {
 		Util.writeSyntax("CREATE TABLE ", syntaxArea, Util.typeColor)

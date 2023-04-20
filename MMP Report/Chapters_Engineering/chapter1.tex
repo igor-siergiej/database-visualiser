@@ -3,9 +3,11 @@
 
 \section{Background}
 
-Database tables are hard to visualise and understand the relationships between them, the project is meant to make this process of design easier and more efficient. This application should spot trivial mistakes like a table not having a primary key or tables with no foreign key constraints, it will also spot syntax errors in the text if it is entered via the text area or there was an error in uploading the psql dump file.
+Because database tables are hard to visualise and understanding the relationships between them is not trivial, this project is meant to make this process of design easier and more efficient. This application spots trivial mistakes like a table not having a primary key or tables with no foreign key constraints. It also validates the SQL that the user uploads and informs them of the syntax error that has been detected.
 
-The background research consisted of reviewing any other projects that aimed at achieving a similar goal to this project and see their approach for inspiration. Mostly SQL parsing is done by either looking at every character in a string or using Regular Expressions, from this research the decision was made to use a combination of both of these approaches to make sure the parsing was thorough but not tedious to write and maintain. Most of the current open-source SQL parsers were not fit for this application or lacking the functionality for parsing SQL Data Definition Language. This meant that the main focus on this project needed to be creating SQL parsing from scratch.
+The main application of this project is to aid students in designing databases. Its aim is to find any errors or possible flaws in the structure and design of the tables before submitting their project. Another application of this project is to be used in marking student projects to quickly spot obvious mistakes and missing relationships between tables.
+
+The background research consisted of reviewing any other projects that aimed at achieving a similar goal to this project and seeing their approach for inspiration. Mostly SQL parsing is done by either looking at every character in a string or using Regular Expressions \cite{Regex}, Based on this research, the decision was made to use a combination of both of these approaches to make sure the parsing was thorough but not tedious to write and maintain. Most of the current open-source SQL parsers were not fit for this application or lacked the functionality for parsing SQL Data Definition Language. This meant that the main focus on this project needed to be creating SQL parsing from scratch.
 
 The main areas of research for this project are as follows:
 
@@ -19,41 +21,57 @@ The main areas of research for this project are as follows:
 
 \subsection{JavaScript Framework}
 
-At the beginning of the project, a decision was made for the database visualiser to be a web-based project which meant that, there were choices to be made about the possible combinations of frameworks which could be used. For JavaScript the decision was made to just use native JavaScript since the scripting that had to be done for this project didn't require any particular frameworks like React, Angular or Vue.
+At the beginning of the project, a decision was made for the database visualiser to be a web-based project, which meant that there were choices to be made about the possible combinations of frameworks that could be used. For JavaScript, the decision was made to just use native JavaScript since the scripting that had to be done for this project didn't require any particular frameworks like React, Angular, or Vue.
 
 \subsection{CSS Framework}
 
-Since the main focus of this project is the functionality of the SQL parser the styling of the webpage could be handled by a CSS Framework. It was decided to use the newest version of Bootstrap \cite{Bootstrap} since it has components that can be used by default which made the design aspect easier and faster. Tailwind was another option for the CSS framework however it didn't provide these components which is why Bootstrap was chosen.
+Since the main focus of this project is the functionality of the SQL parser, the styling of the webpage could be handled by a CSS framework. It was decided to use the newest version of Bootstrap \cite{Bootstrap} since it has components that can be used by default, which made the design aspect easier and faster. Tailwind was another option for the CSS framework, but it didn't provide these components, which is why Bootstrap was chosen.
 
 \subsection{Working Environment}
 
-To start working on the website, a local development server was created to provide a runtime environment. Node.js was used with Visual Studio Code \cite{Code} as the IDE were the main elements of the working Environment.
+To start working on the website, a local development server was created to provide a runtime environment. Node.js was used with Visual Studio Code \cite{Code} as the IDE. These were the main elements of the working environment.
 
 \subsection{Server Hosting}
 
-The Database Visualiser is meant to be used by many students at once so it is meant to be made available on the internet which meant that server hosting was needed. Free server hosting services\cite{Infinity} were used in the beginning, this was done to test that building the webpage locally worked when deployed to the server. Later on in the development process the built webpage was deployed to the University's servers which was a more reliable option since the demonstrations would take place on campus.
+The Database Visualiser is meant to be used by many students at once, so it is meant to be made available on the internet, which meant that server hosting was needed. Free server hosting services\cite{Infinity} were used in the beginning, this was done to test that building the webpage locally worked when deployed to the server. Later on in the development process, the built webpage was deployed to the university's servers, which was a more reliable option since the demonstrations would take place on campus.
 
 \subsection{Version Control}
 
-Version Control was used in this project to mainly back up the code base. Since only one developer was working on this project it was not needed but it worked together with the lifecycle model and process used. Due to its popularity in the industry GitHub \cite{Github} was used.
+Version control was used in this project to mainly back up the code base. Since only one developer was working on this project, it was not needed, but it worked well with the lifecycle model and process used. Due to its popularity in the industry, GitHub \cite{Github} was used.
 
 \section{Analysis}
 
+From the analysis of the task, it was clear that an SQL parser had to be written from scratch, which is the main task for this project. This meant that the input data had to be organized according to the SQL grammar so that it could be converted into a visual table and be interpreted by the user. The visualisation part of this project will consist of creating the tables on the webpage and drawing the relationships between the tables.
 
+\subsection{Regular Expressions}
 
-%Taking into account the problem and what you learned from the background work, what was your analysis of the problem? How did your analysis help to decompose the problem into the main tasks that you would undertake? Were there alternative approaches? Why did you choose one approach compared to the alternatives? 
+Regular Expressions are usually something that should not be used for parsing but it can be helpful \cite{Parsing}. If only Regular Expressions are used for parsing they can be very fragile and should only be used for simpler languages. This is why for this project Regular Expressions are used for only parts of the parsing and it does not make up the entire parser. This was an alternative approach that was looked into but it would not be appropriate for this project.
 
-%There should be a clear statement of the objectives of the work, which you will evaluate at the end of the work. 
+\subsection{Parser}
 
-%In most cases, the agreed objectives or requirements will be the result of a compromise between what would ideally have been produced and what was determined to be possible in the time available. A discussion of the process of arriving at the final list is usually appropriate.
+Regular expressions are usually something that should not be used for parsing, but they can be helpful \cite{Parsing}. If only regular expressions are used for parsing, they can be very fragile and should only be used for simpler languages. This is why for this project regular expressions are used for only parts of the parsing and not the entire parser. This was an alternative approach that was looked into, but it would not be appropriate for this project.
 
-%As mentioned in the lectures, think about possible security issues for the project topic. Whilst these might not be relevant for all projects, do consider if there are relevant for your project. Where there are relevant security issues, discuss how they will this affect the work that you are doing. Carry forward this discussion into relevant areas for design, implementation and testing.
+\subsection{Visualising} 
+
+Visualising consists of displaying the tables after the SQL has been parsed, and if there are any relationships between tables, then those should be displayed as well. The way the tables are structured and laid out is also an important part of visualising since it should be a structure that is easily comprehensible by the user. It should also be displayed properly on the webpage in a responsive manner since the website can be used on devices of different sizes.
+
+\subsection{Suggestion of Structure Faults}
+
+After the SQL has been parsed and the database has been displayed to the user, the application should provide advice and possible faults of the database, if there are any. This should be clear and direct, and it also should provide feedback as to how to fix this issue. This would involve an analysis of the database structure to see if there are any keys missing or an incorrect design of the database.
+
+\subsection{Scope}
+
+To set an appropriate target for this project, it was decided to only create parsing for DDL (Data Definition Language) for PostgreSQL only. It was decided to only create parsing for DDL because it is the SQL commands that define a database schema, which deals with creating and modifying the structure of the database, which is what is going to be visualised. The structure of the database is what this project focuses on, and it is what will be validated for the user. Creating a parser for the entirety of PostgreSQL would be outside the scope of this project and would take up too much time from designing the visualising part of this project.
+
+Another goal for this project was to create parsing for the DQL (Data Query Language). This would involve allowing the user to not only input their table structure but also their entries in the tables. This would allow the user to enter a query for the database, and this project would be able to parse the query and return the result of the query to the user. The user would then test for themselves to see if the returned entries were what they expected from their queries. However, this proved to be extra features that were not needed for the scope of this project, as it only mentioned identifying database design flaws and would prove to take too much time than the project allows.
+
+%Include the auto-fixing of the database structure?
 
 \section{Process}
 
-For this project a process of adapted Scrumban was used. The elements of Scrum that were incorporated were: 
+For this project, a process adapted from Scrumban was used. The elements of Scrum that were incorporated were:  
 \begin{itemize}
-	\item Week-length sprints with weekly review and retrospective sessions for iterative planning at regular intervals.
+	\item Week-long sprints with weekly review and retrospective sessions for iterative planning at regular intervals.
 	\item These meetings dictated how much work was pulled into the sprint based on complexity and priority of the work.
 	\item Assured necessary levels of analysis and design before starting development.
 \end{itemize}

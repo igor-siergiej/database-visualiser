@@ -51,17 +51,3 @@ CREATE TABLE test4(
    column1 serial,
    FOREIGN KEY(column1) REFERENCES test3 (column1)
 );
-
-    
-  
- 
-    
- 
- 
-
-
-
-
-
-
- 
