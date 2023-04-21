@@ -204,7 +204,6 @@ export default class Column {
         } else if (this.nullable == true) {
             Util.writeSyntax(" NULL", syntaxArea, Util.typeValueColor)
         }
-        Util.writeSyntax("<br>",syntaxArea)
     }
   
     addKey(key) {

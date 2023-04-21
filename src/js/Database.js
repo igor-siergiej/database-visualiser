@@ -1,6 +1,7 @@
 import Util from "./Util";
 import { SyntaxError } from "./SyntaxError";
 import jsTokens from "js-tokens";
+import Table from "./Table";
 
 export default class Database {
     schemas = []
@@ -66,8 +67,7 @@ export default class Database {
     }
 
     alterTable(statement) {
-        var tableName
-        var statementIndex
+        var table
 
         // ignore ONLY keyword
         if (statement[0].value.toUpperCase() == "ONLY") {
@@ -86,8 +86,8 @@ export default class Database {
                 }
                 // does table name exist in the schema
                 if (Util.doesNameExist(statement[2].value, tempSchema.tables)) {
-                    statementIndex = 3
-                    tableName = statement[2].value
+                    table = this.getTable(statement[2].value,tempSchema.name) 
+                    statement = statement.splice(3)
                 } else {
                     throw new SyntaxError(`Table "${statement[2].value}" does not exist in ${statement[0].value} Schema`)
                 }
@@ -96,21 +96,21 @@ export default class Database {
             }
         } else {
             if (Util.doesNameExist(statement[0].value, this.getAllTables())) {
-                tableName = statement[0].value
-                statementIndex = 1
+                table = this.getTable(statement[0].value)
+                statement = statement.splice(1)
             } else {
                 throw new SyntaxError(`Table "${statement[0].value}" does not exist`, statement[0].value)
             }
         }
 
-        switch(statement[statementIndex].value.toUpperCase()) {
+        switch(statement[0].value.toUpperCase()) {
             case "OWNER":
-                if (statement[statementIndex + 1].value == "TO") {
-                    var schemaName = statement[statementIndex + 2].value
+                if (statement[1].value == "TO") {
+                    var schemaName = statement[ + 2].value
                     if (Util.doesNameExist(schemaName,this.schemas)) {
                         // set table owner to schema
                         for (const element of this.getAllTables()) {
-                            if (element.name == tableName) {
+                            if (element.name == table.name) {
                                 element.owner = schemaName
                             }
                         }
@@ -118,14 +118,31 @@ export default class Database {
                         throw new SyntaxError(`Schema "${schemaName}" does not exist`, schemaName)
                     }
                 } else {
-                    throw new SyntaxError(`Expecting keyword "TO" instead of "${statement[statementIndex + 1].value}"`,statement[statementIndex + 1].value)
+                    throw new SyntaxError(`Expecting keyword "TO" instead of "${statement[1].value}"`,statement[1].value)
                 }
                 break;
             case "ADD":
+                if (statement[ 1].value.toUpperCase() == "CONSTRAINT") {
+                    if (Util.isNameValid(statement[2].value)) {
+                        if (statement[3].value == "PRIMARY") {
+                            statement = statement.splice(3)
+                            Table.parsePriamryKeyTableConstraint(statement,table)
+                        } else if (statement[3].value == "FOREIGN") {
+                            statement = statement.splice(3)
+                            Table.parseForeignKeyTableConstraint(statement,table,this)
+                        } else {
+                            throw new SyntaxError(`Unrecognised Statement: ${statement[ 1].value}`, statement[ 1].value)
+                        }
+                    } else {
+                        // constarint name is invalid
+                    }
+                } else {
+                    // unrecognised statement
+                }
 
                 break;
             default:
-                throw new SyntaxError(`Unrecognised Statement: ${statement[statementIndex].value}`, statement[statementIndex].value)
+                throw new SyntaxError(`Unrecognised Statement: ${statement[0].value}`, statement[0].value)
         }
     }
 

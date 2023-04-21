@@ -163,7 +163,7 @@ function drawTreeTablesRecursively(tree, appendNode, tables) {
   var item = document.createElement("li")
   for (const table of tables) {
     if (table.name == tree.id) {
-      table.createTreeTable(item)
+      table.createTable(item)
     }
   }
   appendNode.appendChild(item)
@@ -321,6 +321,7 @@ function validateSQL(inputString) {
     var validated = true
 
     for (var statement of statements) {
+      statement = statement.replaceAll("\\.", '')
       statement = statement.replace(/(\r\n|\n|\r)/gm, ""); // replaces new lines
       statement = statement.trim() // removes white spaces before and after statement
 
@@ -372,7 +373,7 @@ function validateSQL(inputString) {
         }
       } else {
         // ignore these statements because they are not relative to visualising/structure
-        if (firstWord.toUpperCase() == "SET" || firstWord.toUpperCase() == "SELECT" || firstWord.toUpperCase() == "\\" || firstWord.toUpperCase() == "COPY") {
+        if (firstWord.toUpperCase() == "SET" || firstWord.toUpperCase() == "SELECT" || firstWord.toUpperCase() == "COPY") {
           continue;
         } else {
           throw new SyntaxError(`Unsupported Statement: ${firstWord}`, firstWord)
