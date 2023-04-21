@@ -363,7 +363,7 @@ function validateSQL(inputString) {
         } else {
           throw new SyntaxError(`Unrecognised Flag: ${secondWord}`, secondWord)
         }
-      } else if (firstWord.toUpperCase() == "ALTER" || firstWord.toUpperCase() == "\\.ALTER") {
+      } else if (firstWord.toUpperCase() == "ALTER") {
         if (secondWord.toUpperCase() == "SCHEMA") {
           database.alterSchema(tokenizedArray.splice(2))
         } else if (secondWord == "TABLE") {
@@ -390,8 +390,6 @@ function validateSQL(inputString) {
     }
     validated = false
   }
-  // DEBUG ONLY
-  console.log(database)
   return validated
 }
 

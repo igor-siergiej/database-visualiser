@@ -442,7 +442,6 @@ export default class Table {
 			this.createKeyColumn(row, column.hasPrimaryKey())
 			this.createColumn(row, column.name)
 			this.createColumn(row, column.columnType.type, column)
-
 		}
 
 		tableContainer.appendChild(table)
@@ -463,7 +462,7 @@ export default class Table {
 
 	createKeyColumn(row, doesColumnHavePrimaryKey) {
 		let cell = row.insertCell();
-		cell.className = ""
+		cell.className = "borderless"
 		if (doesColumnHavePrimaryKey) {
 			cell.innerHTML = `<i class="bi bi-key-fill bi-3x"></i>`
 		}
