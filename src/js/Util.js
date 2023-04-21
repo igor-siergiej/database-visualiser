@@ -12,7 +12,7 @@ export default class Util {
         var valid = false
         const validSQLColumnNameRegex = /^[A-Za-z_][A-Za-z\d_]*$/;
 
-        if (name.match(validSQLColumnNameRegex) && name.length < 59) {
+        if (name.match(validSQLColumnNameRegex) && name.length < 80) {
             valid = true
         }
         return valid

@@ -122,7 +122,7 @@ export default class Database {
                 }
                 break;
             case "ADD":
-                if (statement[ 1].value.toUpperCase() == "CONSTRAINT") {
+                if (statement[1].value.toUpperCase() == "CONSTRAINT") {
                     if (Util.isNameValid(statement[2].value)) {
                         if (statement[3].value == "PRIMARY") {
                             statement = statement.splice(3)
@@ -134,10 +134,10 @@ export default class Database {
                             throw new SyntaxError(`Unrecognised Statement: ${statement[ 1].value}`, statement[ 1].value)
                         }
                     } else {
-                        // constarint name is invalid
+                        throw new SyntaxError(`Constraint name: ${statement[2].value} is not valid`, statement[2].value)
                     }
                 } else {
-                    // unrecognised statement
+                    throw new SyntaxError(`Unrecognised Statement: ${statement[1].value}`, statement[1].value)
                 }
 
                 break;
