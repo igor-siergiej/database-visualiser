@@ -19,6 +19,7 @@ export default class Util {
     }
 
     static doesNameExist(name, list) {
+        name = name.replace(/['"]+/g, '')
         var isNameFound = false
         for (const element of list) {
             if (element.name == name) {
