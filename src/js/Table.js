@@ -14,21 +14,7 @@ export default class Table {
 	columns = [];
 	owner;
 
-	constructor(inputString, database) {
-		// tokenize input string
-		const tokenizedInputString = jsTokens(inputString);
-		let tokenizedArray = Array.from(tokenizedInputString);
-
-		// removes newlines
-		tokenizedArray = tokenizedArray.filter(function (token) {
-			return token.type != "LineTerminatorSequence";
-		});
-
-		// removes whitespaces
-		tokenizedArray = tokenizedArray.filter(function (token) {
-			return token.type != "WhiteSpace";
-		});
-
+	constructor(tokenizedArray, database) {
 		// tokenizedArray[0] this should be "CREATE" but is already checked for	
 
 		var indexOfOpenBracket;
@@ -99,7 +85,7 @@ export default class Table {
 		if (indexOfOpenBracket == -1) {
 			throw new SyntaxError(`Missing columns`)
 		}
-		
+
 
 		// just get the values from tokenized array
 		var tokenizedArrayValues = tokenizedArray.map(function (element) {
@@ -156,7 +142,7 @@ export default class Table {
 				break
 			} else {
 				// this means there were no table constraints
-				var column = new Column(columnArray, this.columns);
+				var column = new Column(columnArray, this.columns, database);
 				this.columns.push(column);
 			}
 		}
@@ -224,9 +210,9 @@ export default class Table {
 
 			if (Util.isNameValid(tableName)) {
 				if (Util.isNameValid(schemaName)) {
-					if (this.doesSchemaExist(schemaName, database)) {
+					if (this.doesSchemaExist(schemaName, database.getSchemas())) {
 						// get the tables where schema is schemaName
-						if (!this.doesTableExist(tableName,schemaName, database)) { // does table already exist in schema
+						if (!this.doesTableExist(tableName, schemaName, database.getSchemas())) { // does table already exist in schema
 							this.name = tableName
 							this.schema = schemaName
 							return true
@@ -246,7 +232,7 @@ export default class Table {
 			// this means that only table name is present
 		} else if (tokenizedArray[nameIndex + 1].value == "(") {
 			if (Util.isNameValid(tableName)) {
-				if (!this.doesTableExist(tableName,this.schema, database)) {
+				if (!this.doesTableExist(tableName, this.schema, database.getSchemas())) {
 					this.name = tableName;
 				} else {
 					throw new SyntaxError(`Table name "${tableName}" already exists`, tableName)
@@ -259,9 +245,9 @@ export default class Table {
 		}
 	}
 
-	doesSchemaExist(schemaName, database) {
+	doesSchemaExist(schemaName, schemas) {
 		var match = false
-		for (const schema of database) {
+		for (const schema of schemas) {
 			if (schema.name == schemaName) {
 				match = true
 			}
@@ -269,9 +255,9 @@ export default class Table {
 		return match
 	}
 
-	doesTableExist(tableName, schemaName, database) {
+	doesTableExist(tableName, schemaName, schemas) {
 		var tables = []
-		for (const schema of database) {
+		for (const schema of schemas) {
 			if (schema.name == schemaName) {
 				for (const table of schema.tables) {
 					tables.push(table)
@@ -279,61 +265,127 @@ export default class Table {
 				break
 			}
 		}
-		return Util.doesNameExist(tableName,tables)
+		return Util.doesNameExist(tableName, tables)
 	}
 
 	parseTableConstraints(tableConstraintsList, database) {
-		for (const constraintStatement of tableConstraintsList) {
-			var firstWord = constraintStatement[0].value
-			var secondWord = constraintStatement[1].value
-			var thirdWord = constraintStatement[2].value
-			switch (firstWord.toUpperCase()) {
+		for (var constraintStatement of tableConstraintsList) {
+			switch (constraintStatement[0].value.toUpperCase()) {
 				case "PRIMARY":
-					if (secondWord.toUpperCase() == "KEY") {
-						if (thirdWord == "(") {
-							var columnNames = [];
-							// while values are either "," or valid column name add them to columnNames
-							columnNames.push(constraintStatement[3].value)
-							columnNames.push(constraintStatement[5].value)
-							this.setPrimaryKey(columnNames)
-						} else {
-							throw new SyntaxError(`Expected open bracket instead of: "${thirdWord}"`, thirdWord)
-						}
-					} else {
-						throw new SyntaxError(`Expected "KEY" instead of: "${secondWord}"`, secondWord)
-					}
+					Table.parsePriamryKeyTableConstraint(constraintStatement, this)
 					break;
-
-				case "FOREIGN":// need to add functionality for multiple columns in foreign key
-					if (secondWord.toUpperCase() == "KEY") {
-						if (thirdWord == "(") {
-							var columnName = constraintStatement[3].value
-							var referencedTable = constraintStatement[6].value
-							var referencedColumn = constraintStatement[8].value
-							var referencedColumnType
-							for (const schema of database) {
-								for (const table of schema.tables) {
-									if (table.name == referencedTable) {
-										for (const column of table.columns) {
-											if (column.name == referencedColumn) {
-												referencedColumnType = column.columnType.type
-											}
-										}
-									}
-								}
-							}
-							this.setForeignKey(columnName, referencedTable, referencedColumn, referencedColumnType)
-						} else {
-							throw new SyntaxError(`Expected open bracket instead of: ${thirdWord}`, thirdWord)
-						}
-					} else {
-						throw new SyntaxError(`Expected "KEY" instead of: ${secondWord}`, secondWord)
-					}
+				case "FOREIGN":
+					Table.parseForeignKeyTableConstraint(constraintStatement, this, database)
 					break;
 				default:
-					throw new SyntaxError(`${firstWord} is not a valid constraint`, firstWord)
+					throw new SyntaxError(`${constraintStatement[0].value} is not a valid constraint`, constraintStatement[0].value)
 			}
 		}
+	}
+
+	static parseForeignKeyTableConstraint(constraintStatement, table, database) {
+		if (constraintStatement[1].value.toUpperCase() == "KEY") {
+			if (constraintStatement[2].value == "(") {
+
+				// removing "FOREIGN KEY ("
+				constraintStatement = constraintStatement.splice(3)
+				var columnNames = table.parseValuesInsideBrackets(constraintStatement, table)
+
+				if (constraintStatement[0].value.toUpperCase() == "REFERENCES") {
+					// removing previous elements of constraintStatement 
+					constraintStatement = constraintStatement.splice(1)
+
+					var referencedTable
+					var openBracketIndex
+
+					if (constraintStatement[1].value == ".") {
+						// if schema exists
+						if (Util.doesNameExist(constraintStatement[0].value, database.getSchemas())) {
+							var tempTable = database.getTable(constraintStatement[2].value, constraintStatement[0].value)
+							if (tempTable != undefined) {
+								openBracketIndex = 3
+								referencedTable = tempTable
+							} else {
+								throw new SyntaxError(`Table "${constraintStatement[2].value}" does not exist`, constraintStatement[2].value)
+							}
+						} else {
+							throw new SyntaxError(`Schema "${constraintStatement[0].value}" does not exist`, constraintStatement[0].value)
+						}
+					} else {
+						var tempTable = database.getTable(constraintStatement[0].value)
+						if (tempTable != undefined) {
+							referencedTable = tempTable
+							openBracketIndex = 1
+						} else {
+							throw new SyntaxError(`Table "${constraintStatement[0].value}" does not exist`, constraintStatement[0].value)
+						}
+					}
+				} else {
+					throw new SyntaxError(`Unrecognised constraint: ${constraintStatement[0].value}`, constraintStatement[0].value)
+				}
+
+				constraintStatement = constraintStatement.splice(openBracketIndex + 1)
+				var referencedColumnNames = referencedTable.parseValuesInsideBrackets(constraintStatement, referencedTable)
+
+
+				// make sure the number of columns are the same in foreign key constraint
+				if (referencedColumnNames.length != columnNames.length) {
+					throw new SyntaxError("Number of referenced column names does not match number of column names in foreign key constraint")
+				}
+
+				for (let i = 0; i < columnNames.length; i++) {
+					var columnType
+					for (const column of referencedTable.columns) {
+						if (column.name == referencedColumnNames[i]) {
+							columnType = column.columnType.type
+						}
+					}
+					table.setForeignKey(columnNames[i], referencedTable.name, referencedColumnNames[i], columnType)
+				}
+
+			} else {
+				throw new SyntaxError(`Expected open bracket instead of: ${thirdWord}`, thirdWord)
+			}
+		} else {
+			throw new SyntaxError(`Expected "KEY" instead of: ${secondWord}`, secondWord)
+		}
+	}
+
+	static parsePriamryKeyTableConstraint(constraintStatement, table) {
+		if (constraintStatement[1].value.toUpperCase() == "KEY") {
+			if (constraintStatement[2].value == "(") {
+				// removing "PRIMARY KEY ("
+				constraintStatement = constraintStatement.splice(3)
+				var columnNames = table.parseValuesInsideBrackets(constraintStatement, table)
+				table.setPrimaryKey(columnNames)
+			} else {
+				throw new SyntaxError(`Expected open bracket instead of: "${constraintStatement[2].value}"`, constraintStatement[2].value)
+			}
+		} else {
+			throw new SyntaxError(`Expected "KEY" instead of: "${constraintStatement[1].value}"`, constraintStatement[1].value)
+		}
+	}
+
+	// this will take a constraintStatement and at index starting 0 parse values in brackets separated by commas until a closing bracket is reached
+	parseValuesInsideBrackets(constraintStatement, table) {
+		let j = 0
+		let values = ""
+		while (constraintStatement[j].value != ")") {
+			if (constraintStatement[j + 1] == undefined || constraintStatement[j + 1].value == "(") {
+				throw new SyntaxError(`Missing closing bracket in key constraint`)
+			}
+			if (constraintStatement[j].value != ",") {
+				if (!Util.doesNameExist(constraintStatement[j].value, table.columns)) {
+					throw new SyntaxError(`Column "${constraintStatement[j].value}" does not exist in table "${table.name}"`, constraintStatement[j].value)
+				}
+			}
+			values += constraintStatement[j].value
+			j++
+		}
+		// removes the values that were just parsed and put into values with the closing bracket
+		constraintStatement.splice(0, j + 1)
+		values = values.split(",")
+		return values
 	}
 
 	setPrimaryKey(columnNames) {
@@ -363,132 +415,71 @@ export default class Table {
 		return false
 	}
 
-	createTreeTable(div) {
-		let table = document.createElement("div");
-		table.className = "table row border border-2 mx-3 gx-0 my-3";
-		table.style = "width: fit-content;"
-		table.id = this.name
-
-		let headingColumn = document.createElement("div")
-		headingColumn.className = "row-lg"
-
-		let keyColumn = document.createElement("div");
-		if (this.hasPrimaryKey()) {
-			keyColumn.className = "col-1 border border-2 gx-0";
-		} else {
-			keyColumn.className = "col-1 border border-2 gx-0 error";
-		}
-
-		let nameColumn = document.createElement("div");
-		nameColumn.className = "col-lg border border-2  gx-0";
-
-		let typeColumn = document.createElement("div");
-		typeColumn.className = "col-lg border border-2  gx-0";
-		typeColumn.id = "typeColumn"
-
-		let heading = document.createElement("h3");
-		heading.className = "text-center border my-0 bg-primary";
-		heading.innerText = this.name;
-		headingColumn.appendChild(heading)
-		table.appendChild(headingColumn);
-
-		for (const column of this.columns) {
-
-			if (column.hasPrimaryKey()) {
-				this.createColumn("P", keyColumn)
-			} else {
-				this.createColumn("", keyColumn)
-			}
-
-			this.createColumn(column.name, nameColumn)
-			this.createColumn(column.columnType.getValue(), typeColumn, column)
-			// type column has to contain table name, column name and datatype
-		}
-
-		// fix this in the future and find a better way to set ids to draw lines 
-		// or just keep it as it is but rework function to make it look better
-		table.appendChild(keyColumn);
-		table.appendChild(nameColumn);
-		table.appendChild(typeColumn);
-
-		div.appendChild(table);
-	}
 
 	createTable(div) {
-		let table = document.createElement("div");
-		table.className = "row border border-2 mx-3 w-25 gx-0 h-100 my-3 w-auto";
-		table.id = this.name
+		let tableContainer = document.createElement("div")
+		let table = document.createElement("table");
+		table.className = "table border border-2"
+		table.style = "width: fit-content;"
 
-		let keyColumn = document.createElement("div");
-		if (this.hasPrimaryKey()) {
-			keyColumn.className = "col-1 border border-2 gx-0";
-		} else {
-			keyColumn.className = "col-1 border border-2 gx-0 error";
+		let thead = table.createTHead();
+		let headingRow = thead.insertRow();
+
+		headingRow.className = ""
+
+		let heading = document.createElement("th")
+		heading.colSpan = 3
+		heading.className = "bg-primary"
+
+		let headingText = document.createTextNode(this.name);
+
+		heading.appendChild(headingText)
+		headingRow.appendChild(heading)
+
+		for (const column of this.columns) {
+			var row = table.insertRow();
+
+			this.createKeyColumn(row, column.hasPrimaryKey())
+			this.createColumn(row, column.name)
+			this.createColumn(row, column.columnType.type, column)
 		}
 
-		let nameColumn = document.createElement("div");
-		nameColumn.className = "col border border-2 h-100 gx-0";
-
-		let typeColumn = document.createElement("div");
-		typeColumn.className = "col border border-2 h-100 gx-0";
-		typeColumn.id = "typeColumn"
-
-		let heading = document.createElement("h3");
-		heading.className = "text-center border my-0 bg-primary";
-		heading.innerText = this.name;
-		table.appendChild(heading);
-
-		for (const column of this.columns) { 
-
-			
-			this.createColumn(column.name, nameColumn)
-			this.createColumn(column.columnType.getValue(), typeColumn, column)
-			// type column has to contain table name, column name and datatype
-		}
-
-		// fix this in the future and find a better way to set ids to draw lines 
-		// or just keep it as it is but rework function to make it look better
-		table.appendChild(keyColumn);
-		table.appendChild(nameColumn);
-		table.appendChild(typeColumn);
-
-		div.appendChild(table);	
+		tableContainer.appendChild(table)
+		div.appendChild(tableContainer);
 	}
 
-	createColumn(text, div, column) {
-		if (text != "") {
-			let nameRow = document.createElement("div");
+	createColumn(row, text, column) {
+		let cell = row.insertCell();
+		cell.className = "px-2 border"
+		let textNode = document.createTextNode(text);
+		cell.appendChild(textNode)
 
-			if (text != "P") {
-				nameRow.className = "row py-1 px-2 gx-0 border";
-			} else {
-				nameRow.className = "row gx-0 gy-0";
-				nameRow.innerHTML =`<i class="bi bi-key-fill"></i>`
-				div.appendChild(nameRow)
-				return
-			}
-			if (div.id == "typeColumn") { // not ideal but works
-				nameRow.id = this.name + "/" + column.name + "/" + column.columnType.type;
-			}
+		if (column != undefined) {
+			// not ideal but works
+			cell.id = this.name + "/" + column.name + "/" + column.columnType.type;
+		}
+	}
 
-			let nameText = document.createTextNode(text);
-			nameRow.appendChild(nameText);
-
-			div.appendChild(nameRow)
+	createKeyColumn(row, doesColumnHavePrimaryKey) {
+		let cell = row.insertCell();
+		cell.className = "borderless"
+		if (doesColumnHavePrimaryKey) {
+			cell.innerHTML = `<i class="bi bi-key-fill bi-3x"></i>`
 		}
 	}
 
 	writeSyntax(syntaxArea) {
+		Util.writeSyntax("<p>", syntaxArea)
 		Util.writeSyntax("CREATE TABLE ", syntaxArea, Util.typeColor)
 		Util.writeSyntax(this.name + " (<br>", syntaxArea)
 
 		for (const column of this.columns) {
-			Util.writeSyntax("&emsp;" + column.name + " ",syntaxArea)
+			Util.writeSyntax("&emsp;" + column.name + " ", syntaxArea)
 			column.writeSyntax(syntaxArea)
 			column.writeConstraintSyntax(syntaxArea)
+			Util.writeSyntax(",<br>", syntaxArea)
 		}
-		
-		Util.writeSyntax("); <br>",syntaxArea)
+		Util.writeSyntax("); </p>", syntaxArea)
 	}
 
 	createErrors() {

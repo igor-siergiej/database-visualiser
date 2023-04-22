@@ -12,13 +12,14 @@ export default class Util {
         var valid = false
         const validSQLColumnNameRegex = /^[A-Za-z_][A-Za-z\d_]*$/;
 
-        if (name.match(validSQLColumnNameRegex) && name.length < 59) {
+        if (name.match(validSQLColumnNameRegex) && name.length < 80) {
             valid = true
         }
         return valid
     }
 
     static doesNameExist(name, list) {
+        name = name.replace(/['"]+/g, '')
         var isNameFound = false
         for (const element of list) {
             if (element.name == name) {
@@ -40,16 +41,6 @@ export default class Util {
                 } else {
                     tokenizedArray[i].value += tokenizedArray[i + 1].value
                     tokenizedArray.splice(i + 1, 1)
-                }
-            }
-        }
-    }
-
-    static getAllTables(tableName, database) {
-        for (const schema of database.schemas) {
-            for (const table of schema.tables) {
-                if (table.name == tableName) {
-                    return schema
                 }
             }
         }
