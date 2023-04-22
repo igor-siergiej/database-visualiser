@@ -3,13 +3,91 @@
 
 \section{Background}
 
-Because database tables are hard to visualise and understanding the relationships between them is not trivial, this project is meant to make this process of design easier and more efficient. This application spots trivial mistakes like a table not having a primary key or tables with no foreign key constraints. It also validates the SQL that the user uploads and informs them of the syntax error that has been detected.
+This project aims to build a website to make it easier and more efficient for beginner SQL learners to create a database that follows good database design principles. Database tables are also hard to visualise as well as understand the relationships between them, this project makes this process easier. This application spots trivial mistakes like a table not having a primary key or tables with no foreign key constraints. It also validates the SQL that the user uploads and informs them of any syntax errors that have been detected.
 
 The main application of this project is to aid students in designing databases. Its aim is to find any errors or possible flaws in the structure and design of the tables before submitting their project. Another application of this project is to be used in marking student projects to quickly spot obvious mistakes and missing relationships between tables.
 
-The background research consisted of reviewing any other projects that aimed at achieving a similar goal to this project and seeing their approach for inspiration. Mostly SQL parsing is done by either looking at every character in a string or using Regular Expressions \cite{Regex}, Based on this research, the decision was made to use a combination of both of these approaches to make sure the parsing was thorough but not tedious to write and maintain. Most of the current open-source SQL parsers were not fit for this application or lacked the functionality for parsing SQL Data Definition Language. This meant that the main focus on this project needed to be creating SQL parsing from scratch.
+\subsection{What is SQL?}
 
-The main areas of research for this project are as follows:
+SQL stands for Structured Query Language and it is a programming language that is used to communicate with databases. SQL is used for manipulation of data within relational database management systems and to perform various operations on the data that is stored within databases. The SQL language consists of many statements that are commands to query and perform operations on the database tables \cite{SQL}, the parsing of these statements is what will be needed for this project.
+
+A table is the most fundamental unit of a database and it holds records which are stored as rows in the table. A database would usually consist of many tables that all relate to each other. Visualising of these tables and making sure they are correctly related to each other is the goal of this project.
+
+DDL stands for Data Definition Language and it is used to create the structure of the tables and schemas in the database \cite{ddlAndDml}. These statements dictate the structure of the database and they are what the parsing in this project will focus on. DML stands for Data Manipulation Language and these statements are used to manipulate the data in the tables. This project will not focus on these statements since they are not part of the structure of the tables themselves which is what the visualisation of tables entails.
+
+Normalisation is a key idea in creating databases, it is the process of organising data in a database in a way so that all data is stored in one place and all related data is stored together\cite{normalisation}. Normalisation improves usability of data and reduces the risks of duplications and errors. For this project being able to advise the user on normalisation is difficult due to this project only looking at the structure of tables and normalisation involves looking at the entries inside the tables. It also involves knowing the context behind the database itself which would be hard to extract from just the SQL itself.
+
+When designing a database the tables are hard to visualise for learners because of their abstract nature and complexity. A database containing even a few tables with relationships between them can be hard to understand and navigate for learners. This project aims to solve this by converting SQL commands into a diagram of tables that can be easier to understand and give a better idea of the structure.
+
+\subsection{Goals of the Project}
+
+The goals of this project is to create and application that reads the SQL from the user, determine if there are any flaws in the database design and display them to the user. Since this project is aimed for SQL learners it should also establish if the SQL that the users enter validates so that there are not errors in the language itself. The reading in of the SQL should be able to be done by pasting the text from a users text editor or it could be written directly in the application. It should also have an option to upload a file in which the SQL is in, this file could be exported from a database management tool or a file that the user wrote the SQL in.
+
+To determine where the database design flaws are, parsing is needed and can be achieved in two ways:
+
+\begin{itemize}
+	\item \textbf{Parsing} - this would involve tokenising the input into tokens that are of different types and from there parse through them to determine how it fits with the SQL syntax. The tokens would have a set of types which could be used to sort them and parsing would be easier since the parsing is not done at each character of the input.
+	
+	\item \textbf{Regular Expressions} - this approach would involve creating a large amount of regular expressions to be able to match each individual part of the SQL syntax. This means that each statement in SQL would need its own regular expression to analyse the input. Since SQL statements are not simple this means that these regular expressions would have to be complex and capturing edge-cases would be hard. These regular expressions would also be hard to read and even harder to maintain.
+\end{itemize}
+
+\section{Research}
+
+\subsection{Review of SQL Parser libraries}
+
+The background research consisted of reviewing any other projects that aimed at achieving a similar goal to this project and seeing their approach for inspiration. Mostly SQL parsing is done by either looking at every character in a string or using Regular Expressions \cite{Regex}, Based on this research, the decision was made to use a combination of both of these approaches to make sure the parsing was thorough but not tedious to write and maintain. Most of the current open-source SQL parsers were not fit for this application or lacked the functionality for parsing SQL (DDL) Data Definition Language. This meant that the main focus on this project needed to be creating SQL parsing from scratch.
+
+These are the SQL parser that were considered to be used in this project:
+
+\begin{center}
+	\captionof{table}{\label{fig:review}Table reviewing SQL parsing libraries}
+	\setlength\extrarowheight{2pt}
+	\begin{tabularx}{\textwidth}{|X|X|X|}
+		\hline
+		\textbf{Parser Name} & \textbf{Project URL} & \textbf{Review} \\
+		\hline
+		sqlparse & \url{https://github.com/andialbrecht/sqlparse} &  This SQL parser is non-validating which means that if the user typed in SQL in a text editor and it had a syntax error present, this API would not detected it which is something that is required for this project.\\
+		\hline
+		JSqlParser & \url{https://github.com/JSQLParser/JSqlParser} &  This SQL parser translates statements into a hierarchy of Java classes that would make it hard to use for a website using JavaScript and it provides no API.\\
+		\hline
+		sql-parser & \url{https://github.com/forward/sql-parser} & This is an SQL parser that includes a lexer and parser for SQL and it's written in JavaScript however it is only capable of parsing basic SELECT queries which is not the focus of this project.\\
+		\hline
+		General SQL Parser & \url{https://www.sqlparser.com/index.php} & This parser provides ways of detecting syntax errors as well as formatting SQL however it is proprietary.\\
+		\hline
+	\end{tabularx}
+	
+\end{center}
+
+\subsection{What mistakes do SQL learners make?}
+
+The most common mistakes that learners make when creating databases is not setting primary and foreign keys. These are essential when creating a database and not setting them correctly means that data can be inconsistent and it in the future makes it difficult to join tables. When learners are setting foreign keys, the columns that are being referenced should also be part of a primary key, this is good practice that some learners forget to follow. Another mistake that learners make is not using the unique constraints where it is needed, this means that entries will become duplicated in some tables. 
+
+\subsection{Scope of the Parser}
+
+To set an appropriate target for this project, it was decided to only create parsing for DDL (Data Definition Language) for PostgreSQL only. It was decided to only create parsing for DDL because it is the SQL commands that define the database structure, which deals with creating and modifying the structure of the database, which is what is going to be visualised. The structure of the database is what this project focuses on, and it is what will be validated for the user. Creating a parser for the entirety of SQL would be outside the scope of this project and would take up too much time from designing the visualising part of this project.
+
+The statements that will be able to be parsed will only include creating and altering tables and schemas. These are the fundamental building blocks of a database and it is what the project will focus on. These statements are:
+
+\begin{itemize}
+	\item CREATE TABLE
+	\item CREATE SCHEMA
+	\item ALTER SCHEMA
+	\item ALTER TABLE
+\end{itemize}
+
+Statements that will not be included will be statements that either are not relevant to the structure of the database or they are advanced statements that learners are not likely to use. These are some of the examples of such statements:
+
+\begin{itemize}
+	\item SELECT * FROM tableName
+	\item PARTITION BY columnName
+	\item CHECK(columnName $>$ num)
+\end{itemize}
+
+\newpage
+
+\section{Justification of Technical Choice}
+
+The main areas of technical choice for this project are as follows:
 
 \begin{itemize}
 	\item JavaScript Framework
@@ -21,9 +99,9 @@ The main areas of research for this project are as follows:
 
 \subsection{JavaScript Framework}
 
-At the beginning of the project, a decision was made for the database visualiser to be a web-based project, which meant that there were choices to be made about the possible combinations of frameworks that could be used. For JavaScript, the decision was made to just use native JavaScript since the scripting that had to be done for this project didn't require any particular frameworks like React, Angular, or Vue.
+At the beginning of the project, a decision was made for the database visualiser to be a web-based project, which meant that there were choices to be made about the possible combinations of frameworks that could be used. For JavaScript, the decision was made to just use native JavaScript since the scripting that had to be done for this project didn't require any particular frameworks like React, Angular, or Vue. Using a framework like React would make creating reusable components easier but it would have cost more time to learn the framework which could be used working on the parser. 
 
-\subsection{CSS Framework}
+\subsection{Front-End Framework}
 
 Since the main focus of this project is the functionality of the SQL parser, the styling of the webpage could be handled by a CSS framework. It was decided to use the newest version of Bootstrap \cite{Bootstrap} since it has components that can be used by default, which made the design aspect easier and faster. Tailwind was another option for the CSS framework, but it didn't provide these components, which is why Bootstrap was chosen.
 
@@ -49,11 +127,21 @@ Regular Expressions are usually something that should not be used for parsing bu
 
 \subsection{Parser}
 
-Regular expressions are usually something that should not be used for parsing, but they can be helpful \cite{Parsing}. If only regular expressions are used for parsing, they can be very fragile and should only be used for simpler languages. This is why for this project regular expressions are used for only parts of the parsing and not the entire parser. This was an alternative approach that was looked into, but it would not be appropriate for this project.
+A parser usually has a structure consisting of a lexer or a tokeniser, and a proper parser. The tokeniser is needed to scan the input text and create tokens from it. These tokens describe the type of text that it is, and example of this would be recognising the difference between a word or punctuation or a number and splitting the input based on this into individual tokens. From there the parsing can be done by scanning through these tokens and makes sense from them based on the order and combination of them.
+
+\newpage
 
 \subsection{Visualising} 
 
-Visualising consists of displaying the tables after the SQL has been parsed, and if there are any relationships between tables, then those should be displayed as well. The way the tables are structured and laid out is also an important part of visualising since it should be a structure that is easily comprehensible by the user. It should also be displayed properly on the webpage in a responsive manner since the website can be used on devices of different sizes.
+Visualising consists of displaying the tables after the SQL has been parsed, and if there are any relationships between tables, then those should be displayed as well. The way the tables are structured and laid out is also an important part of visualising since it should be a structure that is easily comprehensible by the user. It should also be displayed properly on the webpage in a responsive manner since the website can be used on devices of different sizes. Most database visualising is done as an Entity Relationship model which is the approach that will be taken in this project.
+
+An example of how database tables are visualised:
+\begin{figure}[h!]
+	\centering
+	\includegraphics[scale= 0.8]{dbdiagram}
+	\caption{Sample database visualising from: \url{https://dbdiagram.io/home}}
+	\label{fig:dbdiagram}
+\end{figure}
 
 \subsection{Suggestion of Structure Faults}
 
@@ -61,11 +149,27 @@ After the SQL has been parsed and the database has been displayed to the user, t
 
 \subsection{Scope}
 
-To set an appropriate target for this project, it was decided to only create parsing for DDL (Data Definition Language) for PostgreSQL only. It was decided to only create parsing for DDL because it is the SQL commands that define a database schema, which deals with creating and modifying the structure of the database, which is what is going to be visualised. The structure of the database is what this project focuses on, and it is what will be validated for the user. Creating a parser for the entirety of PostgreSQL would be outside the scope of this project and would take up too much time from designing the visualising part of this project.
-
 Another goal for this project was to create parsing for the DQL (Data Query Language). This would involve allowing the user to not only input their table structure but also their entries in the tables. This would allow the user to enter a query for the database, and this project would be able to parse the query and return the result of the query to the user. The user would then test for themselves to see if the returned entries were what they expected from their queries. However, this proved to be extra features that were not needed for the scope of this project, as it only mentioned identifying database design flaws and would prove to take too much time than the project allows.
 
 %Include the auto-fixing of the database structure?
+
+\section{Requirements}
+
+\begin{center}
+	\captionof{table}{\label{fig:fr}Functional Requirement Table}
+	\setlength\extrarowheight{2pt}
+	\begin{tabularx}{\textwidth}{|X|X|X|}
+		
+		\hline
+		\textbf{Functional Requirement Number} & \textbf{Functional Requirement Name} & \textbf{Functional Requirement Description} \\
+		\hline
+		FR-1 & Validate SQL & The user can input text and have syntax highlighting \\
+		\hline
+	\end{tabularx}
+	
+\end{center}
+
+\newpage
 
 \section{Process}
 
@@ -79,4 +183,11 @@ The elements of Kanban that were incorporated were:
 \begin{itemize}
 	\item In addition to the weekly review and retrospective sessions, a short time was dedicated to process improvement.
 	\item Kanban board to provide visualisation of the current items that were in progress, To-Do or in the Sprint Backlog.
+	
+	\begin{figure}[h!]
+		\centering
+		\includegraphics[width=\textwidth]{kanban}
+		\caption{Kanban board used for the process of the project.}
+		\label{fig:kanban}
+	\end{figure}
 \end{itemize}
