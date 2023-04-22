@@ -1,14 +1,65 @@
 %\addcontentsline{toc}{chapter}{Development Process}
 \chapter{Design}
 
-You should concentrate on the more important aspects of the design. It is essential that an overview is presented before going into detail. As well as describing the design adopted it must also explain what other designs were considered and why they were rejected.The design should describe what you expected to do, and might also explain areas that you had to revise after some investigation.Typically, for an object-oriented design, the discussion will focus on the choice of objects and classes and the allocation of methods to classes. The use made of reusable components should be described and their source referenced. Particularly important decisions concerning data structures usually affect the architecture of a system and so should be described here.How much material you include on detailed design and implementation will depend very much on the nature of the project. It should not be padded out. Think about the significant aspects of your system. For example, describe the design of the user interface if it is a critical aspect of your system, or provide detail about methods and data structures that are not trivial. Do not spend time on long lists of trivial items and repetitive descriptions. If in doubt about what is appropriate, speak to your supervisor. You should also identify any support tools that you used. You should discuss your choice of implementation tools - programming language, compilers, database management system, program development environment, etc.Some example sub-sections may be as follows, but the specific sections are for you to define. 
-
 \section{Overall Architecture}
 
-\section{Some detailed design}
+The overall architecture of the project consists of a dynamic webpage with scripting to process user input and display back the results. The webpage has a form for the user to enter the SQL text and here the input SQL is parsed by the JavaScript code. The system attempts to build a database from the user input and if it succeeds it will display the database as a collection of tables back to the user. If the system fails to build the database it means that the SQL that the user entered has some syntax errors and can not be visualised.
 
-\subsection{Even more detail}
+% You should concentrate on the more important aspects of the design. It is essential that an overview is presented before going into detail.
+
+\subsection{Consideration of Other Designs}
+
+During the research stage of the project the aim was to find a third-party library that would handle SQL parsing so that this project could focus more on the visualising and structuring of the output. However this proved to not be possible since there were no open-source libraries that were available to parse the SQL and create some object that could be used to visualise the parsed database. Since this was not possible the main goal of this project was to create an SQL parser that would be able to check if the SQL compiles and if there were any syntax errors in the text.
+
+% The design should describe what you expected to do, and might also explain areas that you had to revise after some investigation. As well as describing the design adopted it must also explain what other designs were considered and why they were rejected.
+
+\section{Algorithms}
+
+\subsection{Parser}
+
+As mentioned in the first chapter, the parser consists of a tokeniser and the proper parsing. To tokenise the input text a library was used \cite{tokeniser}, it is designed to turn JavaScript code into tokens however for the purpose of parsing SQL it is also appropriate. The library is powered by regular expressions and it almost complies with parsing specification. This library was chosen because of the tokens it produces are easy to work with and the types of tokens are compatible with SQL and the parsing that was designed.
+
+After the input has been tokenised the proper parsing has to be done to make sense of the SQL and check if there are syntax errors. This is initially done by some more regular expressions. This was done by finding patterns in the SQL that could easily be picked out by regular expressions, this includes things like each statement being separated by a semicolon. Each column has to be separated by a comma and a regular expression is used to separate these however only if they are outside of brackets.  To achieve this regex look ahead and look behind is used to see if the comma is surrounded by brackets. If it is this means that it is part of a primary or foreign key statement and it is a list of columns.
+% image of difference between these two commas.
+
+The other part of parsing consists of going through the split up statements and checking the type of statement that it is and to examine if the syntax matches the PostgreSQL documentation.  
+
+
+
+\subsection{Creating Tree Structure}
+
+The main algorithms involve converting the database object into a tree structure of tables that are visualised. This is done by 
+% parsing
+% creating tree structure from key-value pairs
+% identifying if all tables are joined together by FK
+
+\section{Data Structures}
+
+% tokenized array used for parsing, tree structure for tables
+
+\section{Code Structure}
+
+% object orientated, javascript es6
+% creating a datamodel that matches a database from which on could be used to visualise
+
+\subsection{Class Diagram}
 
 \section{User Interface}
 
-\section{Other relevant sections}
+%bootstrap, tables, textarea, input form
+
+\subsection{Visualising}
+
+% drawing arrows, creating html tree structure
+
+
+
+
+
+
+
+%Typically, for an object-oriented design, the discussion will focus on the choice of objects and classes and the allocation of methods to classes. The use made of reusable components should be described and their source referenced. Particularly important decisions concerning data structures usually affect the architecture of a system and so should be described here.
+
+%How much material you include on detailed design and implementation will depend very much on the nature of the project. It should not be padded out. Think about the significant aspects of your system. For example, describe the design of the user interface if it is a critical aspect of your system, or provide detail about methods and data structures that are not trivial. Do not spend time on long lists of trivial items and repetitive descriptions. If in doubt about what is appropriate, speak to your supervisor.
+ 
+%You should also identify any support tools that you used. You should discuss your choice of implementation tools - programming language, compilers, database management system, program development environment, etc.

@@ -23,9 +23,6 @@
 %% 2. Silvano Balemi and Richard H. Roy's IEEEbib.bst (1993)
 %% 
 %% Added sorting code is from plain.bst.
-%%
-%% Updated Legal Notice to provide updated URL for Perl Artistic License. 
-%% 1st March 2017. Neil Taylor (nst@aber.ac.uk)
 %% 
 %% See:
 %% http://www.ctan.org/tex-archive/macros/latex/contrib/supported/IEEEtran/
@@ -47,7 +44,7 @@
 %% of any information contained here.
 %%
 %% This code is distributed under the Perl Artistic License 
-%% ( http://dev.perl.org/licenses/artistic.html ) 
+%% ( http://language.perl.com/misc/Artistic.html ) 
 %% and may be freely used, distributed and modified - subject to the
 %% constraints therein.
 %% Retain all contribution notices, credits and disclaimers.
@@ -280,7 +277,6 @@ ENTRY
     howpublished
     institution
     intype
-    isbn
     journal
     key
     language
@@ -1719,29 +1715,6 @@ FUNCTION {format.tech.report.number}
   if$
 }
 
-%% isbn 
-
-FUNCTION {format.isbn}
-{ isbn empty$
-    { "" }
-    { this.to.prev.status
-      this.status.std
-      punct.period 'this.status.punct :=
-      isbn #1 #1 substring$
-      duplicate$ "{" =
-        { skip$ }
-        { status.cap
-          { "u" }
-          { "l" }
-        if$
-        change.case$
-        }
-      if$
-      isbn #2 global.max$ substring$ * "isbn" bibinfo.check
-      cap.yes  'status.cap :=
-    }
-  if$
-}
 
 
 %% note
@@ -2003,10 +1976,8 @@ FUNCTION {book}
   format.address.publisher.date output
   format.volume output
   format.number output
-  format.pages output
   format.note output
   format.url output
-  format.isbn output
   fin.entry
   if.url.std.interword.spacing
 % TB: added for annotation
