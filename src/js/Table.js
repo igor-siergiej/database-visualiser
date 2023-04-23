@@ -419,7 +419,7 @@ export default class Table {
 	createTable(div) {
 		let tableContainer = document.createElement("div")
 		let table = document.createElement("table");
-		table.className = "table border border-2"
+		table.className = "table border border-2 m-3"
 		table.style = "width: fit-content;"
 
 		let thead = table.createTHead();
@@ -431,7 +431,12 @@ export default class Table {
 		heading.colSpan = 3
 		heading.className = "bg-primary"
 
-		let headingText = document.createTextNode(this.name);
+		let headingText;
+		if (this.schema != "public") {
+			headingText = document.createTextNode(this.schema + "." + this.name); 
+		} else {
+			headingText = document.createTextNode(this.name); 
+		}
 
 		heading.appendChild(headingText)
 		headingRow.appendChild(heading)
