@@ -1,6 +1,6 @@
 
 
-export class SyntaxError extends Error{
+ class SyntaxError extends Error{
     #errorWord;
 
     constructor(message, errorWord) {
@@ -12,3 +12,5 @@ export class SyntaxError extends Error{
         return this.#errorWord
     }
 }
+
+module.exports = SyntaxError

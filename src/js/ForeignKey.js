@@ -1,4 +1,4 @@
-export default class ForeignKey {
+class ForeignKey {
     referencedTable;
     referencedColumn;
     referencedColumnType
@@ -9,3 +9,5 @@ export default class ForeignKey {
         this.referencedColumnType = referencedColumnType
     }
 }
+
+module.exports = ForeignKey

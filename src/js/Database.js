@@ -1,9 +1,8 @@
-import Util from "./Util";
-import { SyntaxError } from "./SyntaxError";
-import jsTokens from "js-tokens";
-import Table from "./Table";
+const Util = require("./Util")
+const SyntaxError = require("./SyntaxError")
+const Table = require("./Table")
 
-export default class Database {
+  class Database {
     schemas = []
     errors = []
 
@@ -168,3 +167,5 @@ export default class Database {
         }
     }
 }
+
+module.exports = Database
