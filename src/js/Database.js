@@ -1,11 +1,17 @@
 const Util = require("./Util")
 const SyntaxError = require("./SyntaxError")
 const Table = require("./Table")
+const Schema = require("./Schema")
 
   class Database {
     schemas = []
     errors = []
 
+
+    constructor() {
+        var publicSchema = new Schema("public", this.getSchemas()); // create default schema
+        this.addSchema(publicSchema) // add public schema to database array
+    }
 
     addSchema(schema) {
         this.schemas.push(schema)

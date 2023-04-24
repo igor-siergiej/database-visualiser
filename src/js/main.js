@@ -4,7 +4,7 @@ import Table from './Table';
 import LeaderLine from 'leader-line-new';
 import jsTokens from "js-tokens";
 import Schema from './Schema';
-import { SyntaxError } from './SyntaxError';
+const SyntaxError = require("./SyntaxError")
 import Database from './Database';
 import Util from './Util';
 import Validator from './Validator';
@@ -46,15 +46,13 @@ textTabButton.addEventListener("click", clearAlertDiv)
 fileTabButton.addEventListener("click", clearAlertDiv)
 
 function clearAlertDiv() {
+  createLines(database.getAllTables())
   alertDiv.innerHTML = ""
 }
 
 var lines = []
 
-var database = new Database(); // this should be an array of schema
-var publicSchema = new Schema("public", database.getSchemas()); // create default schema
-database.addSchema(publicSchema) // add public schema to database array
-
+var database = new Database();
 
 function createTableData() {
   // 2D array of trees
@@ -302,8 +300,6 @@ function writeSyntax(syntaxTextArea, tables) {
 function validateSQL(inputString) {
   clearAlertDiv()
   database = new Database();
-  publicSchema = new Schema("public", database.getSchemas());
-  database.addSchema(publicSchema)
 
   let validated = true
 
@@ -409,7 +405,7 @@ function createAlert(error, alertsDiv) {
   dismissButton.className = "btn-close"
   dismissButton.setAttribute("data-bs-dismiss", "alert")
   dismissButton.type = "button"
-  dismissButton.ariaLabel = "Close"
+  dismissButton.setAttribute('aria-label', 'Close')
 
   alertDiv.appendChild(boldError)
   alertDiv.appendChild(alertText)

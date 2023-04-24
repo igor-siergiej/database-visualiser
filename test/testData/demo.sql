@@ -29,7 +29,6 @@ columnName2 serial,
 FOREIGN KEY(columnName1) REFERENCES account_roles (user_id));
 
 
-
  CREATE TABLE test1(
    column1 serial,
    column2 serial
