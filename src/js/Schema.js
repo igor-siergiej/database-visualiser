@@ -1,7 +1,7 @@
-import Util from "./Util";
-import { SyntaxError } from "./SyntaxError";
+const Util = require("./Util")
+const SyntaxError = require("./SyntaxError")
 
-export default class Schema {
+ class Schema {
     name;
     tables = [];
     owner;
@@ -29,4 +29,6 @@ export default class Schema {
     setOwner(owner) {
         this.owner = owner;
     }
-}
+ }
+
+ module.exports = Schema

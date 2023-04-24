@@ -1,9 +1,9 @@
-import ColumnType from './ColumnType';
-import ForeignKey from './ForeignKey';
-import Util from './Util';
-import { SyntaxError } from './SyntaxError';
+const ColumnType = require("./ColumnType")
+const ForeignKey = require("./ForeignKey")
+const Util = require("./Util")
+const SyntaxError = require("./SyntaxError")
 
-export default class Column {
+ class Column {
     name;
     columnType;
     #primaryKey = "";
@@ -228,3 +228,4 @@ export default class Column {
     }
 }
 
+module.exports = Column

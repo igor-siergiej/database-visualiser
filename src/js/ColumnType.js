@@ -1,6 +1,6 @@
-import { SyntaxError } from "./SyntaxError";
+const SyntaxError = require("./SyntaxError")
 
-export default class ColumnType {
+class ColumnType {
     type;
     value;
     secondValue;
@@ -69,3 +69,5 @@ export default class ColumnType {
         return this.typesWithInput.includes(type) || this.typesWithNoInput.includes(type)
     }
 }
+
+module.exports = ColumnType

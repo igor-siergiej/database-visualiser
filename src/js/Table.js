@@ -1,9 +1,11 @@
-import jsTokens from "js-tokens";
-import Column from './Column';
-import Util from "./Util";
-import { SyntaxError } from "./SyntaxError";
 
-export default class Table {
+const jsTokens = require("js-tokens")
+const Column = require("./Column")
+const Util = require("./Util")
+const SyntaxError = require("./SyntaxError")
+
+
+ class Table {
 	name;
 	global = false;
 	local = false;
@@ -500,3 +502,5 @@ export default class Table {
 		return Array.from(new Set(columnTypes))
 	}
 }
+
+module.exports = Table
