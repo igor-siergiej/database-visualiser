@@ -138,7 +138,7 @@ Visualising consists of displaying the tables after the SQL has been parsed, and
 An example of how database tables are visualised:
 \begin{figure}[h!]
 	\centering
-	\includegraphics[scale= 0.8]{dbdiagram}
+	\includegraphics[width=\textwidth]{dbdiagram}
 	\caption{Sample database visualising from: \url{https://dbdiagram.io/home}}
 	\label{fig:dbdiagram}
 \end{figure}
@@ -149,9 +149,9 @@ After the SQL has been parsed and the database has been displayed to the user, t
 
 \subsection{Scope}
 
-Another goal for this project was to create parsing for the DQL (Data Query Language). This would involve allowing the user to not only input their table structure but also their entries in the tables. This would allow the user to enter a query for the database, and this project would be able to parse the query and return the result of the query to the user. The user would then test for themselves to see if the returned entries were what they expected from their queries. However, this proved to be extra features that were not needed for the scope of this project, as it only mentioned identifying database design flaws and would prove to take too much time than the project allows.
+A possible goal for this project was to create parsing for the DQL (Data Query Language). This would involve allowing the user to not only input their table structure but also their entries in the tables. This would allow the user to enter a query for the database, and this project would be able to parse the query and return the result of the query to the user. The user would then test for themselves to see if the returned entries were what they expected from their queries. However, this proved to be extra features that were not needed for the scope of this project, as it only mentioned identifying database design flaws and would prove to take too much time than the project allows.
 
-%Include the auto-fixing of the database structure?
+Another goal for this project was to create an algorithm to fix the issues that were detected by the parsing of the SQL. Since the parsing has detected the errors, it would be possible to create a function to fix a problem for each kind of error. This could be done for creating keys and joining tables by foreign keys, however since it would be difficult to identify the context of the real world entities behind the database it would make it hard to automatically find the correct tables to link together by a foreign key. This would also not be very educational for the learners since this is not teaching the ways to correct the errors, it instead does it for the learner not leaving much room for learning. 
 
 \section{Requirements}
 
@@ -163,7 +163,21 @@ Another goal for this project was to create parsing for the DQL (Data Query Lang
 		\hline
 		\textbf{Functional Requirement Number} & \textbf{Functional Requirement Name} & \textbf{Functional Requirement Description} \\
 		\hline
-		FR-1 & Validate SQL & The user can input text and have syntax highlighting \\
+		FR-1 & Enter SQL into website form & The user can enter their SQL into the website form. \\
+		\hline
+		FR-1.1 & Enter SQL into the textarea & The user can paste the SQL code into the textarea in the website. \\
+		\hline
+		FR-1.2 & Upload SQL file to website form & The user can upload their SQL file to the website form. \\
+		\hline
+		FR-2 & Validate entered SQL & If the SQL syntax is not valid then the user should be informed with the syntax error. \\
+		\hline
+		FR-3 & Visualise entered database & If the SQL syntax is correct then the user should be able to visualise the entered database. \\
+		\hline
+		FR-4 & View highlighted syntax after visualising & Once the database has been visualised, the user can switch to "syntax view" and be presented with highlighted syntax of the entered SQL. \\
+		\hline
+		FR-5 & The user can filter through data types of columns in syntax view & Also in the syntax view the user can select data types to be highlighted. \\
+		\hline
+		FR-6 & The user can view the flaws of the database & The user can switch to the "Problem View" and view the list of flaws of the database if there are any. \\
 		\hline
 	\end{tabularx}
 	

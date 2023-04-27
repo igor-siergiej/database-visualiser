@@ -2,7 +2,7 @@
 import * as bootstrap from 'bootstrap';
 import Table from './Table';
 import LeaderLine from 'leader-line-new';
-import jsTokens from "js-tokens";
+
 import Schema from './Schema';
 const SyntaxError = require("./SyntaxError")
 import Database from './Database';
@@ -126,7 +126,6 @@ function getForeignKeysInDB() {
   }
   return keys
 }
-// need to dynamically generate this, could just be a for loop but need to check foreign keys
 
 function createTree(data) {
   const idMapping = data.reduce((acc, el, i) => {

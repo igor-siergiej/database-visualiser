@@ -1,4 +1,4 @@
- class Util {
+  class Util {
     // Name must contain only letters (a-z, A-Z), numbers (0-9), or underscores ( _ ) 
     // Name must begin with a letter or underscore.
     // Name must be less than the maximum length of 59 characters. 
@@ -12,6 +12,7 @@
         var valid = false
         const validSQLColumnNameRegex = /^[A-Za-z_][A-Za-z\d_]*$/;
 
+        name = name.replace(/['"`]+/g, '')
         if (name.match(validSQLColumnNameRegex) && name.length < 80) {
             valid = true
         }
