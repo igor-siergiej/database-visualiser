@@ -26,8 +26,6 @@ const Schema = require("./Schema")
             const tokenizedInputString = jsTokens(statement);
             let tokenizedArray = Array.from(tokenizedInputString);
 
-            console.log(tokenizedArray)
-
             // removes newlines
             tokenizedArray = tokenizedArray.filter(function (token) {
                 return token.type != "LineTerminatorSequence";
