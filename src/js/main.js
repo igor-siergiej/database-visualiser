@@ -68,14 +68,13 @@ function createTableData() {
   var ids = []
   var parentIds = []
 
-  console.log(keys)
-  const isDuplicate = (item, arr) => { 
+  const isDuplicate = (item, arr) => {
     return arr.some(el => item.id === el.id && item.parentId === el.parentId);
   }
 
   var uniqueKeys = []
-  for(const item of keys) {
-    if(!isDuplicate(item, uniqueKeys)) uniqueKeys.push(item);
+  for (const item of keys) {
+    if (!isDuplicate(item, uniqueKeys)) uniqueKeys.push(item);
   }
 
   keys = uniqueKeys
@@ -204,6 +203,7 @@ function visualise() {
     var dataList = createTableData()
     for (const data of dataList) {
       var tree = createTree(data)
+      console.log(tree)
       drawTreeTablesRecursively(tree, treeArea, tables)
       var treeNames = []
       for (const table of data) {
@@ -257,8 +257,6 @@ function createLines(tables) {
             foreignKey.referencedColumn + "/" +
             foreignKey.referencedColumnType
 
-          console.log(from, to)
-
           var line = new LeaderLine(
             document.getElementById(from),
             document.getElementById(to)
@@ -279,7 +277,6 @@ function createLines(tables) {
     }
   } catch (error) {
     console.log(error)
-    console.log(getForeignKeysInDB())
   }
 }
 
@@ -303,7 +300,7 @@ function validateSQL(inputString) {
   let validated = true
 
   try { // try to create datamodel and the first error it throws will be displayed to user as error
-   Validator.validateSQL(database, inputString)
+    Validator.validateSQL(database, inputString)
   } catch (syntaxError) {
     console.log(syntaxError)
     if (syntaxError instanceof SyntaxError) {

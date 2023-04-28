@@ -108,8 +108,7 @@ If there are foreign keys present in a database the tables that are involved in 
  		}
  	}
  }
- 
- \end{lstlisting}
+\end{lstlisting}
 
 \section{Data Structures}
 
@@ -119,37 +118,77 @@ The data structures that were used in this project were not complicated and did 
 
 The tokenised array is a array of Token objects and a Token object consists of a type and value. These arrays of Tokens are created from the SQL statement string when it is being parsed. The token types specify the type of string is which belongs to the token, the value is the value of the string itself. The types of tokens are used to parse JavaScript code however, it splits up the SQL statement string into things like: punctuators, white spaces and identifier names which are words without punctuation. This array is the core of the parsing algorithm that is used in this project.
 
+ \begin{lstlisting}[style=JavaScript, caption={Tokenised array of tokens from a part of a simple input of an "CREATE TABLE" statement.}]
+	{ type: "IdentifierName", value: "CREATE" },
+	{ type: "WhiteSpace", value: " " },
+	{ type: "IdentifierName", value: "TABLE" },
+	{ type: "WhiteSpace", value: " " },
+	{ type: "IdentifierName", value: "account_roles" }
+\end{lstlisting}
+
 \subsection{Key-Value Pairs}
 
+The key-value pairs that represent the foreign keys are stored as an array of objects with pair values. The key and values are stored as id and parentId in each object.
 
+ \begin{lstlisting}[style=JavaScript, caption={Representation of the array of objects containing the key-value pairs.}]
+	{ id: "accounts", parentId: "account_roles" },
+	{ id: "roles", parentId: "account_roles" },
+	{ id: "account_roles", parentId: null }
+\end{lstlisting}
+
+For the root table it has no parent node therefore it's parentId is null to represent that. This is fairly common practice to store this data for a one-to-many tree node relationship.
 
 \subsection{Tree Node Object}
 
+The tree node object is a an object that has a key and a value in the form of the id and parentId and a list of children with each of them having their key-value pairs and more children nodes. This is a one-to-many relationship so there can be many children to each node.
 
+ \begin{lstlisting}[style=JavaScript, caption={}]
+ 	Object {id: "account_roles", parentId: null, children: (2) {
+ 		0: Object { id: "accounts", parentId: "account_roles" },
+ 		1: Object { id: "roles", parentId: "account_roles" }}
+ 	}
+\end{lstlisting}
+
+\newpage
 
 \section{User Interface}
 
+The user interface was designed so it was simple and easy to use since it was aimed at SQL learners. It was designed to be use on a desktop computer with a medium to large monitor. The core of the design has been the same throughout the project, however some of the elements have undergone major changes to the styling or layout. It was designed using Bootstrap 5 which is a front-end toolkit, it was used to do all of the styling and for the key icons. It was used to give the website a more professional and uniform look, after the colour scheme was chosen and entered, bootstrap modified all elements to follow this colour scheme.
 
-%bootstrap, tables, textarea, input form
+There are two main elements to the user interface: 
 
-\subsection{Drawing Foreign Key Representation on the Webpage}
+\begin{itemize}
+	\item \textbf{The Input Form} - The input form is how the user enters their SQL database design into the website for the script to process it. It has two tabs: text input and file input. Either of these can be chosen to either enter text into a textarea or upload a file into the file picker.
+	\item \textbf{The Visualised Views} - Once the SQL has been validated, the "Visualise" button can be pressed and the visualised database view tabs appear. These tabs include: table, syntax and problem view. Each of these is a separate page that contains information or a visualisation of the entered SQL database.
+\end{itemize}
 
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=\textwidth]{firstDesign}
+	\caption{First iteration of the user interface design}
+	\label{fig:firstDesign}
+\end{figure}
 
+The first iteration of the design included only the text input in the form with crude parsing of the SQL. The tables are also stretched across the page without borders and styling, and have the column name and data type as columns in the HTML table which might also be confusing.
 
-\subsection{Styling the Structure of the Tables on the Webpage}
+\newpage
 
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=\textwidth]{secondDesign}
+	\caption{Second iteration of the user interface design}
+	\label{fig:secondDesign}
+\end{figure}
 
+The second iteration of the design had a much better colour scheme following the website trend of having a dark background with white text and accent colours. It now also includes the file input tab and the output tabs below the visualise button. However the foreign key arrows have not been implemented yet and the tables here are visualised in the order that they are defined in the SQL file. Also the primary key icons are not yet added and instead are represented as either a "P" for this column being part of a primary key constraint and "N/A" for not having a primary key constraint.
 
-% drawing arrows, creating html list structure
+\newpage
 
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=\textwidth]{finalDesign}
+	\caption{Final iteration of the user interface design}
+	\label{fig:finalDesign}
+\end{figure}
 
-
-
-
-
-
-%Typically, for an object-oriented design, the discussion will focus on the choice of objects and classes and the allocation of methods to classes. The use made of reusable components should be described and their source referenced. Particularly important decisions concerning data structures usually affect the architecture of a system and so should be described here.
-
-%How much material you include on detailed design and implementation will depend very much on the nature of the project. It should not be padded out. Think about the significant aspects of your system. For example, describe the design of the user interface if it is a critical aspect of your system, or provide detail about methods and data structures that are not trivial. Do not spend time on long lists of trivial items and repetitive descriptions. If in doubt about what is appropriate, speak to your supervisor.
- 
-%You should also identify any support tools that you used. You should discuss your choice of implementation tools - programming language, compilers, database management system, program development environment, etc.
+The final design builds from the second iteration by adding the tree node structure lay out to tables and the foreign key links between them. The tables are now HTML tables and not the Bootstrap tables made out of row and columns div elements which makes them look slightly more compact and more professional. There are now key icons for the primary key column in each table for the columns that are part of the primary key constraint. It also includes the green outline and tick icon for the input form that is shown when the SQL in the input file, is valid and compiles. The colour scheme has stayed the same since it has not interfered with any of the other elements and did not need to be changed. 
