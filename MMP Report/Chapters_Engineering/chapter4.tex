@@ -1,29 +1,64 @@
 \chapter{Testing}
 
-Detailed descriptions of every test case are definitely not what is required here. What is important is to show that you adopted a sensible strategy that was, in principle, capable of testing the system adequately even if you did not have the time to test the system fully.
-
-Provide information in the body of your report and the appendix to explain the testing that has been performed. How does this testing address the requirements and design for the project?
-
-How comprehensive is the testing within the constraints of the project?  Are you testing the normal working behaviour? Are you testing the exceptional behaviour, e.g. error conditions? Are you testing security issues if they are relevant for your project? 
-
-Have you tested your system on ``real users''? For example, if your system is supposed to solve a problem for a business, then it would be appropriate to present your approach to involve the users in the testing process and to record the results that you obtained. Depending on the level of detail, it is likely that you would put any detailed results in an appendix.
-
-Whilst testing with ``real users'' can be useful, don't see it as a way to shortcut detailed testing of your own. Think about issues discussed in the lectures about until testing, integration testing, etc. User testing without sensible testing of your own is not a useful activity.
-
-The following sections indicate some areas you might include. Other sections may be more appropriate to your project. 
-
 \section{Overall Approach to Testing}
+
+The overall approach used to testing was a combination of both automated and manual testing. Unit tests were written for the parsing algorithm of the project and manual testing was done for integration testing. The testing should show that the project can take in some SQL from a user and subsequently parse and visualise it in a way to make it simpler for the user to understand SQL. Unit testing the parsing algorithm shows that the validating is working correctly and catching the correct syntax errors with the entered SQL. Manual testing is used to test the entire system working together and making sure that the initial requirements are met and the user can use the system without problem and can get some use out of it.
 
 \section{Automated Testing}
 
-\subsection{Unit Tests}
+The automated testing addresses the requirement of validating the entered SQL. The parsing algorithm was written to be testable by throwing an error if the SQL does not validate. The unit tests can then catch that error and check that the error message to the user is correct and the parser is throwing the correct error. The unit tests were written using a testing framework for JavaScript called Mocha\cite{mocha}. The unit tests are written to test parsing either just a string of a SQL statement or an entire file of an SQL database dump file containing an entire database. Testing an entire file tests that an entire database can be parsed and correctly find that no errors are present. Testing simple statements that are missing parts of the syntax tests that the parser is detecting the correct syntax errors in the SQL and is giving the user correct feedback. The unit test are also testing the behaviour if data is entered that is meant to break the system which tests for the robustness of the parser.
 
-\subsection{User Interface Testing}
+\subsection{Unit Testing Test Table}
 
-\subsection{Stress Testing}
+\begin{center}
+	\captionof{table}{\label{fig:unitTestTable}Table showing examples of the unit tests that were written, all of the following tests reference the SQL validation requirement (FR-2).}
+	\setlength\extrarowheight{2pt}
+	\begin{tabularx}{\textwidth}{|c|X|X|X|c|}
+		\hline
+		\textbf{Test ID} & \textbf{Description} & \textbf{Input} & \textbf{Expected Result} & \textbf{Pass/Fail} \\
+		\hline
+		TC-1 & Parser should throw syntax error & Validate the statement: "CREATE TABLE" & Error should be thrown with the message "Missing Semicolon in statement" & Pass \\
+		\hline
+		TC-1 & Parser should throw syntax error & Validate the statement: "CREATE TABLE" & Error should be thrown with the message "Missing Semicolon in statement" & Pass \\
+		\hline
+	\end{tabularx}
+\end{center}
 
-\subsection{Other types of testing}
+\section{Manual Testing}
 
-\section{Integration Testing}
+Manual testing was done because the system is quite complex to test using a testing framework. This part of testing tests the entire system and follows the steps that the user might follow but also steps that could potentially break the system. The manual testing was done to make sure that the requirements have been met that are not to do with the parsing since that was covered by the unit tests, parsing is involved in these tests however what is being tested is that the system as a whole reacts correctly to the output of the parsing and also that the output matches for the same case as the unit tests. This is done to test that the parsing works correctly when it is isolated in unit tests but also when it is part of a much larger system.
+
+\subsection{Manual Testing Test Table}
+
+\begin{center}
+	\captionof{table}{\label{fig:manualTestTable}Test table listing the manual tests.}
+	\setlength\extrarowheight{2pt}
+	\begin{tabularx}{\textwidth}{|c|c|X|X|X|c|}
+		\hline
+		\textbf{Test ID} & \textbf{Reference} & \textbf{Description} & \textbf{Steps} & \textbf{Expected Result} & \textbf{Pass/Fail} \\
+		\hline
+		TC-1 & FR-1.1 & Entering valid SQL into the textarea & Enter a valid SQL statement into the labelled text area. & Text area border should turn to a green colour and the "Visualise" button should be enabled & Pass \\
+		\hline
+		TC-2 & FR-1.1 & Entering invalid SQL into the textarea & Enter an invalid SQL statement into the labelled text area. & Text area border colour should turn to a red colour and an alert should appear with the syntax error & Pass \\
+		\hline
+		TC-3 & FR-1.2 & Entering an valid SQL file into the filepicker & Enter an valid SQL file into the filepicker. & Text area border should turn to a green colour and the "Visualise" button should be enabled & Pass \\
+		\hline
+		TC-4 & FR-1.2 & Entering an invalid file into the filepicker & Enter an invalid SQL file into the filepicker. & Filepicker border should turn to a red colour and an alert should appear with a message that the filename is invalid. & Pass \\
+		\hline
+		TC-5 & FR-3 & Visualising a test database from file & Upload the file test.sql into the filepicker and press the "Visualise" button. & Test database should be visualised correctly with the foreign key arrows. & Pass \\
+		\hline
+		TC-6 & FR-4 & Viewing the syntax highlighting & Upload the file test.sql into the filepicker and press the "Visualise" button, then press the "Syntax View" tab button. & Syntax highlighting of the test database should be displayed with correct colours, syntax and indentation & Pass \\
+		\hline
+		TC-7 & FR-5 & Using the filters in syntax view & Upload the file test.sql into the filepicker and press the "Visualise" button, then press the "Syntax View" tab button and press the "serial" checkbox . & All of the "serial" data types should be highlighted in a green colour. & Pass \\
+		\hline
+		% enter test1.sql with an expected flaw and make sure it matches, also check that the notification bubble exists.
+		TC-8 & FR-6 & View a database flaw & Upload the file test1.sql into the filepicker and press the "Visualise" button, then press the "Problem view" tab button and press the accordion button. &  & Pass \\
+		\hline
+		% enter test.sql and no problems should be listed, but a message should be there saying all is good
+		TC-9 & FR-6 & View problems of a database with no flaws & Upload the file test1.sql into the filepicker and press the "Visualise" button, then press the "Problem view" tab button &  & Pass \\
+		\hline
+	\end{tabularx}
+\end{center}
 
 \section{User Testing}
+

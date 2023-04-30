@@ -1,22 +1,47 @@
 \chapter{Evaluation}
 
-Examiners expect to find a section addressing questions such as:
+\section{Requirement Fulfilment}
 
-\begin{itemize}
-   \item Were the requirements correctly identified? 
-   \item Were the design decisions correct?
-   \item Could a more suitable set of tools have been chosen?
-   \item How well did the software meet the needs of those who were expecting to use it?
-   \item How well were any other project aims achieved?
-   \item If you were starting again, what would you do differently?
-\end{itemize}
+Overall, all of the requirements that were identified at the beginning of the project have been met to a good standard. The website is able to visualise simple databases and if there are any flaws detected it will advise the user on how to fix these issues. Despite the SQL parsing not being as rigorous as expected the validation in the form works and will catch simple syntax errors that the user might make and inform them of it. The website has a simple and intuitive user interface, with minimalistic styling and theme.
 
-Other questions can be addressed as appropriate for a project. 
+\section{Identification of Requirements}
 
-The questions are an indication of issues you should consider. They are not intended as a specification of a list of sections.
+The identification of requirements was reasonable for the length of this project. The goals were set to be challenging yet attainable. As mentioned in the scope of this project \textit{\hyperref[subsec:scope]{Scope}}, parsing Data Query Language and creating an algorithm to automatically repair databases would be outside of the scope of this project. All of the requirements are necessary for this application to be useful to SQL learners.
 
-The evaluation is regarded as an important part of the project report; it should demonstrate that you are capable not only of carrying out a piece of work but also of thinking critically about how you did it and how you might have done it better. This is seen as an important part of an honours degree. 
+\section{Evaluation of Methodology Used}
 
-There will be good things in the work and aspects of the work that could be improved. As you write this section, identify and discuss the parts of the work that went well and also consider ways in which the work could be improved. 
+As discussed in \textit{\hyperref[sec:process]{Chapter 1}}, a process adapted from Scrumban was used. The use of this methodology was beneficial because it gave a solid structure to the development of this project. The weekly sprints were useful because planning was done at the beginning of the sprint for what was going to be worked on in that week. This made it easier to focus on a few issues or implementations at a time and the Kanban board allowed the visualisation of issues and their completion stage. During each sprint additional issues were raised as work was being done and were added to the sprint backlog which was reviewed at the end of the week to create a new set of issues to work on during the late weeks. 
 
-In the latter stages of the module, we will discuss the evaluation. That will probably be around week 9, although that differs each year. 
+However an improvement for this approach to the project would have been focusing more on testing in the beginning stages of development. The testing framework should have been looked into during spike work and test should have been written throughout the development process. A framework for integration testing for the entire website should have also been looked into, it would be useful to be able to automatically test the website as a whole and test the interaction of components.
+
+\section{Were the design decisions correct?}
+
+The design of the project was mostly correct, more thought might have gone into designing a more efficient parsing framework however this would require more time. A more in-depth parsing framework would allow to have more exhaustive parsing and better syntax error feedback to the user with the line number where the error is and maybe a link to the highlighted text.
+
+The decision to use object-orientated JavaScript was a good design decision since it worked well in this application and the code is readable and structured. Inheritance was used to prevent code duplication in some cases and class choices to follow the data model of a database was a good choice since it gave a logical layout to the classes, and gave more context to some of the functions.
+
+The design decisions for the user interface were good because the website is easy to use for SQL learners and conveys the information efficiently and directly. The decision to layout the tables into a tree structure was correct because it was much clearer than laying out the tables in creation order and was appropriate for this application.
+
+\section{Choice of Tools and Development Environment?}
+
+The choice of the development environment was good as there were no issues during the development of the project. The website was developed on a local development server which provided instant feedback on the changes made to either the code or the styling of the website, this was done using Node.js. There were also no issues with lacking functionality from the IDE or the website hosting servers. 
+
+The choice of using native JavaScript was good for the current state of the project. In the future if the parsing framework was expanded and more functionality was added to the website which would require more user interface elements then potentially a JavaScript framework would be more appropriate. One of these frameworks could be React which would allow the creation of reusable components that would need to be created if the website had more features that would require user interface components. This would require more time to implement these reusable components and learning the framework however it would save time in the future by being able to re-use components. 
+
+The choice of using Bootstrap as the front-end toolkit was correct since it allowed the focus of the project to be on the parsing and the visualising of the tables and less on the styling and design of the website. A more appropriate toolkit might be available that does not focus so much on the responsive and mobile-first design however for the current state of the project it is satisfactory. 
+
+\subsection{Familiarity of the Technology Used}
+
+
+
+% Fairly used to HTML and Javascript however had to learn Bootstrap but was not too hard. Had a hiccup with the responsive design of tables being squished, which might have been avoided if I knew it. 
+
+%\section{How well did the software meet the needs of those who were expecting to use it?}
+
+% maybe talk about user testing?
+
+\section{If you were starting again, what would you do differently?}
+
+% figure out how to get past the hurdle of the SQL parsing, either adapt an already made parser to work better for just DDL, or contribute to one that is missing that funcionality so that a parsing framework is already done and the focus can be on maybe finding and automating normalisation and more sophisticated database flaw detection.
+
+%maybe allow lecturer mode where batch files can be uploaded
