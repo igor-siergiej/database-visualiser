@@ -193,8 +193,8 @@ function goToTableView() {
   errorViewButton.className = "nav-link"
 
   tableTab.className = "tab-pane fade active show"
-  syntaxTab.classname = "tab-pane fade"
-  errorTab.classname = "tab-pane fade"
+  syntaxTab.className = "tab-pane fade"
+  errorTab.className = "tab-pane fade"
 }
 
 function visualise() {
