@@ -33,6 +33,85 @@
 \usepackage{graphicx}
 \usepackage{caption}
 \usepackage{tabularx}
+\usepackage{color}
+\usepackage{listings}
+\usepackage{ltablex}
+\usepackage{hyperref}
+
+% Requires package: color.
+\definecolor{mediumgray}{rgb}{0.3, 0.4, 0.4}
+\definecolor{mediumblue}{rgb}{0.0, 0.0, 0.8}
+\definecolor{forestgreen}{rgb}{0.13, 0.55, 0.13}
+\definecolor{darkviolet}{rgb}{0.58, 0.0, 0.83}
+\definecolor{royalblue}{rgb}{0.25, 0.41, 0.88}
+\definecolor{crimson}{rgb}{0.86, 0.8, 0.24}
+
+\lstdefinelanguage[ECMAScript2015]{JavaScript}[]{JavaScript}{
+	morekeywords=[1]{await, async, case, catch, class, const, default, do,
+		enum, export, extends, finally, from, implements, import, instanceof,
+		let, static, super, switch, throw, try},
+	morestring=[b]` % Interpolation strings.
+}
+
+\lstdefinestyle{JSES6Base}{
+	backgroundcolor=\color{white},
+	basicstyle=\ttfamily,
+	breakatwhitespace=false,
+	breaklines=false,
+	captionpos=b,
+	columns=fullflexible,
+	commentstyle=\color{mediumgray}\upshape,
+	emph={},
+	emphstyle=\color{crimson},
+	extendedchars=true,  % requires inputenc
+	fontadjust=true,
+	frame=single,
+	identifierstyle=\color{black},
+	keepspaces=true,
+	keywordstyle=\color{mediumblue},
+	keywordstyle={[2]\color{darkviolet}},
+	keywordstyle={[3]\color{royalblue}},
+	numbers=left,
+	numbersep=5pt,
+	numberstyle=\tiny\color{black},
+	rulecolor=\color{black},
+	showlines=true,
+	showspaces=false,
+	showstringspaces=false,
+	showtabs=false,
+	stringstyle=\color{forestgreen},
+	tabsize=2,
+	title=\lstname,
+	upquote=true  % requires textcomp
+}
+
+\lstdefinestyle{JavaScript}{
+	language=JavaScript,
+	style=JSES6Base
+}
+\lstdefinestyle{ES6}{
+	language=ES6,
+	style=JSES6Base
+}
+\lstalias[]{ES6}[ECMAScript2015]{JavaScript}
+
+\lstdefinelanguage{JavaScript}{
+	morekeywords=[1]{break, continue, delete, else, for, function, if, in,
+		new, return, this, typeof, var, void, while, with},
+	% Literals, primitive types, and reference types.
+	morekeywords=[2]{false, null, true, boolean, number, undefined,
+		Array, Boolean, Date, Math, Number, String, Object},
+	% Built-ins.
+	morekeywords=[3]{eval, parseInt, parseFloat, escape, unescape},
+	sensitive,
+	morecomment=[s]{/*}{*/},
+	morecomment=[l]//,
+	morecomment=[s]{/**}{*/}, % JavaDoc style comments
+	morestring=[b]',
+	morestring=[b]"
+}[keywords, comments, strings]
+
+
 
 % the following packages are used for citations - You only need to include one. 
 %
@@ -113,52 +192,21 @@
 
 \setchapterheaderfooter
 
-%TC:endignore
-
 % include the chapters
 \include{Chapters_\showreporttype/chapter1}
 \include{Chapters_\showreporttype/chapter2}
 \include{Chapters_\showreporttype/chapter3}
 \include{Chapters_\showreporttype/chapter4}
 \include{Chapters_\showreporttype/chapter5}
-% add any additional chapters here
 
-%TC:ignore
 \setemptyheader
 
 \nocite{*} % include everything from the bibliography, irrespective of whether it has been referenced.
-
-% the following line is included so that the bibliography is also shown in the table of contents. There is the possibility that this is added to the previous page for the bibliography. To address this, a newline is added so that it appears on the first page for the bibliography. 
 \addcontentsline{toc}{chapter}{References} % Adds References to contents page
-
-%
-% example of including an bibliography. The current style uses IEEE. If you want to change, comment out the line and uncomment the previous line. You should also modify the packages included at the top (see the notes earlier in the file) and then trash your aux files and re-run. 
-%\bibliographystyle{StylesAndReferences/authordate2annot}
 \bibliographystyle{StylesAndReferences/IEEEannot.bst}
 \renewcommand{\bibname}{References} 
 
 \bibliography{StylesAndReferences/references} % References file
-
-
-\setemptyheader
-
-\addcontentsline{toc}{chapter}{Appendices}
-\chapter*{Appendices}
-The appendices are for additional content that is useful to support the discussion in the report. It is material that is not necessarily needed in the body of the report, but its inclusion in the appendices makes it easy to access.
-
-If you have used any 3rd party code, i.e. code that you have not written yourself such as libraries, then you must include Appendix A. In that appendix, you will provide details of the 3rd party code that you have used. 
-
-For most other items, it would be better to include them in your technical submission instead of including them as an appendix. For example:
-
-\begin{itemize}
-    \item If you have developed a Design Specification document as part of a plan-driven approach for the project, then it would be appropriate to include that document in the technical work. In this report, you would highlight the most interesting aspects of the design, referring your reader to the full specification for further detail.
-    \item If you have taken an agile approach to developing the project, then you may be less likely to have developed a full requirements specification at the start of the project. Perhaps you used stories to keep track of the functionality and the ‘future conversations.’ If it isn’t relevant to include all those stories in the body of your report, you could detail those stores in a document in the technical work.
-    \item If you have used manual testing, then include a document in the technical work that records the tests that have been done. In this report, you would talk about the use of those tests.
-\end{itemize}
-
-Documents included in the technical work or in the appendices are supporting evidence of the work done. Where you include documents, this report should refer to the documents. You should not be relying on detailed study of those documents in order to understand what is written in this report. 
-
-Speak to your supervisor or the module coordinator if you have questions about this.
 
 \pagebreak
 
@@ -182,7 +230,6 @@ Speak to your supervisor or the module coordinator if you have questions about t
 
 % include any appendices here
 \include{Appendices/appendixA}
-\include{Appendices/appendixB}
 
 \fancypagestyle{plain}{%
    \fancyhead{} %[C]{Annotated Bibliography}

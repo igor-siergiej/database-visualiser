@@ -68,20 +68,20 @@ To set an appropriate target for this project, it was decided to only create par
 
 The statements that will be able to be parsed will only include creating and altering tables and schemas. These are the fundamental building blocks of a database and it is what the project will focus on. These statements are:
 
-\begin{itemize}
-	\item CREATE TABLE
-	\item CREATE SCHEMA
-	\item ALTER SCHEMA
-	\item ALTER TABLE
-\end{itemize}
+\begin{lstlisting}[style=JavaScript, caption={}]
+	ALTER TABLE
+	ALTER SCHEMA
+	CREATE SCHEMA
+	CREATE TABLE
+\end{lstlisting}
 
 Statements that will not be included will be statements that either are not relevant to the structure of the database or they are advanced statements that learners are not likely to use. These are some of the examples of such statements:
 
-\begin{itemize}
-	\item SELECT * FROM tableName
-	\item PARTITION BY columnName
-	\item CHECK(columnName $>$ num)
-\end{itemize}
+\begin{lstlisting}[style=JavaScript, caption={}]
+	SELECT * FROM tableName
+	PARTITION BY columnName
+	CHECK(columnName $>$ num)
+\end{lstlisting}
 
 \newpage
 
@@ -148,6 +148,7 @@ An example of how database tables are visualised:
 After the SQL has been parsed and the database has been displayed to the user, the application should provide advice and possible faults of the database, if there are any. This should be clear and direct, and it also should provide feedback as to how to fix this issue. This would involve an analysis of the database structure to see if there are any keys missing or an incorrect design of the database.
 
 \subsection{Scope}
+\label{subsec:scope}
 
 A possible goal for this project was to create parsing for the DQL (Data Query Language). This would involve allowing the user to not only input their table structure but also their entries in the tables. This would allow the user to enter a query for the database, and this project would be able to parse the query and return the result of the query to the user. The user would then test for themselves to see if the returned entries were what they expected from their queries. However, this proved to be extra features that were not needed for the scope of this project, as it only mentioned identifying database design flaws and would prove to take too much time than the project allows.
 
@@ -185,6 +186,7 @@ Another goal for this project was to create an algorithm to fix the issues that 
 \newpage
 
 \section{Process}
+\label{sec:process}
 
 For this project, a process adapted from Scrumban was used. The elements of Scrum that were incorporated were:  
 \begin{itemize}
