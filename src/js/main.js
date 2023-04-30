@@ -11,6 +11,9 @@ import Validator from './Validator';
 
 var visualised = false
 
+const accordion = document.getElementById("accordion")
+const bubble = document.getElementById("bubble")
+
 const textTabButton = document.getElementById("text-tab-button")
 const fileTabButton = document.getElementById("file-tab-button")
 
@@ -27,6 +30,10 @@ const errorViewButton = document.getElementById("error-tab")
 
 fileVisualiseButton.disabled = true
 textVisualiseButton.disabled = true
+
+const tableTab = document.getElementById("tableTab")
+const syntaxTab = document.getElementById("syntaxArea")
+const errorTab = document.getElementById("errorArea")
 
 const filePicker = document.getElementById("filePicker");
 const textArea = document.getElementById("textArea");
@@ -176,14 +183,32 @@ function drawTreeTablesRecursively(tree, appendNode, tables) {
   }
 }
 
+function goToTableView() {
+  tableViewButton.setAttribute("aria-selected", true)
+  syntaxViewButton.setAttribute("aria-selected",false)
+  errorViewButton.setAttribute("aria-selected",false)
+
+  tableViewButton.className = "nav-link active"
+  syntaxViewButton.className = "nav-link"
+  errorViewButton.className = "nav-link"
+
+  tableTab.className = "tab-pane fade active show"
+  syntaxTab.classname = "tab-pane fade"
+  errorTab.classname = "tab-pane fade"
+}
+
 function visualise() {
   if (visualised) { // if the table has already been visualised then reset the html of the outputs
     tableArea.innerHTML = ""
     syntaxTextArea.innerHTML = ""
     filterArea.innerHTML = ""
     treeArea.innerHTML = ""
-    // refresh error tab inner html too
+    accordion.innerHTML = ""
+    bubble.innerHTML = ""
   }
+
+  goToTableView()
+
 
   // reveal output tab only once database is visualised
   document.getElementById("outputTab").hidden = false;
@@ -215,6 +240,7 @@ function visualise() {
       // remove tables that are part of tree from tablesList
       // check if there are left over tables that are not part of tree structure
     }
+
     for (const table of tablesList) {
       table.createTable(tableArea)
     }
@@ -233,6 +259,16 @@ function visualise() {
   }
 
   createFilters(uniqueColumnTypesForAllTables(tables), filterArea)
+
+  // check if problems are created, if not create a element to say everything is good
+  // if not then add notification bubble.
+
+  var numOfProblems = accordion.childElementCount
+  if (numOfProblems > 0) {
+    bubble.innerHTML = numOfProblems
+  } else {
+    // create element to say all is good
+  }
 
   visualised = true;
 }

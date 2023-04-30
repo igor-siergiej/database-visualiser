@@ -44,8 +44,8 @@ describe('Validator', function () {
                 database = new Database();
             });
 
-            it("Should validate demo.sql successfully", function () {
-                fs.readFile("test/testData/demo.sql", "utf-8", (err, data) => {
+            it("Should validate test.sql successfully", function () {
+                fs.readFile("test/testData/test.sql", "utf-8", (err, data) => {
                     if (err) {
                         console.log(err)
                     } else {
