@@ -3,6 +3,7 @@ const jsTokens = require("js-tokens")
 const Column = require("./Column")
 const Util = require("./Util")
 const SyntaxError = require("./SyntaxError")
+const MissingPrimaryKeyProblem = require("./MissingPrimaryKeyProblem")
 
 
  class Table {
@@ -442,6 +443,12 @@ const SyntaxError = require("./SyntaxError")
 
 		heading.appendChild(headingText)
 		headingRow.appendChild(heading)
+
+		// if this table does not have any primary keys then create a problem to report
+		if (!this.hasPrimaryKey()) {
+			var missingKeyProblem = new MissingPrimaryKeyProblem()
+			missingKeyProblem.createAccordionItem(this.name)
+		}
 
 		for (const column of this.columns) {
 			var row = table.insertRow();

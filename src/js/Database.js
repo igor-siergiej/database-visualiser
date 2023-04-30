@@ -5,8 +5,6 @@ const Schema = require("./Schema")
 
   class Database {
     schemas = []
-    errors = []
-
 
     constructor() {
         var publicSchema = new Schema("public", this.getSchemas()); // create default schema

@@ -113,7 +113,7 @@
 
           <button class="nav-link position-relative btn" id="error-tab" data-bs-toggle="tab" data-bs-target="#errorArea" type="button"
             role="tab" aria-controls="errorArea" aria-selected="false">
-            Problem View <span id="numOfProblems" class="badge bg-danger rounded-circle"></span>
+            Problem View <span id="bubble" class="badge bg-danger rounded-circle"></span>
           </button>
 
         </li>
@@ -152,20 +152,7 @@
 
         <div class="tab-pane fade" id="errorArea" role="tabpanel" aria-labelledby="error-tab">
 
-          <div class="accordion py-3">
-            <div class="accordion-item">
-              <h2 class="accordion-header">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                  data-bs-target="#body-panel">
-                  Accordion Item #1
-                </button>
-              </h2>
-              <div id="body-panel" class="accordion-collapse collapse">
-                <div class="accordion-body">
-                  Test
-                </div>
-              </div>
-            </div>
+          <div class="accordion py-3" id="accordion"></div>
 
         </div>
 
