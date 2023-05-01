@@ -246,6 +246,7 @@ function visualise() {
     }
 
   } else {
+    // NO FOREIGN KEYS CREATE PROBLEM
     for (const table of tables) {
       table.createTable(tableArea)
     }

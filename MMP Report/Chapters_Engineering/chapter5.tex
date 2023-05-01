@@ -32,16 +32,26 @@ The choice of using Bootstrap as the front-end toolkit was correct since it allo
 
 \subsection{Familiarity of the Technology Used}
 
+The familiarity with web development was adequate with native HTML, CSS and JavaScript which was useful for the project since time did not need to be used to learn these technologies. 
 
+However Bootstrap was not used before this project and reading and learning had to be done to get used to designing a website using Bootstrap. If some other toolkit was used that was not so focused on responsive design then the re-designing of the tables might have not been needed. This might have also been avoided if there was familiarity with Bootstrap before the start of this project. 
 
-% Fairly used to HTML and Javascript however had to learn Bootstrap but was not too hard. Had a hiccup with the responsive design of tables being squished, which might have been avoided if I knew it. 
+% cite this back to the squished tables.
 
 %\section{How well did the software meet the needs of those who were expecting to use it?}
 
-% maybe talk about user testing?
+% maybe talk about user testing? does it need to be here?
 
-\section{If you were starting again, what would you do differently?}
+\section{Lessons Learnt}
 
-% figure out how to get past the hurdle of the SQL parsing, either adapt an already made parser to work better for just DDL, or contribute to one that is missing that funcionality so that a parsing framework is already done and the focus can be on maybe finding and automating normalisation and more sophisticated database flaw detection.
+If this project would be reworked then the issue of adequate SQL parsing should be addressed. This project should either adapt an already implemented parser from an API and use it to just parse DDL statements, another way to do this is to contribute to a parsing framework that is not fully developed and add functionality to parse DDL statements. After this issue is solved then more interesting features can be worked on and added to this project.
+
+Deeper exploration of different combinations of frameworks could be done to see if it would be useful when building a more complex website application with more content and features. 
+
+% add to this what else was learnt?
+
+\section{Future Work}
+
+If the this project were to be worked on in the future, then more advanced detection of flaws with the parsed database should be looked into. This could involve possibly detecting if the database has been normalised and if not see if there is a way to prompt the user to do so. Another flaw detection is to see if the table or column name is plural since it is good design to have names be singular, in addition to this it could also check if the correct naming convention is used in names. Another feature that could be implemented is to prompt the user to inform them that a deprecated feature is used, even though it is correct syntax it should be avoided to use deprecated flags.
 
 %maybe allow lecturer mode where batch files can be uploaded

@@ -1,8 +1,8 @@
 const Problem = require("./Problem")
 
 class MissingForeignKeyConstraint extends Problem{
-    title = "This table is missing a Foreign Key Constraint"
-    fixText = "add a FOREIGN KEY constraint."
+    title = "Currently in the database, there are no foreign keys."
+    fixText = "add a FOREIGN KEY constraint to link the tables."
     link = "https://www.postgresql.org/docs/15/ddl-constraints.html#DDL-CONSTRAINTS-FK"
 
     createAccordionItem(tableName) {
