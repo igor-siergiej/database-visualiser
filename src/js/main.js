@@ -8,6 +8,8 @@ const SyntaxError = require("./SyntaxError")
 import Database from './Database';
 import Util from './Util';
 import Validator from './Validator';
+import NoForeignKeyProblem from './NoForeignKeyProblem';
+import MultipleRootsProblem from './MultipleRootsProblem';
 
 var visualised = false
 
@@ -44,6 +46,8 @@ const highlights = document.getElementById("highlights")
 
 const alertDiv = document.getElementById("alertDiv");
 
+const successAlertDiv = document.getElementById("successAlert")
+
 textArea.addEventListener("scroll", function (event) {
   backdrop.scrollTop = textArea.scrollTop
 });
@@ -53,7 +57,6 @@ textTabButton.addEventListener("click", clearAlertDiv)
 fileTabButton.addEventListener("click", clearAlertDiv)
 
 function clearAlertDiv() {
-  createLines(database.getAllTables())
   alertDiv.innerHTML = ""
 }
 
@@ -104,6 +107,8 @@ function createTableData() {
   // if there are multiple roots then need to split up into separate trees
   // means that tables are not all joined up by foreign keys
   if (roots.length > 1) {
+    var multipleRootsProblem = new MultipleRootsProblem()
+    multipleRootsProblem.createAccordionItem()
     for (const root of roots) {
       let nodes = []
       // get all keys that belong to the root and its childrens
@@ -246,7 +251,8 @@ function visualise() {
     }
 
   } else {
-    // NO FOREIGN KEYS CREATE PROBLEM
+    var noFKProblem = new NoForeignKeyProblem()
+    noFKProblem.createAccordionItem()
     for (const table of tables) {
       table.createTable(tableArea)
     }
@@ -267,6 +273,7 @@ function visualise() {
   var numOfProblems = accordion.childElementCount
   if (numOfProblems > 0) {
     bubble.innerHTML = numOfProblems
+    successAlertDiv.innerHTML = ""
   } else {
     createNoFlawMessage()
   }
@@ -277,6 +284,7 @@ function visualise() {
 function createNoFlawMessage() {
   var alert = document.createElement("div")
 
+  alert.id = "successAlert"
   alert.className = "alert alert-success"
   alert.setAttribute("role", "alert")
   
@@ -289,7 +297,7 @@ function createNoFlawMessage() {
   alert.appendChild(boldText)
   alert.appendChild(alertText)
 
-  errorTab.appendChild(alert)
+  successAlertDiv.appendChild(alert)
 }
 
 function createLines(tables) {
@@ -543,6 +551,7 @@ fileVisualiseButton.addEventListener('click', function () {
 tableViewButton.addEventListener("click", function (event) {
   createLines(database.getAllTables())
 })
+
 syntaxViewButton.addEventListener("click", function (event) {
   removeLines()
 })

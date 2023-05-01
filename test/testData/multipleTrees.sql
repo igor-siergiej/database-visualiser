@@ -23,5 +23,30 @@ CREATE TABLE account_roles (
       REFERENCES accounts (user_id)
 );
 
---Test data used from 
---https://www.postgresqltutorial.com/postgresql-tutorial/postgresql-create-table/
+CREATE TABLE test10(
+columnName1 serial,
+columnName2 serial,
+FOREIGN KEY(columnName1) REFERENCES account_roles (user_id));
+
+
+ CREATE TABLE test1(
+   column1 serial,
+   column2 serial
+);
+
+CREATE TABLE test2(
+   column1 serial,
+   column2 serial
+);
+
+CREATE TABLE test3(
+   column1 serial,
+   column2 serial,
+   FOREIGN KEY (column1) REFERENCES test1 (column1),
+   FOREIGN KEY (column2) REFERENCES test2 (column1)
+); 
+
+CREATE TABLE test4(
+   column1 serial,
+   FOREIGN KEY(column1) REFERENCES test3 (column1)
+);

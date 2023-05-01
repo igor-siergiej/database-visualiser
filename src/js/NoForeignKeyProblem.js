@@ -1,6 +1,6 @@
 const Problem = require("./Problem")
 
-class MissingForeignKeyConstraint extends Problem{
+class NoForeignKeyProblem extends Problem{
     title = "Currently in the database, there are no foreign keys."
     fixText = "add a FOREIGN KEY constraint to link the tables."
     link = "https://www.postgresql.org/docs/15/ddl-constraints.html#DDL-CONSTRAINTS-FK"
@@ -10,4 +10,4 @@ class MissingForeignKeyConstraint extends Problem{
     }
 } 
 
-module.exports = MissingForeignKeyConstraint
+module.exports = NoForeignKeyProblem

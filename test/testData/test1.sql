@@ -8,7 +8,7 @@ CREATE TABLE accounts (
 );
 
 CREATE TABLE roles(
-   role_id serial PRIMARY KEY,
+   role_id serial,
    role_name VARCHAR (255) UNIQUE NOT NULL
 );
 

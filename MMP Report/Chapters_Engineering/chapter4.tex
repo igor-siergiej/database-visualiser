@@ -17,9 +17,9 @@ The automated testing addresses the requirement of validating the entered SQL. T
 		\hline
 		\textbf{Test ID} & \textbf{Description} & \textbf{Input} & \textbf{Expected Result} & \textbf{Pass/Fail} \\
 		\hline
-		TC-1 & Parser should throw syntax error & Validate the statement: "CREATE TABLE" & Error should be thrown with the message "Missing Semicolon in statement" & Pass \\
+		ATC-1 & Parser should throw syntax error & Validate the statement: "CREATE TABLE" & Error should be thrown with the message "Missing Semicolon in statement" & Pass \\
 		\hline
-		TC-1 & Parser should throw syntax error & Validate the statement: "CREATE TABLE" & Error should be thrown with the message "Missing Semicolon in statement" & Pass \\
+		ATC-2 & Parser should not throw a syntax error & Validate the test.sql file & Validation should be complete without syntax errors being thrown & Pass \\
 		\hline
 	\end{tabularx}
 \end{center}
@@ -37,25 +37,23 @@ Manual testing was done because the system is quite complex to test using a test
 		\hline
 		\textbf{Test ID} & \textbf{Reference} & \textbf{Description} & \textbf{Steps} & \textbf{Expected Result} & \textbf{Pass/Fail} \\
 		\hline
-		TC-1 & FR-1.1 & Entering valid SQL into the textarea & Enter a valid SQL statement into the labelled text area. & Text area border should turn to a green colour and the "Visualise" button should be enabled & Pass \\
+		MTC-1 & FR-1.1 & Entering valid SQL into the textarea & Enter a valid SQL statement into the labelled text area. & Text area border should turn to a green colour and the "Visualise" button should be enabled & Pass \\
 		\hline
-		TC-2 & FR-1.1 & Entering invalid SQL into the textarea & Enter an invalid SQL statement into the labelled text area. & Text area border colour should turn to a red colour and an alert should appear with the syntax error & Pass \\
+		MTC-2 & FR-1.1 & Entering invalid SQL into the textarea & Enter an invalid SQL statement into the labelled text area. & Text area border colour should turn to a red colour and an alert should appear with the syntax error & Pass \\
 		\hline
-		TC-3 & FR-1.2 & Entering an valid SQL file into the filepicker & Enter an valid SQL file into the filepicker. & Text area border should turn to a green colour and the "Visualise" button should be enabled & Pass \\
+		MTC-3 & FR-1.2 & Entering an valid SQL file into the filepicker & Enter an valid SQL file into the filepicker. & Text area border should turn to a green colour and the "Visualise" button should be enabled & Pass \\
 		\hline
-		TC-4 & FR-1.2 & Entering an invalid file into the filepicker & Enter an invalid SQL file into the filepicker. & Filepicker border should turn to a red colour and an alert should appear with a message that the filename is invalid. & Pass \\
+		MTC-4 & FR-1.2 & Entering an invalid file into the filepicker & Enter an invalid SQL file into the filepicker. & Filepicker border should turn to a red colour and an alert should appear with a message that the filename is invalid. & Pass \\
 		\hline
-		TC-5 & FR-3 & Visualising a test database from file & Upload the file test.sql into the filepicker and press the "Visualise" button. & Test database should be visualised correctly with the foreign key arrows. & Pass \\
+		MTC-5 & FR-3 & Visualising a test database from file & Upload the file test.sql into the filepicker and press the "Visualise" button. & Test database should be visualised correctly with the foreign key arrows. & Pass \\
 		\hline
-		TC-6 & FR-4 & Viewing the syntax highlighting & Upload the file test.sql into the filepicker and press the "Visualise" button, then press the "Syntax View" tab button. & Syntax highlighting of the test database should be displayed with correct colours, syntax and indentation & Pass \\
+		MTC-6 & FR-4 & Viewing the syntax highlighting & Upload the file test.sql into the filepicker and press the "Visualise" button, then press the "Syntax View" tab button. & Syntax highlighting of the test database should be displayed with correct colours, syntax and indentation & Pass \\
 		\hline
-		TC-7 & FR-5 & Using the filters in syntax view & Upload the file test.sql into the filepicker and press the "Visualise" button, then press the "Syntax View" tab button and press the "serial" checkbox . & All of the "serial" data types should be highlighted in a green colour. & Pass \\
+		MTC-7 & FR-5 & Using the filters in syntax view & Upload the file test.sql into the filepicker and press the "Visualise" button, then press the "Syntax View" tab button and press the "serial" checkbox . & All of the "serial" data types should be highlighted in a green colour. & Pass \\
 		\hline
-		% enter test1.sql with an expected flaw and make sure it matches, also check that the notification bubble exists.
-		TC-8 & FR-6 & View a database flaw & Upload the file test1.sql into the filepicker and press the "Visualise" button, then press the "Problem view" tab button and press the accordion button. &  & Pass \\
+		MTC-8 & FR-6 & View a database flaw & Upload the file test1.sql into the filepicker and press the "Visualise" button, then press the "Problem view" tab button and press the accordion button. & There should be an user interface element displaying the missing primary key constraint. & Pass \\
 		\hline
-		% enter test.sql and no problems should be listed, but a message should be there saying all is good
-		TC-9 & FR-6 & View problems of a database with no flaws & Upload the file test1.sql into the filepicker and press the "Visualise" button, then press the "Problem view" tab button &  & Pass \\
+		MTC-9 & FR-6 & View problems of a database with no flaws & Upload the file test1.sql into the filepicker and press the "Visualise" button, then press the "Problem view" tab button & There should be a prompt for the user to inform them that there are no database flaws detected & Pass \\
 		\hline
 	\end{tabularx}
 \end{center}
