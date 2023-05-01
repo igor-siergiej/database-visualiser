@@ -268,13 +268,30 @@ function visualise() {
   if (numOfProblems > 0) {
     bubble.innerHTML = numOfProblems
   } else {
-    // create element to say all is good
+    createNoFlawMessage()
   }
 
   visualised = true;
 }
 
-// this should probably be in a try catch block because it error crashes often
+function createNoFlawMessage() {
+  var alert = document.createElement("div")
+
+  alert.className = "alert alert-success"
+  alert.setAttribute("role", "alert")
+  
+  let boldText = document.createElement("strong")
+
+  boldText.innerHTML = "Congratulations! "
+
+  let alertText = document.createTextNode("No flaws have been detected for this database!")
+
+  alert.appendChild(boldText)
+  alert.appendChild(alertText)
+
+  errorTab.appendChild(alert)
+}
+
 function createLines(tables) {
   removeLines()
   try {
