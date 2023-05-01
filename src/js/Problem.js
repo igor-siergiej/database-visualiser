@@ -1,5 +1,15 @@
 class Problem {
 
+    title;
+    fixText;
+    link;
+
+    constructor(title,fixText,link) {
+        this.title = title
+        this.fixText = fixText
+        this.link = link
+    }
+
     createAccordionItem(tableName, title, body,url) {
         // identifier is a randomly generater letter from A-Z to differentiate between 
         // different accordion items and the table where the problem originates from.
@@ -19,7 +29,11 @@ class Problem {
         // Identifier here is used to match the header to the button so that only this one expands
         accordionButton.setAttribute("data-bs-target", `#${identifier}`)
 
-        accordionButton.innerHTML = tableName + " - " + title
+        if (tableName == undefined) {
+            accordionButton.innerHTML =  title
+        } else {
+            accordionButton.innerHTML = tableName + " - " + title
+        }
 
         var bodyPanel = document.createElement("div")
         bodyPanel.id = identifier
