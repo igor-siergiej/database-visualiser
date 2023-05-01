@@ -54,7 +54,7 @@
             let textNode = document.createElement("span");
             textNode.className = color
             textNode.textContent = text
-            textNode.id = text
+            textNode.id = text.replace(/ /g,"_");
             syntaxTextArea.appendChild(textNode)
         }
     }
