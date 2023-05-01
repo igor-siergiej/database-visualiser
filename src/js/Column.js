@@ -7,7 +7,7 @@ const SyntaxError = require("./SyntaxError")
     name;
     columnType;
     #primaryKey = "";
-    #foreignKey;
+    #foreignKey = [];
     nullable;
     unique = false;
 
@@ -83,12 +83,12 @@ const SyntaxError = require("./SyntaxError")
             tokenizedArray = tokenizedArray.splice(2)
         }
         this.columnType = columnType
-        this.parseColumnConstraints(tokenizedArray,database)
+        this.parseColumnConstraints(tokenizedArray,database,columns)
     }
 
-    parseColumnConstraints(tokenizedArray,database) {
+    parseColumnConstraints(tokenizedArray,database,columns) {
         while (tokenizedArray.length > 0) {
-            var word = tokenizedArray[0].value
+            var word = tokenizedArray[0].value.toUpperCase()
             
             switch (word.toUpperCase()) {
                 case "NULL":
@@ -103,7 +103,10 @@ const SyntaxError = require("./SyntaxError")
                     }
                     break;
                 case "PRIMARY":
-                    if (tokenizedArray[1].value == "KEY") {
+                    if (tokenizedArray[1].value.toUpperCase() == "KEY") {
+                        if (this.doColumnsAlreadyHavePrimaryKey(columns)) {
+                            throw new SyntaxError(`This table already has a Primary Key Constraint`, tokenizedArray[0].value + " "+ tokenizedArray[1].value)
+                        }
                         this.addKey("P")
                         tokenizedArray.splice(0, 2)
                     }
@@ -220,11 +223,21 @@ const SyntaxError = require("./SyntaxError")
     }
 
     setForeignKey(referencedTable, referencedColumn, columnType) {
-        this.#foreignKey = new ForeignKey(referencedTable, referencedColumn, columnType)
+        this.#foreignKey.push(new ForeignKey(referencedTable, referencedColumn, columnType))
     }
 
-    getForeignKey() {
+    getForeignKeys() {
         return this.#foreignKey
+    }
+
+    doColumnsAlreadyHavePrimaryKey(columns) {
+        let isPrimaryKeyPresent = false
+        for (const column of columns) {
+            if (column.hasPrimaryKey()) {
+                isPrimaryKeyPresent = true
+            }
+        }
+        return isPrimaryKeyPresent
     }
 }
 

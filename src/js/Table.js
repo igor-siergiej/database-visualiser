@@ -216,7 +216,7 @@ const MissingPrimaryKeyProblem = require("./MissingPrimaryKeyProblem")
 					if (this.doesSchemaExist(schemaName, database.getSchemas())) {
 						// get the tables where schema is schemaName
 						if (!this.doesTableExist(tableName, schemaName, database.getSchemas())) { // does table already exist in schema
-							this.name = tableName
+							this.name = tableName.replace(/['"`]+/g, '')
 							this.schema = schemaName
 							return true
 						} else {
@@ -330,6 +330,20 @@ const MissingPrimaryKeyProblem = require("./MissingPrimaryKeyProblem")
 				constraintStatement = constraintStatement.splice(openBracketIndex + 1)
 				var referencedColumnNames = referencedTable.parseValuesInsideBrackets(constraintStatement, referencedTable)
 
+				var formattedColumnNames = []
+				for (let columnName of referencedColumnNames) {
+					formattedColumnNames.push(columnName.replace(/['"`]+/g, ''))
+				}
+
+				referencedColumnNames = formattedColumnNames
+
+				var formattedColumnNames = []
+				for (let columnName of columnNames) {
+					formattedColumnNames.push(columnName.replace(/['"`]+/g, ''))
+				}
+
+				columnNames = formattedColumnNames
+
 
 				// make sure the number of columns are the same in foreign key constraint
 				if (referencedColumnNames.length != columnNames.length) {
@@ -343,6 +357,7 @@ const MissingPrimaryKeyProblem = require("./MissingPrimaryKeyProblem")
 							columnType = column.columnType.type
 						}
 					}
+
 					table.setForeignKey(columnNames[i], referencedTable.name, referencedColumnNames[i], columnType)
 				}
 
@@ -360,7 +375,13 @@ const MissingPrimaryKeyProblem = require("./MissingPrimaryKeyProblem")
 				// removing "PRIMARY KEY ("
 				constraintStatement = constraintStatement.splice(3)
 				var columnNames = table.parseValuesInsideBrackets(constraintStatement, table)
-				table.setPrimaryKey(columnNames)
+				
+				var formattedColumnNames = []
+				for (let columnName of columnNames) {
+					formattedColumnNames.push(columnName.replace(/['"`]+/g, ''))
+				}
+
+				table.setPrimaryKey(formattedColumnNames)
 			} else {
 				throw new SyntaxError(`Expected open bracket instead of: "${constraintStatement[2].value}"`, constraintStatement[2].value)
 			}

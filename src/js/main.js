@@ -129,8 +129,10 @@ function getForeignKeysInDB() {
   for (let schema of database.getSchemas()) {
     for (let table of schema.tables) {
       for (let column of table.columns) {
-        if (column.getForeignKey() != undefined) {
-          keys.push({ column: column.getForeignKey(), tableName: table.name })
+        if (column.getForeignKeys() != undefined) {
+          for (let key of column.getForeignKeys()) {
+            keys.push({ column: key, tableName: table.name })
+          }
         }
       }
     }
@@ -190,8 +192,8 @@ function drawTreeTablesRecursively(tree, appendNode, tables) {
 
 function goToTableView() {
   tableViewButton.setAttribute("aria-selected", true)
-  syntaxViewButton.setAttribute("aria-selected",false)
-  errorViewButton.setAttribute("aria-selected",false)
+  syntaxViewButton.setAttribute("aria-selected", false)
+  errorViewButton.setAttribute("aria-selected", false)
 
   tableViewButton.className = "nav-link active"
   syntaxViewButton.className = "nav-link"
@@ -226,6 +228,8 @@ function visualise() {
       tables.push(table)
     }
   }
+
+  console.log(database)
 
   // if there are no foreign keys then draw tables in creation order
   if (getForeignKeysInDB().length > 0) {
@@ -287,7 +291,7 @@ function createNoFlawMessage() {
   alert.id = "successAlert"
   alert.className = "alert alert-success"
   alert.setAttribute("role", "alert")
-  
+
   let boldText = document.createElement("strong")
 
   boldText.innerHTML = "Congratulations! "
@@ -305,35 +309,38 @@ function createLines(tables) {
   try {
     for (const table of tables) {
       for (const column of table.columns) {
-        var foreignKey = column.getForeignKey()
-        if (foreignKey !== undefined) {
-          // need the id to be unique and start from the type column
-          // therefore need table and column name and column type
-          var from = table.name + "/" +
-            column.name + "/" +
-            column.columnType.type
+        var foreignKeys = column.getForeignKeys()
+        if (foreignKeys !== undefined) {
+          for (const foreignKey of foreignKeys) {
+            // need the id to be unique and start from the type column
+            // therefore need table and column name and column type
+            var from = table.name + "/" +
+              column.name + "/" +
+              column.columnType.type
 
-          // same as above need this id to be unique per schema
-          // that's why table, column and type are required to be in the id
-          var to = foreignKey.referencedTable + "/" +
-            foreignKey.referencedColumn + "/" +
-            foreignKey.referencedColumnType
+            // same as above need this id to be unique per schema
+            // that's why table, column and type are required to be in the id
+            var to = foreignKey.referencedTable + "/" +
+              foreignKey.referencedColumn + "/" +
+              foreignKey.referencedColumnType
 
-          var line = new LeaderLine(
-            document.getElementById(from),
-            document.getElementById(to)
-          )
+            var line = new LeaderLine(
+              document.getElementById(from),
+              document.getElementById(to)
+            )
 
-          line.startPlugColor = '#1a6be0'
-          line.endPlugColor = '#1efdaa'
-          line.startPlug = "square"
-          line.endPlug = "arrow1"
-          line.gradient = true
-          line.dropShadow = true
-          line.path = "line"
-          line.setOptions({ startSocket: 'right', endSocket: 'right' })
+            line.startPlugColor = '#1a6be0'
+            line.endPlugColor = '#1efdaa'
+            line.startPlug = "square"
+            line.endPlug = "arrow1"
+            line.gradient = true
+            line.dropShadow = true
+            line.path = "line"
+            line.setOptions({ startSocket: 'right', endSocket: 'right' })
 
-          lines.push(line)
+            lines.push(line)
+          }
+
         }
       }
     }
@@ -525,6 +532,7 @@ filePicker.addEventListener('change', function () {
 document.getElementById("outputTab").hidden = true;
 
 function highlighttokenizedArray(type, checkbox) {
+  type = type.replace(/ /g,"_");
   var tokenizedArray = document.querySelectorAll(`[id=${type}]`);
   if (checkbox.checked) {
     for (let i = 0; i < tokenizedArray.length; i++) {
