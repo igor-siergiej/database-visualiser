@@ -8,11 +8,21 @@ Initially it was decided to create the SQL tables during visualisation using the
 
 Later on in the implementation of this tables when the parsing was sophisticated enough to parse large tables, the problem emerged of Bootstrap shifting the layout of the tables and squashing it's columns together to look like rows on smaller screen or if the window was resized. The grid system is useful when building layouts for mobile-first designs and the changing the layout when the screen size is smaller is useful, but not for this project since learners are not going to be writing their sql databases on a mobile device. 
 
-% provide image of the tables beign squashed
+\begin{figure}[h!]
+	\centering
+	\includegraphics[scale=0.5]{postSquash}
+	\caption{Visualisation of tables showing the column being compressed to look like rows in a single column due to the flexbox responsive resizing.}
+	\label{fig:squash}
+\end{figure}
 
 This problem was solved by going back to using HTML table elements and dynamically creating tables from the table objects. This solution was slightly harder to implement however the and layout was much better since Bootstrap did not resize the table element. This was because the entire table is viewed as an element which prevents it from being changed when the window is resized, compared to the previous implementation which had a single column be an element which was resized. Bootstrap provides styling classes for tables which made the styling easy to change as it was before using the previous tables.
 
-%provide image of html table not being resized.
+\begin{figure}[h!]
+	\centering
+	\includegraphics[scale=0.7]{newPostSquash}
+	\caption{Visualisation of tables after a structure using HTML table elements was adopted, showing no signs of distortion after changing the size of the window.}
+	\label{fig:afterSquash}
+\end{figure}
 
 \subsection{Early stages of parsing}
 
@@ -26,13 +36,34 @@ Drawing lines between two HTML elements was something that had to be done to rep
 
 Drawing the tables in a way that was easy to understand was difficult because the order or layout the tables are displayed in plays a key role in how easy a database can be understood. It was first implemented to display the tables in the order in which the tables appeared in the SQL text file since it seemed logical to do so because the learners will expect the tables to be displayed in this order. However once foreign key arrows were implemented then the tables had foreign key constraint arrows across them because the tables that were joined together were not together in the sql text file. This was quite confusing to try to understand and a decision was made to display them in a more organised structure. 
 
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=\textwidth]{overlap}
+	\caption{Visualisation of tables in the order of creation with drawing of arrows depicting overlap between the tables and arrows prevent text in columns to be readable.}
+	\label{fig:overlap}
+\end{figure}
+
 \subsection{Implementing Highlighting of Text in a HTML TextArea}
 
 The HTML Textarea is what is used in the website form to enter the SQL text by the user, to be user-friendly, if the entered SQL has some syntax errors it should highlight roughly where the error is. This is important because an SQL learner will not be able to easily spot where their error is in the SQL, since they are not familiar with the syntax. 
 
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=\textwidth]{textArea}
+	\caption{Initial implementation of the textArea validation and syntax error alert.}
+	\label{fig:textArea}
+\end{figure}
+
 The HTML Textarea does not natively have the functionality to highlight text inside of it, any mark up to the text would appear as plain text. A possible solution to this problem is to implement a rich text editor in the webpage and replace the Textarea with it, rich text areas can provide implementation to highlight and mark up text much better and easier than the Textarea. However building a rich text editor is not the easiest to do since even basic functionality is difficult to implement \cite{highlightText}.
 
 However since adding a already functioning text editor to the webpage would require styling it and cutting down all of the features down only to the highlighting, it was decided to create a work around for the Textarea. This was done by creating a "fake" textarea under the current one that only looked like a textarea and since it was overlayed over the textarea, it was not perceivable by the user. The goal of this textArea is to only highlight the text and since it is a div that looks like a textArea this can be done by creating span elements of the words that have to be highlighted that had some styling. This proved to be quite easy to implement and provides the solution to the problem.
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics[scale = 1]{highlightedTextArea}
+	\caption{Later implementation of the highlighting of the origin of the syntax error in the input textarea.}
+	\label{fig:highlightedTextArea}
+\end{figure}
 
 \newpage
 
@@ -57,7 +88,7 @@ The initial requirements are all mostly met apart from the functionality that is
 		\hline
 		FR-5 & The user can filter through data types of columns in syntax view & At the syntax view tab there are filters that can be checked to highlight the data types to a green colour to separate them from the rest. \\
 		\hline
-		FR-6 & The user can view the flaws of the database & \\
+		FR-6 & The user can view the flaws of the database & Once the database has been visualised, the "Problem View" tab can be selected with a list of flaws that the database might have, if there are no flaws detected then the user is prompted with a message. \\
 		\hline
 	\end{tabularx}
 \end{center}
