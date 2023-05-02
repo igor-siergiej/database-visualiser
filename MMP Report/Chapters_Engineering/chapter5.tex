@@ -38,10 +38,6 @@ However Bootstrap was not used before this project and reading and learning had 
 
 % cite this back to the squished tables.
 
-%\section{How well did the software meet the needs of those who were expecting to use it?}
-
-% maybe talk about user testing? does it need to be here?
-
 \section{Lessons Learnt}
 
 If this project would be reworked then the issue of adequate SQL parsing should be addressed. This project should either adapt an already implemented parser from an API and use it to just parse DDL statements, another way to do this is to contribute to a parsing framework that is not fully developed and add functionality to parse DDL statements. After this issue is solved then more interesting features can be worked on and added to this project.
@@ -52,8 +48,8 @@ Deeper exploration of different combinations of frameworks could be done to see 
 
 \section{Future Work}
 
-If the this project were to be worked on in the future, then more advanced detection of flaws with the parsed database should be looked into. This could involve possibly detecting if the database has been normalised and if not see if there is a way to prompt the user to do so. Another flaw detection is to see if the table or column name is plural since it is good design to have names be singular, in addition to this it could also check if the correct naming convention is used in names. Another feature that could be implemented is to prompt the user to inform them that a deprecated feature is used, even though it is correct syntax it should be avoided to use deprecated flags.
+If this project were to be worked on in the future, more advanced detection of flaws in the parsed database should be looked into. This could involve possibly detecting if the database has been normalised and if not see if there is a way to prompt the user to do so. Another flaw detection is to see if the table or column name is plural since it is good design to have names be singular, in addition to this it could also check if the correct naming convention is used in names. Another feature that could be implemented is to prompt the user to inform them that a deprecated feature is used, even though it is correct syntax it should be avoided to use deprecated flags.
 
+In addition to more advanced detection of these flaws, there should be some ranking system created to quantify how serious of a flaw is to the integrity of the database. This could involve ranking a missing primary key as a serious flaw that is high risk where as using a deprecated flag is not even a flaw that has to be fixed, it could be a warning to the user.
 
-
-%maybe allow lecturer mode where batch files can be uploaded
+Finally since this project is also aimed to be used in teaching, in the future there should be functionality for people marking student databases. This would involve being able to upload many SQL files at a time to parse and detect flaws for all of them and output the results in a suitable form. This most likely not be a replacement for marking since the parsing and flaw detection will need to be much more sophisticated for this use case.
