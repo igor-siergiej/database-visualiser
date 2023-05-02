@@ -4,6 +4,7 @@ const Column = require("./Column")
 const Util = require("./Util")
 const SyntaxError = require("./SyntaxError")
 const MissingPrimaryKeyProblem = require("./MissingPrimaryKeyProblem")
+import * as bootstrap from 'bootstrap';
 
 
  class Table {
@@ -443,7 +444,26 @@ const MissingPrimaryKeyProblem = require("./MissingPrimaryKeyProblem")
 	createTable(div) {
 		let tableContainer = document.createElement("div")
 		let table = document.createElement("table");
-		table.className = "table border border-2 m-3"
+		if (this.hasPrimaryKey()) {
+			table.className = "table border border-2 m-3"
+		} else {
+			table.className = "table border border-2 m-3 error"
+		
+			table.setAttribute("data-container","body")
+			table.setAttribute("data-bs-toggle","tooltip")
+			table.setAttribute("data-bs-placement","top")
+			table.setAttribute("title","Missing Primary Key")
+		}
+
+		table.addEventListener("mouseenter", function(event) {
+			new bootstrap.Tooltip(table)
+		} )
+
+		table.addEventListener("mouseleave", function (event) {
+			var tooltip = bootstrap.Tooltip.getInstance(table)
+			tooltip.dispose()
+		})
+		
 		table.style = "width: fit-content;"
 
 		let thead = table.createTHead();

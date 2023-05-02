@@ -4,7 +4,7 @@
   "description": "",
   "scripts": {
     "start": "parcel serve src/index.html --public-url / --dist-dir dist",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "mocha",
     "build": "parcel build --public-url ./ ./src/index.html --dist-dir build"
   },
   "keywords": [],
@@ -14,6 +14,7 @@
     "@popperjs/core": "^2.11.6",
     "anim-event": "^1.0.17",
     "bootstrap": "^5.2.3",
+    "js-tokens": "^8.0.1",
     "leader-line-new": "^1.1.9"
   },
   "devDependencies": {

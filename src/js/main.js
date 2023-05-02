@@ -64,7 +64,10 @@ var lines = []
 
 var database = new Database();
 
+var drawnTables = []
+
 function createTableData() {
+  drawnTables = []
   // 2D array of trees
   var data = []
   var keys = []
@@ -161,6 +164,13 @@ function createTree(data) {
   return root
 }
 
+// enables tooltip
+var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+  return new bootstrap.Tooltip(tooltipTriggerEl)
+})
+
+
 function extractTree(rootNode, data, listOfNodes) {
   //get all nodes where the parent id is rootNode recursively
   for (const element of data) {
@@ -174,8 +184,9 @@ function extractTree(rootNode, data, listOfNodes) {
 function drawTreeTablesRecursively(tree, appendNode, tables) {
   var item = document.createElement("li")
   for (const table of tables) {
-    if (table.name == tree.id) {
+    if (table.name == tree.id && !drawnTables.includes(table)) {
       table.createTable(item)
+      drawnTables.push(table)
     }
   }
   appendNode.appendChild(item)
@@ -212,6 +223,7 @@ function visualise() {
     treeArea.innerHTML = ""
     accordion.innerHTML = ""
     bubble.innerHTML = ""
+    successAlertDiv.innerHTML = ""
   }
 
   goToTableView()
