@@ -1,5 +1,6 @@
 const jsTokens = require("js-tokens")
 const Table = require("./Table")
+const SyntaxError = require("./SyntaxError")
 const Schema = require("./Schema")
   
   class Validator {

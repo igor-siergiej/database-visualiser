@@ -1,16 +1,12 @@
 
 import * as bootstrap from 'bootstrap';
-import Table from './Table';
 import LeaderLine from 'leader-line-new';
-
-import Schema from './Schema';
-const SyntaxError = require("./SyntaxError")
+import SyntaxError from "./SyntaxError"
 import Database from './Database';
 import Util from './Util';
 import Validator from './Validator';
 import NoForeignKeyProblem from './NoForeignKeyProblem';
 import MultipleRootsProblem from './MultipleRootsProblem';
-
 
 // importing elements from HTML file
 const accordion = document.getElementById("accordion")
@@ -562,6 +558,14 @@ fileVisualiseButton.addEventListener('click', function () {
 
 // when switching tabs lines need to be removed and drawn accordingly
 tableViewButton.addEventListener("click", function (event) {
+  createLines(database.getAllTables())
+})
+
+fileTabButton.addEventListener("click", function (event) {
+  createLines(database.getAllTables())
+})
+
+textTabButton.addEventListener("click", function (event) {
   createLines(database.getAllTables())
 })
 
