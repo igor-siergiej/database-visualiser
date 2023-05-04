@@ -134,6 +134,8 @@
 \definecolor{mmpSection}{RGB}{10,85,155}
 \definecolor{mmpSubsection}{RGB}{79,129,189}
 
+\newcolumntype{s}{>{\hsize=.3\hsize}X}
+
 \chapterfont{\color{mmpTitle}}  % sets colour of chapters
 \sectionfont{\color{mmpSection}}  % sets colour of sections 
 \subsectionfont{\color{mmpSubsection}} % sets colour subsections
@@ -229,7 +231,7 @@
 \fancyfoot[C]{{\thepage} of \pageref{LastPage}}
 
 % include any appendices here
-%\include{Appendices/appendixA}
+\include{Appendices/appendixA}
 
 \fancypagestyle{plain}{%
    \fancyhead{} %[C]{Annotated Bibliography}

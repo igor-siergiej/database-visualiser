@@ -4,6 +4,7 @@ const Schema = require("./Schema")
   
   class Validator {
 
+    // attempts to create a database object, if syntax error is detected, throws errors
     static validateSQL(database, inputString) {
         var statements
         // removes lines beginning with -- (comment in SQL)

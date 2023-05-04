@@ -4,8 +4,10 @@ const Column = require("./Column")
 const Util = require("./Util")
 const SyntaxError = require("./SyntaxError")
 const MissingPrimaryKeyProblem = require("./MissingPrimaryKeyProblem")
-import * as bootstrap from 'bootstrap';
 
+// IMPORTANT - Comment importing bootstrap when running tests,
+// couldn't figure out why mocha cannot import bootstrap
+const bootstrap = require('bootstrap');
 
  class Table {
 	name;
@@ -152,6 +154,7 @@ import * as bootstrap from 'bootstrap';
 		}
 	}
 
+	// pushes the expected index of open bracket depending on the flags and name used
 	checkCreateTableStatement(startingIndex, tokenizedArray, database) {
 		var indexOfOpenBracket
 		if (tokenizedArray[3] == undefined) {
@@ -173,6 +176,7 @@ import * as bootstrap from 'bootstrap';
 		return indexOfOpenBracket
 	}
 
+	// check if the "if not exists" flag is used
 	checkIfNotExists(indexOfTable, tokenizedArray) {
 		var firstWord = tokenizedArray[indexOfTable + 1].value
 		var secondWord = tokenizedArray[indexOfTable + 2].value

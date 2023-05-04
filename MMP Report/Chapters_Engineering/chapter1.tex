@@ -19,7 +19,7 @@ This project will not focus on these statements since they update and retrieve t
 
 Normalisation is a key idea in creating databases, it is the process of organising data in a database in a way so that all data is stored in one place and all related data is stored together\cite{normalisation}. Normalisation improves usability of data and reduces the risks of duplications and errors. For this project being able to advise the user on normalisation is difficult due to this project only looking at the structure of tables and normalisation involves looking at the entries inside the tables. 
 
-It also involves knowing the context behind the database itself which would be hard to extract that from just the SQL code itself. Due to this reason being able to automatically detect and advise on the normalisation of a table will be something that could be included in future work of this project.
+It also involves knowing the context behind the database itself which would be hard to extract from just the SQL code itself. Due to this reason being able to automatically detect and advise on the normalisation of a table will be something that could be included in future work of this project.
 
 When designing a database the tables are hard to visualise for learners because of their abstract nature and complexity. A database containing even a few tables with relationships between them can be hard to understand and navigate for learners. This project aims to solve this by converting SQL commands into a diagram of tables that can be easier to understand and give a better idea of the structure of their database.
 
@@ -36,7 +36,7 @@ From the research it was concluded that in order to determine where the database
 \begin{itemize}
 	\item \textbf{Parsing} - this would involve tokenising the input into tokens of different types and from there, parse through them to determine if it follows the pattern of SQL syntax. The tokens would have a set of types which could be used to identify their contents and parsing would be easier since the parsing is not done at each character of the input.
 	
-	\item \textbf{Regular Expressions} - this approach would involve creating a large amount of regular expressions to be able to match each individual part of the SQL syntax. This means that each statement in SQL would need its own regular expression to analyse the input. Since SQL statements are not simple this means that these regular expressions would have to be complex and capturing edge-cases would be difficult. These regular expressions would also be hard to read and even harder to maintain.
+	\item \textbf{Regular Expressions} - this approach would involve creating a large amount of regular expressions to be able to match each individual part of the SQL syntax. This means that each statement in SQL would need its own regular expression to analyse the input. Since SQL statements are not simple, this means that these regular expressions would have to be complex and capturing edge-cases would be difficult. These regular expressions would also be hard to read and even harder to maintain.
 \end{itemize}
 
 \subsection{Review of SQL Parser libraries}
@@ -54,11 +54,11 @@ These are the SQL parser that were considered to be used in this project:
 		\hline
 		\textbf{Parser Name} & \textbf{Project URL} & \textbf{Review} \\
 		\hline
-		sqlparse & \url{https://github.com/andialbrecht/sqlparse} &  This SQL parser is non-validating which means that if the user typed in SQL in a text editor and it had a syntax error present, this API would not detected it. For SQL learners this feature is quite important and is something that is required for this project.\\
+		sqlparse & \url{https://github.com/andialbrecht/sqlparse} &  This SQL parser is non-validating which means that if the user typed in SQL in a text editor and it had a syntax error present, this API would not detect it. For SQL learners, this feature is quite important and is something that is required for this project.\\
 		\hline
-		JSqlParser & \url{https://github.com/JSQLParser/JSqlParser} &  This SQL parser translates statements into a hierarchy of Java classes. It would time consuming and difficult to adapt this library to be used for this project using JavaScript, and it provides no API this approach would be necessary.\\
+		JSqlParser & \url{https://github.com/JSQLParser/JSqlParser} &  This SQL parser translates statements into a hierarchy of Java classes. It would be time consuming and difficult to adapt this library to be used for this project using JavaScript, and it provides no API to be used instead.\\
 		\hline
-		sql-parser & \url{https://github.com/forward/sql-parser} & This is an SQL parser that includes a lexer and parser for SQL and it's written in JavaScript however it is only capable of parsing basic SELECT queries which is not the focus of this project.\\
+		sql-parser & \url{https://github.com/forward/sql-parser} & This is an SQL parser that includes a lexer and parser for SQL and it's written in JavaScript however, it is only capable of parsing basic SELECT queries which is not the focus of this project.\\
 		\hline
 		General SQL Parser & \url{https://www.sqlparser.com/index.php} & This parser provides ways of detecting syntax errors as well as formatting SQL however it is proprietary, and the trial version only lasts for 90 days.\\
 		\hline
@@ -74,7 +74,7 @@ When setting foreign keys between tables, it is good practice to have all tables
 
 \subsection{Scope of the Parser}
 
-To set an appropriate target for this project, it was decided to only create parsing for DDL for PostgreSQL only, however since the statements are simple they could potentially be compatible with different variants of SQL. 
+To set an appropriate target for this project, it was decided to only create parsing for DDL statements of PostgreSQL, however since the statements are simple they could potentially be compatible with different variants of SQL. 
 
 It was decided to only create parsing for DDL statements because these are the statements that define the database structure which deals with creating and modifying the structure of the database, which is what is going to be visualised. Creating a parser for the entirety of the SQL language would be outside the scope of this project, and would take up too much time from designing the visualising and flaw detection part of this project.
 
@@ -123,11 +123,11 @@ To start working on the website, a local development server was created to provi
 
 \subsection{Server Hosting}
 
-The application is meant to be available as a website on the internet, which meant that server hosting was needed. Free server hosting services\cite{Infinity} were used in the beginning, this was done to test that  deploying a build of the webpage to the server was working as expected. Later on in the development process, the built webpage was deployed to the university's servers, which was a more reliable option since the demonstrations would take place on campus.
+The application is meant to be available as a website on the internet, which meant that server hosting was needed. Free server hosting services\cite{Infinity} were used in the beginning, this was done to test that deploying a build of the webpage to the server was working as expected. Later on in the development process, the built webpage was deployed to the university's servers, which was a more reliable option since the demonstrations would take place on campus.
 
 \subsection{Version Control}
 
-The main reason why version control was used in this project was to have a off site back up of the code base and have the ability to revert to previous version to easily take snapshots of previous designs. Since only one developer was working on this project, it was not necessary however it worked well with the lifecycle model and process used. Due to its popularity in the industry, it was decided to use GitHub \cite{Github}.
+The main reason why version control was used in this project was to have an off-site back up of the code base and have the ability to revert to previous version to easily take snapshots of previous designs. Since only one developer was working on this project, it was not necessary however it worked well with the lifecycle model and process used. Due to its popularity in the industry, it was decided to use GitHub \cite{Github}.
 
 \section{Analysis}
 
@@ -139,7 +139,7 @@ Regular Expressions are usually something that should not be used for parsing bu
 
 \subsection{Parser}
 
-A parser usually has a structure consisting of a lexer or a tokeniser, and a proper parser \cite{Parsing}. The tokeniser is needed to scan the input text and create tokens from it. These tokens describe the type of text it is, and example of this would be recognising the difference between a word, punctuation, or a number and splitting the input based on this into individual tokens. From there the parsing can be done by scanning through these tokens and makes sense from them based on their order and combination.
+A parser usually has a structure consisting of a lexer or a tokeniser, and a proper parser \cite{Parsing}. The tokeniser is needed to scan the input text and create tokens from it. These tokens describe the type of text it is, and an example of this would be recognising the difference between a word, punctuation, or a number and splitting the input based on this into individual tokens. From there the parsing can be done by scanning through these tokens and makes sense from them based on their order and combination.
 
 \newpage
 

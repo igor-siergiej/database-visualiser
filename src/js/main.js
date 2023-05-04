@@ -11,8 +11,8 @@ import Validator from './Validator';
 import NoForeignKeyProblem from './NoForeignKeyProblem';
 import MultipleRootsProblem from './MultipleRootsProblem';
 
-var visualised = false
 
+// importing elements from HTML file
 const accordion = document.getElementById("accordion")
 const bubble = document.getElementById("bubble")
 
@@ -30,9 +30,6 @@ const tableViewButton = document.getElementById("table-tab")
 const syntaxViewButton = document.getElementById("syntax-tab")
 const errorViewButton = document.getElementById("error-tab")
 
-fileVisualiseButton.disabled = true
-textVisualiseButton.disabled = true
-
 const tableTab = document.getElementById("tableTab")
 const syntaxTab = document.getElementById("syntaxArea")
 const errorTab = document.getElementById("errorArea")
@@ -45,25 +42,24 @@ const backdrop = document.getElementById("backdrop");
 const highlights = document.getElementById("highlights")
 
 const alertDiv = document.getElementById("alertDiv");
-
 const successAlertDiv = document.getElementById("successAlert")
 
-textArea.addEventListener("scroll", function (event) {
-  backdrop.scrollTop = textArea.scrollTop
-});
+// preventing user from visualising with no input
+fileVisualiseButton.disabled = true
+textVisualiseButton.disabled = true
 
-textTabButton.addEventListener("click", clearAlertDiv)
+document.getElementById("outputTab").hidden = true;
 
-fileTabButton.addEventListener("click", clearAlertDiv)
+highlights.innerHTML = textArea.value;
 
-function clearAlertDiv() {
-  alertDiv.innerHTML = ""
-}
+// used to clear some divs like alerts when visualisation happens more than once
+var visualised = false
 
 var lines = []
 
 var database = new Database();
 
+// used to prevent tables from being drawn if there are multiple roots
 var drawnTables = []
 
 function createTableData() {
@@ -127,6 +123,7 @@ function createTableData() {
   return data
 }
 
+// return all of the foreing keys in the database
 function getForeignKeysInDB() {
   var keys = []
   for (let schema of database.getSchemas()) {
@@ -143,6 +140,7 @@ function getForeignKeysInDB() {
   return keys
 }
 
+// borrowed code from https://dev.to/nas5w/building-deep-trees-in-javascript-using-object-references-4565
 function createTree(data) {
   const idMapping = data.reduce((acc, el, i) => {
     acc[el.id] = i;
@@ -164,15 +162,8 @@ function createTree(data) {
   return root
 }
 
-// enables tooltip
-var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-  return new bootstrap.Tooltip(tooltipTriggerEl)
-})
-
-
+//get all nodes where the parent id is rootNode recursively
 function extractTree(rootNode, data, listOfNodes) {
-  //get all nodes where the parent id is rootNode recursively
   for (const element of data) {
     if (element.parentId == rootNode) {
       listOfNodes.push(element)
@@ -181,6 +172,7 @@ function extractTree(rootNode, data, listOfNodes) {
   }
 }
 
+// recursively draw tables while creating lists 
 function drawTreeTablesRecursively(tree, appendNode, tables) {
   var item = document.createElement("li")
   for (const table of tables) {
@@ -201,6 +193,7 @@ function drawTreeTablesRecursively(tree, appendNode, tables) {
   }
 }
 
+// when visulisation is done go to the table view each time
 function goToTableView() {
   tableViewButton.setAttribute("aria-selected", true)
   syntaxViewButton.setAttribute("aria-selected", false)
@@ -215,6 +208,7 @@ function goToTableView() {
   errorTab.className = "tab-pane fade"
 }
 
+// visualise the database using the database object which is stored as a global variable above
 function visualise() {
   if (visualised) { // if the table has already been visualised then reset the html of the outputs
     tableArea.innerHTML = ""
@@ -228,7 +222,6 @@ function visualise() {
 
   goToTableView()
 
-
   // reveal output tab only once database is visualised
   document.getElementById("outputTab").hidden = false;
 
@@ -240,8 +233,6 @@ function visualise() {
       tables.push(table)
     }
   }
-
-  console.log(database)
 
   // if there are no foreign keys then draw tables in creation order
   if (getForeignKeysInDB().length > 0) {
@@ -297,6 +288,7 @@ function visualise() {
   visualised = true;
 }
 
+// if there are no flaws create a message saying there are no detected flaws in the database
 function createNoFlawMessage() {
   var alert = document.createElement("div")
 
@@ -316,6 +308,7 @@ function createNoFlawMessage() {
   successAlertDiv.appendChild(alert)
 }
 
+// create the lines for each foreign key in the database
 function createLines(tables) {
   removeLines()
   try {
@@ -352,7 +345,6 @@ function createLines(tables) {
 
             lines.push(line)
           }
-
         }
       }
     }
@@ -361,6 +353,7 @@ function createLines(tables) {
   }
 }
 
+// remove the foreign key lines from the webpage
 function removeLines() {
   for (var line of lines) {
     line.remove()
@@ -368,19 +361,21 @@ function removeLines() {
   lines = []
 }
 
+// write out the syntax for each table
 function writeSyntax(syntaxTextArea, tables) {
   for (const table of tables) {
     table.writeSyntax(syntaxTextArea);
   }
 }
 
+// try to create datamodel and the first error it throws will be displayed to user as error
 function validateSQL(inputString) {
   clearAlertDiv()
   database = new Database();
 
   let validated = true
 
-  try { // try to create datamodel and the first error it throws will be displayed to user as error
+  try { 
     Validator.validateSQL(database, inputString)
   } catch (syntaxError) {
     console.log(syntaxError)
@@ -394,6 +389,7 @@ function validateSQL(inputString) {
   return validated
 }
 
+// highlight the errorWord in the textArea, used to show where syntax error originates.
 function highlightSyntaxError(errorWord) {
   var text = textArea.value
   text = text.replace(/\n$/g, '\n\n')
@@ -402,6 +398,7 @@ function highlightSyntaxError(errorWord) {
   highlights.innerHTML = highlightedText
 }
 
+// based on validation outcome styling the filePicker accordingly
 function validateFilePickerText(fileText) {
   if (validateSQL(fileText)) {
     fileVisualiseButton.disabled = false
@@ -417,6 +414,8 @@ function validateFilePickerText(fileText) {
   }
 }
 
+
+// Check if the uploaded file has the correct extensions (txt, psql or sql)
 function validateFilePicker() {
   const file = filePicker.files[0]
   const filename = file.name
@@ -428,12 +427,13 @@ function validateFilePicker() {
       validateFilePickerText(event.target.result)
     })
   } else {
-    createAlert(new SyntaxError(`Filename ${filename} is invalid`), alertDiv)
+    createAlert(new Error(`Filename ${filename} is invalid`), alertDiv)
     filePicker.classList.remove("is-valid")
     filePicker.classList.add("is-invalid")
   }
 }
 
+// based on validation outcome styling the textArea accordingly
 function validateTextArea() {
   if (validateSQL(textArea.value)) {
     textVisualiseButton.disabled = false
@@ -449,6 +449,7 @@ function validateTextArea() {
   }
 }
 
+// get the unique column types for all tables in the current database
 function uniqueColumnTypesForAllTables(tables) {
   var columnTypes = []
   for (const element of tables) {
@@ -458,6 +459,7 @@ function uniqueColumnTypesForAllTables(tables) {
   return (Array.from(new Set(columnTypes)))
 }
 
+// create filters for a list of column types
 function createFilters(uniqueColumnTypes, filterArea) {
   for (const type of uniqueColumnTypes) {
     var checkBoxDiv = createCheckbox(type)
@@ -465,6 +467,7 @@ function createFilters(uniqueColumnTypes, filterArea) {
   }
 }
 
+// create a Bootstrap alert to give feedback to user
 function createAlert(error, alertsDiv) {
   if (alertsDiv.firstChild) { // if alertsDiv already has an alert then clear the div
     alertsDiv.innerHTML = ""
@@ -491,6 +494,7 @@ function createAlert(error, alertsDiv) {
   alertsDiv.appendChild(alertDiv)
 }
 
+// create a checkbox for filters
 function createCheckbox(type) {
   var columnDiv = document.createElement("div");
   columnDiv.className = "col"
@@ -521,28 +525,8 @@ function createCheckbox(type) {
   return columnDiv
 }
 
-const delayedValidateTextArea = Util.debounce(() => validateTextArea());
-const delayedValidateFilePicker = Util.debounce(() => validateFilePicker());
-
-highlights.innerHTML = textArea.value;
-
-textArea.addEventListener("input", function () {
-  highlights.innerHTML = textArea.value;
-  //update the text of the fake textArea
-
-  textArea.classList.remove("is-invalid")
-  textArea.classList.remove("is-valid")
-  delayedValidateTextArea()
-});
-
-filePicker.addEventListener('change', function () {
-  filePicker.classList.remove("is-invalid")
-  filePicker.classList.remove("is-valid")
-  delayedValidateFilePicker()
-})
-
-document.getElementById("outputTab").hidden = true;
-
+// when a filter checkbox is checked, highlight all the types in the 
+// syntax highlighter of this type 
 function highlighttokenizedArray(type, checkbox) {
   type = type.replace(/ /g,"_");
   var tokenizedArray = document.querySelectorAll(`[id=${type}]`);
@@ -557,6 +541,17 @@ function highlighttokenizedArray(type, checkbox) {
   }
 }
 
+// clears alerts in alertDiv
+function clearAlertDiv() {
+  alertDiv.innerHTML = ""
+}
+
+// delayed event listeners to give instant feedback to user
+const delayedValidateTextArea = Util.debounce(() => validateTextArea());
+const delayedValidateFilePicker = Util.debounce(() => validateFilePicker());
+
+// event handlers to visualise database when visualise button is pressed
+// depending on the type of input selected
 textVisualiseButton.addEventListener('click', function () {
   visualise(textArea.value)
 }, false)
@@ -565,9 +560,7 @@ fileVisualiseButton.addEventListener('click', function () {
   visualise(document.getElementById("filePicker").files[0].value)
 })
 
-// showing and hiding lines drawn between tables because they can't seem to be 
-// able to be added to a div so bootstrap cannot hide them automatically
-
+// when switching tabs lines need to be removed and drawn accordingly
 tableViewButton.addEventListener("click", function (event) {
   createLines(database.getAllTables())
 })
@@ -578,4 +571,36 @@ syntaxViewButton.addEventListener("click", function (event) {
 
 errorViewButton.addEventListener("click", function (event) {
   removeLines()
+})
+
+// matching the scroll of the textArea and fake textArea
+textArea.addEventListener("scroll", function (event) {
+  backdrop.scrollTop = textArea.scrollTop
+});
+
+// when input tabs are changed remove alerts
+textTabButton.addEventListener("click", clearAlertDiv)
+fileTabButton.addEventListener("click", clearAlertDiv)
+
+// when a new file is entered, clear styling and validated it
+filePicker.addEventListener('change', function () {
+  filePicker.classList.remove("is-invalid")
+  filePicker.classList.remove("is-valid")
+  delayedValidateFilePicker()
+})
+
+// when text is change in text area, clear styling and validate it
+textArea.addEventListener("input", function () {
+  //update the text of the fake textArea
+  highlights.innerHTML = textArea.value;
+
+  textArea.classList.remove("is-invalid")
+  textArea.classList.remove("is-valid")
+  delayedValidateTextArea()
+});
+
+// enables tooltips, boilerplate Bootstrap code
+var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+  return new bootstrap.Tooltip(tooltipTriggerEl)
 })
