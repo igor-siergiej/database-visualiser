@@ -4,7 +4,7 @@
 
 Overall, all of the requirements that were identified at the beginning of the project have been met to a good standard. The website is able to visualise simple databases and if there are any flaws detected it will advise the user on how to fix these issues. 
 
-Despite the SQL parsing not being as rigorous as expected the validation in the form works and will catch simple syntax errors that the user might make and inform them of it. The website has a simple and intuitive user interface, with minimalistic styling and theme.
+Despite the SQL parsing not being as rigorous as expected, the validation in the form works and will catch simple syntax errors that the user might make and inform them of it. The website has a simple and intuitive user interface, with minimalistic styling and theme.
 
 \section{Identification of Requirements}
 
@@ -56,6 +56,6 @@ If this project were to be worked on in the future, more advanced detection of f
 
 Another flaw detection is to see if the table or column name is plural since it is good design to have names be singular, in addition to this it could also check if the correct naming convention is used in names. A feature that could also be implemented is to prompt the user to inform them that a deprecated feature is used, even though it is correct syntax it should be avoided to use deprecated flags.
 
-In addition to more advanced detection of these flaws, there should be some ranking system created to quantify how serious of a flaw is to the integrity of the database. This could involve ranking a missing primary key as a serious flaw that is high risk where as using a deprecated flag is not even a flaw that has to be fixed, it could be a warning to the user.
+In addition to more advanced detection of these flaws, there should be some ranking system created to quantify how serious of a flaw it is to the integrity of the database. This could involve ranking a missing primary key as a serious flaw that is high risk where as using a deprecated flag is not even a flaw that has to be fixed, it could be a warning to the user.
 
 Finally, since this project is also aimed to be used in teaching, in the future there should be functionality for people marking student databases. This would involve being able to upload many SQL files at a time, to parse and detect flaws for all of them and output the results in a suitable form. This most likely not be a replacement for marking since the parsing and flaw detection will need to be much more sophisticated for this use case.

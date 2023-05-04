@@ -10,7 +10,7 @@ The unit tests show that the parsing algorithm is working correctly and throwing
 
 The automated testing addresses the requirement of validating the entered SQL and making sure it follows the PostgreSQL documentation of statement syntax. The parsing algorithm was written to be testable by throwing an error if the SQL does not validate. The unit tests can then catch that error and check that the error message to the user is correct and the parser is throwing the correct error. 
 
-The unit tests were written using a testing framework for JavaScript called Mocha\cite{mocha}. The testing suite includes test that parse a small string that is passed through but also it can read files from the testData directory where there are SQL files. These SQL files are database dump files containing statements that make up an entire database. 
+The unit tests were written using a testing framework for JavaScript called Mocha\cite{mocha}. The testing suite includes tests that parse a small string that is passed through but also it can read files from the testData directory where there are SQL files. These SQL files are database dump files containing statements that make up an entire database. 
 
 Testing a file makes sure that an entire database can be parsed and correctly find that no errors are present. Testing simple statements is an easy way to enter a single statement with a missing part of syntax to test if the error thrown contains a message complaining about that particular part of syntax not being included. The unit tests are also testing the behaviour if data is entered that is meant to break the system, which tests for the robustness of the parser.
 
@@ -68,5 +68,5 @@ Parsing is involved in these tests however, what is being tested is that the sys
 	\end{tabularx}
 \end{center}
 
-%\section{User Testing}
+\section{User Testing}
 

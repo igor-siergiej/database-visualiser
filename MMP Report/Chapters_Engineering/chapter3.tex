@@ -4,13 +4,15 @@
 
 \subsection{Creating Tables Using Bootstrap}
 
-Initially it was decided to create the SQL tables during visualisation using the Bootstrap 5 grid system. Using a series of rows and column in a flexbox it can layout and align the content responsively. This seemed like a good tool for creating tables because it allowed the creation of custom layouts for tables and it would give more freedom for styling and highlighting since, it is not as restrictive as a HTML table element. 
+Initially it was decided to create the SQL tables during visualisation using the Bootstrap 5 grid system. Using a series of rows and columns in a flexbox it can layout and align the content responsively. This seemed like a good tool for creating tables because it allowed the creation of custom layouts for tables and it would give more freedom for styling and highlighting since it is not as restrictive as an HTML table element. 
 
 Also HTML tables were not initially used because the idea was to create tables that did not have any contents inside of them apart from headers, so the table cells would be empty which would not be desirable. The application would not be able to parse "INSERT" statements which means no entries will be added to the tables so it would lead to empty rows in the table.
 
 Later on in the implementation of this tables, when the parsing was sophisticated enough to parse large tables, the problem emerged of Bootstrap shifting the layout of the tables and compressing it's columns together to look like rows on smaller screen or if the window was resized. 
 
 The grid system is useful when building layouts for mobile-first designs, the layout of the webpage changes when the size of the screen is changed. However, for this project, learners are not going to be writing their SQL databases on a mobile device, or devices with very small screen so it is not very useful and the structure of the tables should not change when the window size is altered. 
+
+\newpage
 
 \begin{figure}[h!]
 	\centering
@@ -19,7 +21,7 @@ The grid system is useful when building layouts for mobile-first designs, the la
 	\label{fig:squash}
 \end{figure}
 
-This problem was solved by going back to using HTML table elements and dynamically creating tables from the table objects. This solution was slightly harder to implement however, the and layout was much better since Bootstrap did not resize the table element. 
+This problem was solved by going back to using HTML table elements and dynamically creating tables from the table objects. This solution was slightly harder to implement however, the final layout was much better since Bootstrap did not resize the table element. 
 
 This was because the entire table is viewed as an element which prevents it from being changed when the window is resized, compared to the previous implementation, which had a table comprised of multiple column and row elements which were resized and the flexbox layout was altered. Bootstrap provides styling classes for these new tables which made the styling easy to make look like the previous table design.
 
@@ -38,11 +40,11 @@ Parsing was a lot more complex than initially thought, there were lots of edge c
 
 \subsection{Drawing arrows library}
 
-Drawing lines between two HTML elements was something that had to be done to represent foreign key relationships between tables. One possible way to do was to use a HTML canvas and draw lines using the position of elements on the webpage. However, this was difficult to style correctly in order to match the design of the website and would require more work to create a function to do so. Instead, a library called LeaderLine \cite{leaderLine} was used to draw an arrow between two elements. The styling of this arrows was much easier to do and it also included some implementation for animations which made the design look much better than the HTML canvas lines.
+Drawing lines between two HTML elements was something that had to be done to represent foreign key relationships between tables. One possible way to do was to use a HTML canvas and draw lines using the position of elements on the webpage. However, this was difficult to style correctly in order to match the design of the website and would require more work to create a function to do so. Instead, a library called LeaderLine \cite{leaderLine} was used to draw an arrow between two elements. The styling of these arrows was much easier to do and it also included some implementation for animations which made the design look much better than the HTML canvas lines.
 
 \subsection{Drawing Tables on the webpage}
 
-Drawing the tables in a way that was easy to understand was difficult because the order or layout the tables are displayed in, plays a key role in how easy a database can be understood. It was first implemented to display the tables in the order in which the tables appeared in the SQL text file since it seemed like a most logical solution. 
+Drawing the tables in a way that was easy to understand was difficult because the order or layout the tables are displayed in plays a key role in how easy a database can be understood. It was first implemented to display the tables in the order in which the tables appeared in the SQL text file since it seemed like a most logical solution. 
 
 This was done because the learners will expect the tables to be displayed in this order however, once foreign key arrows were implemented, the tables had arrows stretch across them because the tables were horizontally laid out. 
 
@@ -92,9 +94,9 @@ The HTML text area does not natively have the functionality to highlight text th
 
 Another solution to this problem would be embedding an already functioning rich text editor in the webpage. This approach would require styling it and cutting down all of the features down only to the simply highlighting, from this evaluation it was decided to create a simple work around for the lack of functionality of the HTML text area. 
 
-This was done by creating a "fake" text area under the current one that only looked like a text area although it was a div element, and since it was overlaid over the text area, it was not perceivable by the user. The goal of this text area is to highlight the text and match the position of it to the text area on top of it to make it seem like one component on the webpage. 
+This was done by creating a "fake" text area under the current one that only looked like a text area although it was a section element, and since it was overlaid over the text area, it was not perceivable by the user. The goal of this text area is to highlight the text and match the position of it to the text area on top of it to make it seem like one component on the webpage. 
 
-This div was styled so that it was identical to the text area and it's background was set to transparent so it did not interfere with the overall design. The highlighting was done by creating span elements of the words that had to be highlighted, these span elements had styling to change the colour of it's background. So from the point of view from the user, they can see the text from the text area and the highlighting done by the background of the span elements.
+This section was styled so that it was identical to the text area and it's background was set to transparent so it did not interfere with the overall design. The highlighting was done by creating span elements of the words that had to be highlighted, these span elements had styling to change the colour of it's background. So from the point of view of the user, they can see the text from the text area and the highlighting done by the background of the span elements.
 
 This proved to be quite easy to implement and provides the solution to the problem without having to write a rich text editor or implement one. This solution to the problem was inspired by an article \cite{fakeTextArea}.
 
@@ -109,18 +111,16 @@ This proved to be quite easy to implement and provides the solution to the probl
 
 \section{Review of Requirements}
 
-The initial requirements are all mostly met apart from the functionality that is outside the \textit{\hyperref[subsec:scope]{scope}} of this project that is mentioned previously in the report. 
-
 \begin{center}
-	\captionof{table}{\label{fig:reviewOfImplementation}Table reviewing the initial table of requirements.}
+	\captionof{table}{\label{fig:reviewOfImplementation}Table reviewing the initial table of requirements. The initial requirements are all mostly met apart from the functionality that is outside the \textit{\hyperref[subsec:scope]{scope}} of this project that is mentioned previously in the report. }
 	\setlength\extrarowheight{2pt}
-	\begin{tabularx}{\textwidth}{|X|X|X|}
+	\begin{tabularx}{\textwidth}{|s|s|X|}
 		\hline
 		\textbf{Functional Requirement Number} & \textbf{Functional Requirement Name} & \textbf{Review of Requirement} \\
 		\hline
-		FR-1 &  Enter SQL into website form. & The user can enter their SQL in either text or file form. This can be done by either entering text into the text area or uploading a file into the file picker. The website accurately processes the data that the user provides and there are restrictions to the file types that the user can upload. \\
+		FR-1 &  Enter SQL into the website form. & The user can enter their SQL in either text or file form. This can be done by either entering text into the text area or uploading a file into the file picker. The website accurately processes the data that the user provides and there are restrictions to the file types that the user can upload. \\
 		\hline
-		FR-2 & Validate entered SQL. & Once the data has been entered the SQL is validated and feedback is given to the user. If there are syntax errors in the SQL, alerts are created to inform the user as well as red highlighting of the text area.\\
+		FR-2 & Validate entered SQL. & Once the data has been entered, the SQL is validated and feedback is given to the user. If there are syntax errors in the SQL, alerts are created to inform the user as well as red highlighting of the text area.\\
 		\hline
 		FR-3 & Visualise entered database. & The entered database is visualised by creating tables and the links between them. They are laid out in a way to make it easy to understand the structure of the database.\\
 		\hline
