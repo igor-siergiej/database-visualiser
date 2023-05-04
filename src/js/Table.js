@@ -536,7 +536,11 @@ const bootstrap = require('bootstrap');
 			Util.writeSyntax("&emsp;" + column.name + " ", syntaxArea)
 			column.writeSyntax(syntaxArea)
 			column.writeConstraintSyntax(syntaxArea)
-			Util.writeSyntax(",<br>", syntaxArea)
+			if (this.columns.indexOf(column) != this.columns.length - 1) {
+				Util.writeSyntax(",<br>", syntaxArea)
+			} else {
+				Util.writeSyntax("<br>", syntaxArea)
+			}
 		}
 		Util.writeSyntax("); </p>", syntaxArea)
 	}
