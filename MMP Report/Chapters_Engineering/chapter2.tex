@@ -3,17 +3,21 @@
 
 \section{Overall Architecture}
 
-The overall architecture of the project consists of a dynamic webpage with scripting to process user input and display back the results. The webpage has a form for the user to enter the SQL text and here the input SQL is parsed by the JavaScript code. The system attempts to build a database from the user input and if it succeeds it will display the database as a collection of tables back to the user. If the system fails to build the database it means that the SQL that the user entered has some syntax errors and can not be visualised. Once the database has been visualised then the user can also interact with the database by viewing the syntax highlighting of the SQL text and also viewing the list of flaws of the database.
+The overall architecture of the project consists of a dynamic webpage with scripting to process user SQL and display back the database structure. The webpage has an input form for the user to enter the SQL as either a file or text. From there, the SQL code is parsed by the JavaScript functions. 
+
+The application attempts to build a database from the user input and if it succeeds it will display the database as a collection of tables on the webpage. If the system fails to build the database it means that the SQL entered has some syntax errors and can not be visualised. Once the database has been visualised, the user can interact with the database by viewing the syntax highlighting of the SQL text, as well as the list of flaws of the database.
 
 \subsection{Consideration of Other Designs}
 
-During the research stage of the project the aim was to find a third-party library that would handle SQL parsing so that this project could focus more on the visualising and structuring of the output. However this proved to not be possible since there were no open-source libraries that were available to parse the SQL and create some object that could be used to visualise the parsed database. Since this was not possible the main goal of this project was to create an SQL parser that would be able to check if the SQL compiles and if there were any syntax errors in the input.
+During the research stage of the project the aim was to find a third-party library that would handle SQL parsing, this will allow the project to focus more on the visualising and structuring of the output. However this proved to not be possible since there were no open-source libraries available to parse the SQL and create an object that could be used to visualise the parsed database. Since this was not possible the main goal of this project was to create an SQL parser that would be able to check if the SQL compiles and if it contained any syntax errors.
 
-Another design that was considered comprised of assuming that the user inserted SQL that compiles and has no syntax errors, this SQL would be for example exported from a database management system. This would make parsing easier since syntax error detection would not have to be implemented and instead the parser could include more syntax from the documentation and more time could be allocated to detection of more sophisticated flaw detection like normalisation. However the decision was made to instead focus on syntax error detection and include it in the parser since this project is aimed at SQL learners which means they are more likely to enter SQL with syntax errors.
+Another design that was considered comprised of assuming that the user inserted SQL that compiles and had no syntax errors, an example of this could be an exported file from a database management system. This would make parsing easier since syntax error detection would not have to be implemented, instead, the parser could include more syntax from the documentation and more time could be allocated to detection of more sophisticated database flaws like normalisation. However, the decision was made to instead focus on syntax error detection and include it in the parser since this project is aimed at SQL learners, this means they are more likely to enter SQL with syntax errors which has to be addressed.
 
 \section{Code Structure}
 
-The code is structured into classes that follow the data model of a database, this approach uses an object orientated approach using JavaScript ES6 classes. The classes are closely related to the properties of the PostgreSQL database, this means that a created database object will contains schemas, tables and columns just like a PostgreSQL database. This approach was taken to be able to create a "database" object and from there be able to visualise that object, which improves readability of the code base. The syntax errors in the SQL are also implemented in the JavaScript code as an error that is thrown when the database object could not be created due to syntax errors in the SQL input. This allows the creation of alerts to inform the user of the syntax error, the message in the error is displayed to the user in the alert.  
+The code is structured into classes that follow the data model of a database, this structure uses an object orientated approach using JavaScript ES6 classes. The classes are closely related to the properties of the PostgreSQL database, this means that a created database object will contains schemas, tables and columns just like a PostgreSQL database. This approach was taken to be able to create a "database" object and from there be able to visualise that object, which improves readability of the code base. 
+
+The syntax errors in the SQL are also implemented in the JavaScript code as an error that are thrown when the database object could not be created due to syntax errors in the SQL input. This allows the creation of alerts to inform the user of the syntax error, the error message is displayed to the user in the alert.
 % elaborate more on the syntax error alerts
 
 \newpage
@@ -23,7 +27,7 @@ The code is structured into classes that follow the data model of a database, th
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=\textwidth]{classDiagram}
-	\caption{UML Class diagram for the project created using \cite{dbdiagram}}
+	\caption{UML Class diagram for the project, created using diagrams.net\cite{dbdiagram}.}
 	\label{fig:classDiagram}
 \end{figure}
 
@@ -33,30 +37,53 @@ The code is structured into classes that follow the data model of a database, th
 
 \subsection{Parser}
 
-As mentioned in the first chapter, the parser consists of a tokeniser and the proper parsing. To tokenise the input text a library was used \cite{tokeniser}, it is designed to turn JavaScript code into tokens however for the purpose of parsing SQL it is also appropriate. The library is powered by regular expressions and it almost complies with parsing specification. This library was chosen because of the token object it produces are easy to work with and the types of tokens are compatible with SQL and the parsing that was designed. The library consisted of an function that converted a string to token objects that were later converted into an array. The Token objects contained a type of token as well as the value of the token. This made parsing easier since after tokenising the input text, all white spaces could be ignored and each token would either be of type "Punctuator" or "IdentifierName". This meant that the array of values to parse only contained words or flags of SQL statements which were separated by punctuators which were used to identify the different syntax of each statement.
+As mentioned in the first chapter, the parser consists of a tokeniser and the proper parser. To tokenise the input text, a library was used called js-tokens\cite{tokeniser}. It is designed to tokenise JavaScript code however, for the purpose of parsing SQL it is also appropriate. 
 
-After the input has been tokenised the proper parsing has to be done to make sense of the SQL and check if there are syntax errors. This is achieved using regular expressions and further proper parsing. The regular expressions were created to match simple patterns in the SQL syntax, an example of this includes separating each SQL statement by a semicolon. Another example of this is separating each column in a "CREATE TABLE" statement. Each column should be separated by a comma, however commas are also present when a primary key is created with more than one column. To achieve this a regular expression was constructed to use Lookahead and Lookbehind was used to see if the comma is surrounded by brackets and not match that comma.
+This library is powered by regular expressions and it almost complies with parsing specification. It was chosen because the token object it creates are easy to work with and the types of tokens are compatible for the parsing of the SQL. The library consisted of a function that converted a string into token objects that were later converted into an array. 
+
+The Token objects contained the type of token it was, as well as the value of the token. This made parsing easier since after tokenising the input text, all white spaces could be ignored easily. That left tokens that would either be of type "Punctuator" or "IdentifierName", "Punctuator" tokens would only contain punctuation and "IdentifierName" tokens contained words with numbers. 
+
+This meant that the array of values to parse only contained words which were separated by punctuation. These values could easily be parsed to identify the syntax of each statement by checking against the SQL syntax patterns.
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width = \textwidth]{tokenisingDiagram}
+	\caption{Diagram visualising the tokenisation process in the parser function, created using diagrams.net \cite{dbdiagram}.}
+	\label{fig:tokenisingDiagram}
+\end{figure}
+
+After the input has been tokenised, the proper parsing has to be done analyse the SQL and check if there are syntax errors. This is achieved using regular expressions and further proper parsing. The regular expressions were created to match simple patterns in the SQL syntax, an example of this includes separating each SQL statement by a semicolon. Another example of this is separating each column in a "CREATE TABLE" statement. 
+
+Each column should be separated by a comma, however commas are also present when a primary key is created with more than one column. To achieve this a regular expression was constructed to use Lookahead and Lookbehind, this was used to see if the comma is surrounded by brackets and if it was that comma was not matched.
 
 \begin{figure}[h!]
 	\centering
 	\includegraphics{regex}
-	\caption{Comma highlighted in purple is the comma that is missed out from the matching using the regular expression}
+	\caption{Comma highlighted in purple is the comma that is missed out from the matching using the regular expression to separate each section of syntax in the "CREATE TABLE" SQL statement.}
 	\label{fig:regex}
 \end{figure}
 
-Regular expressions were also used to sanitize the input data, this included removing lines that were comments in SQL and removing line breaks to make parsing easier. This was done before the input string was tokenised and the regular expressions removed line breaks regardless of operating system used to write the input text.
+Regular expressions were also used to sanitize the input data, this included removing lines that were commented in SQL and also removing line breaks. The regular expression that was used to remove line breaks did so regardless of operating system that used to write the input text. This was done before the input string was tokenised which meant that less sanitizing of tokens had to be done later on in the parser functions.
 
-The other part of parsing consists of going through the split up statements and checking the type of statement that it is and to examine if the syntax matches the PostgreSQL documentation.  This was done by iterating through the array of Token objects and matching the value against a dictionary of words that corresponded to the SQL syntax. Depending on the value of the token a different constructor was called to create the corresponding object and add it to the database. The dictionary look-up approach was also taken when checking if a data type of a column in a table is valid. The value of the token in the position where the data type should be is checked against a dictionary of possible data types that are available in SQL.
+The other part of parsing consists of going through the split up statements and checking the type of statement that it is, and to examine if the syntax matches the PostgreSQL documentation.  This was done by iterating through the array of token objects and matching the value against a dictionary of words that corresponded to the SQL syntax. 
 
-% more about parsing?? look at sources
+Depending on the value of the token a different constructor was called to create the corresponding object and add it to the database. The dictionary look-up approach was also taken when checking if a data type of a column in a table is valid. The value of the token that is the data type is checked against a dictionary of possible data types that are available in PostgreSQL.
 
 \subsection{Creating Tree Structure}
 
-The main algorithms involve converting the database object into a tree structure of tables that are visualised. This is done after the SQL has been parsed and the database object is created, all the foreign keys from the database are collected and are converted into key-value pairs. The key is set to the table that the foreign key references and the value is set to the table where the foreign key is present, these become the id of a node and the parentId. Duplicates are removed to prevent tables from being visualised more than once and, roots are determined from this list of keys. This is done by finding the tables that have no foreign keys being referenced by them, the roots will determine the root nodes of the tree structure. If there is only one root that means that all the tables entered are joined together by foreign keys, however if there are more roots that means that there are multiple trees of tables that have to be extracted from the list of tables. 
+The main algorithms involve converting the database object into a tree structure of tables that are then visualised. This is done after the SQL has been parsed and the database object is created, all the foreign keys from the database are collected and are converted into key-value pairs. 
+
+The key is set to the table that the foreign key references and the value is set to the table where the foreign key is present, these become the id and parentId of a node. Duplicates are removed to prevent tables from being visualised more than once and roots are determined from this list of keys. 
+
+This is done by finding the tables that have no foreign keys being referenced by them, the roots will determine the root nodes of the tree structure. If there is only one root that means that all the tables entered are joined together by foreign keys, however if there are more roots that means that there are multiple trees of tables that have to be extracted from the list of tables. 
 
 \subsection{Extraction of Trees from list of values}
 
-For all of the roots a tree is created from the key value pairs, after each one is created, it's values are removed from the list of entire key-value pairs. The remaining values from this list are used to build the remaining trees of tables. This is done using a recursive function, given a root key-value pair and the list of key-value pairs it will recursively get all of the values that belong to that pair. This essentially gets all of the members of a subtree given a root node and from this list a tree structure can be created. The worst case big-O runtime for this recursive function is O(N) with N being the size of the tree. Since the size of the tree will not be large due to the database of a learner will most likely not contain many tables it's not a issue and does not need to be optimised. 
+For all of the roots a tree is created from the list of key value pairs, after each one is created, it's values are removed from the list. The remaining values from this list are used to build the remaining trees of tables. 
+
+This is achieved using a recursive function, given a root key-value pair and the list of key-value pairs it will recursively get all of the values that belong to that pair. This essentially gets all of the members of a subtree given a root node, and from this list a tree structure can be created. 
+
+The worst case big-O runtime for this recursive function is O(N) with N being the size of the tree. Since the size of the tree will not be large due to the database of a learner will most likely not contain many tables it's not a issue and does not need to be optimised further.
 
 \subsection{Building trees from list of key value pairs}
 
@@ -87,9 +114,14 @@ function createTree(data) {
 
 \subsection{Drawing HTML Tables as a tree}
 
-If there are foreign keys present in a database the tables that are involved in those foreign keys are visualised on the webpage as a tree node structure. HTML lists are structured in a way that requires the the drawing of the tables to be done depth-first in the tree of tables. The drawing is done by a function that recursively iterates through the tree depth-first, and depending if the node is a leaf or branch it will either create a HTML list item or an unordered list. This is determined by checking if the current done has children or not and if it does create a new list and draw all of the children of the current node in that list. The tables are drawn in HTML lists because CSS styling is used to position the list items in the list horizontally like a tree node diagram. HTML lists were used since they naturally follow a tree structure so it was simple to adapt this structure to draw HTML elements like tables in a tree node diagram structure. 
+If there are foreign keys present in a database, the tables that are linked by those foreign keys are visualised on the webpage as a tree node structure. This is laid out on the webpage using HTML lists. These HTML lists are also structured in a tree node structure, this means that the tables have to be created in the order of left to right. This is the equivalent to depth-first exploration of a tree which is how this was programmed. 
 
- \begin{lstlisting}[style=JavaScript, caption={JavaScript function draw a list of tables recursively while also creating HTML list elements to be structured on the webpage.}]
+The drawing is done by a function that recursively iterates through the tree depth-first, and depending if the node is a leaf or branch it will either create a HTML list item or an unordered list. This is determined by checking if the current done has children or not and if it does create a new list and draw all of the children of the current node in that list. 
+
+The tables are drawn in HTML lists because CSS styling is used to position the list items in the list horizontally like a tree node diagram is normally visualised. HTML lists were used since they naturally follow a tree structure so it was simple to adapt this structure to draw HTML elements like tables in a tree node diagram structure. 
+% if this is hard to understand create a diagram to show the comparsion between HTML structure and table structure
+
+ \begin{lstlisting}[style=JavaScript, caption={JavaScript function that draws a list of tables recursively in HTML list elements.}]
  function drawTreeTablesRecursively(tree, appendNode, tables) {
  	var item = document.createElement("li")
  	for (const table of tables) {
@@ -112,11 +144,11 @@ If there are foreign keys present in a database the tables that are involved in 
 
 \section{Data Structures}
 
-The data structures that were used in this project were not complicated and did not require much technical work. The database class and all of the classes that were written that are included in the database class did not contain any data structures that were more complex than arrays and lists of objects. The more interesting data structures that were used involve a tree which was used to structure drawing the tables on the webpage and the tokenised array which was created before parsing the input data.
+The data structures that were used in this project were mostly comprised of arrays of objects and tree node structures. The database classes mostly contained the arrays of objects, while the algorithm that was used to draw the tables used the tree node structures and a list of key-value pairs. In the parsing of the SQL code the tokenising library \cite{tokeniser} created an array of token objects as an output which was the main data structure of the parsing algorithm.
 
 \subsection{Tokenised Array}
 
-The tokenised array is a array of Token objects and a Token object consists of a type and value. These arrays of Tokens are created from the SQL statement string when it is being parsed. The token types specify the type of string is which belongs to the token, the value is the value of the string itself. The types of tokens are used to parse JavaScript code however, it splits up the SQL statement string into things like: punctuators, white spaces and identifier names which are words without punctuation. This array is the core of the parsing algorithm that is used in this project.
+The tokenised array is an array of token objects and each token object consists of a type and value, these arrays of tokens are created from the SQL statement string. The token type specifies the type of value which the token has, there are many types which are used for parsing JavaScript code. This array of tokens is a core element of the parsing algorithm that is used in this project.
 
  \begin{lstlisting}[style=JavaScript, caption={Tokenised array of tokens from a part of a simple input of an "CREATE TABLE" statement.}]
 	{ type: "IdentifierName", value: "CREATE" },
@@ -136,7 +168,7 @@ The key-value pairs that represent the foreign keys are stored as an array of ob
 	{ id: "account_roles", parentId: null }
 \end{lstlisting}
 
-For the root table it has no parent node therefore it's parentId is null to represent that. This is fairly common practice to store this data for a one-to-many tree node relationship.
+For the root pair it has no parent node, therefore to represent that it's parentId is set to be null. This is fairly common practice to store this data for a one-to-many tree node relationship.
 
 \subsection{Tree Node Object}
 
@@ -153,34 +185,36 @@ The tree node object is a an object that has a key and a value in the form of th
 
 \section{User Interface}
 
-The user interface was designed so it was simple and easy to use since it was aimed at SQL learners. It was designed to be use on a desktop computer with a medium to large monitor. The core of the design has been the same throughout the project, however some of the elements have undergone major changes to the styling or layout. It was designed using Bootstrap 5 which is a front-end toolkit, it was used to do all of the styling and for the key icons. It was used to give the website a more professional and uniform look, after the colour scheme was chosen and entered, bootstrap modified all elements to follow this colour scheme.
+The user interface was designed so it was simple and easy to use since it was aimed at SQL learners. It was designed to be used on a desktop computer with a medium to large monitor. The core of the design has been the same throughout the project, however some of the elements have undergone major changes to the styling or layout. It was designed using Bootstrap 5 \cite{Bootstrap} which is a front-end toolkit, it was used to do all of the styling and for the key icons. It was used to give the website a more professional and uniform look, after the colour scheme was chosen and entered, bootstrap modified all elements to follow this colour scheme.
 
 There are two main elements to the user interface: 
 
 \begin{itemize}
-	\item \textbf{The Input Form} - The input form is how the user enters their SQL database design into the website for the script to process it. It has two tabs: text input and file input. Either of these can be chosen to either enter text into a textarea or upload a file into the file picker.
-	\item \textbf{The Visualised Views} - Once the SQL has been validated, the "Visualise" button can be pressed and the visualised database view tabs appear. These tabs include: table, syntax and problem view. Each of these is a separate page that contains information or a visualisation of the entered SQL database.
+	\item \textbf{The Input Form} - The input form is how the user enters their SQL database design into the website for the script to process it. It has two tabs: "Text Input" and "File Input". These can be chosen to either enter text into the text area or upload a file into the file picker.
+	\item \textbf{The Visualised Views} - Once the SQL has been validated, the "Visualise" button can be pressed and the visualised database view tabs appear. These tabs include: "Table View", "Syntax View" and "Problem View". Each of these is a separate page that contains information or a visualisation of the entered SQL database.
 \end{itemize}
 
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=\textwidth]{firstDesign}
-	\caption{First iteration of the user interface design}
+	\caption{First iteration of the user interface design.}
 	\label{fig:firstDesign}
 \end{figure}
 
-The first iteration of the design included only the text input in the form with crude parsing of the SQL. The tables are also stretched across the page without borders and styling, and have the column name and data type as columns in the HTML table which might also be confusing.
+The first iteration of the design included the input form with the only option of input being text with crude parsing of the SQL. The tables are also stretched across the page without borders and styling. The tables here were made using HTML tables however they have the SQL column name and data type as columns in the table which might be confusing, due to this the structure of the tables were changed in the future iterations.
 
 \newpage
 
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=\textwidth]{secondDesign}
-	\caption{Second iteration of the user interface design}
+	\caption{Second iteration of the user interface design.}
 	\label{fig:secondDesign}
 \end{figure}
 
-The second iteration of the design had a much better colour scheme following the website trend of having a dark background with white text and accent colours. It now also includes the file input tab and the output tabs below the visualise button. However the foreign key arrows have not been implemented yet and the tables here are visualised in the order that they are defined in the SQL file. Also the primary key icons are not yet added and instead are represented as either a "P" for this column being part of a primary key constraint and "N/A" for not having a primary key constraint.
+The second iteration of the design had a much better colour scheme following the website trend of having a dark background with white text and lighter accent colours. It now also includes the option to change the input form from text to file input, as well as the output tabs being created below the visualise button for the table output and syntax highlighting output. 
+
+However the foreign key arrows have not been implemented yet and the tables here are visualised in the order that they are created in the SQL file. Also the primary key icons are also not yet added and instead are represented as either a "P" for being part of a primary key constraint and "N/A" for not being part of a primary key constraint.
 
 \newpage
 
@@ -191,4 +225,4 @@ The second iteration of the design had a much better colour scheme following the
 	\label{fig:finalDesign}
 \end{figure}
 
-The final design builds from the second iteration by adding the tree node structure lay out to tables and the foreign key links between them. The tables are now HTML tables and not the Bootstrap tables made out of row and columns div elements which makes them look slightly more compact and more professional. There are now key icons for the primary key column in each table for the columns that are part of the primary key constraint. It also includes the green outline and tick icon for the input form that is shown when the SQL in the input file, is valid and compiles. The colour scheme has stayed the same since it has not interfered with any of the other elements and did not need to be changed. 
+The final design builds from the second iteration by adding the tree node structure layout to tables and the foreign key links between them. The tables are now HTML tables and not the Bootstrap tables made out of row and columns div elements which makes them look slightly more compact and more professional. There are now key icons for the primary key column in each table for the columns that are part of the primary key constraint. It also includes the green outline and tick icon for the input form that is shown when the SQL in the input file, is valid and compiles. The colour scheme has stayed the same since it has not interfered with any of the other elements and did not need to be changed. 
