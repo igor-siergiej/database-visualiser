@@ -371,7 +371,7 @@ function validateSQL(inputString) {
 
   let validated = true
 
-  try { 
+  try {
     Validator.validateSQL(database, inputString)
   } catch (syntaxError) {
     console.log(syntaxError)
@@ -524,7 +524,7 @@ function createCheckbox(type) {
 // when a filter checkbox is checked, highlight all the types in the 
 // syntax highlighter of this type 
 function highlighttokenizedArray(type, checkbox) {
-  type = type.replace(/ /g,"_");
+  type = type.replace(/ /g, "_");
   var tokenizedArray = document.querySelectorAll(`[id=${type}]`);
   if (checkbox.checked) {
     for (let i = 0; i < tokenizedArray.length; i++) {
@@ -602,6 +602,15 @@ textArea.addEventListener("input", function () {
   textArea.classList.remove("is-valid")
   delayedValidateTextArea()
 });
+
+// allows the tabbing inside textarea
+textArea.onkeydown = function (e) {
+  if (e.keyCode == 9 || e.which == 9) {
+    e.preventDefault();
+    this.value = this.value.substring(0, this.selectionStart) + "\t" + this.value.substring(this.selectionEnd);
+    this.selectionEnd = this.selectionStart + 1;
+  }
+}
 
 // enables tooltips, boilerplate Bootstrap code
 var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
