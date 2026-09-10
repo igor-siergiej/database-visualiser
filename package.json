@@ -1,7 +1,7 @@
 {
   "name": "database-visualiser",
   "version": "1.0.0",
-  "description": "",
+  "description": "Browser-based SQL teaching tool: parses DDL and renders the schema as an interactive horizontal tree.",
   "scripts": {
     "start": "parcel serve src/index.html --public-url / --dist-dir dist",
     "test": "mocha",
@@ -9,7 +9,7 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "AGPL-3.0-or-later",
   "dependencies": {
     "@popperjs/core": "^2.11.6",
     "anim-event": "^1.0.17",
